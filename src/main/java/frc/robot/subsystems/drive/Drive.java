@@ -5,17 +5,17 @@ import com.kauailabs.navx.frc.AHRS;
 import PIDControl.PIDControl;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public abstract class Drive extends SubsystemBase
+public class Drive extends SubsystemBase
 {
-    protected AHRS           _gyro;
+    private   AHRS           _gyro;
     private   double         _gyroOffset;
 
-    protected PIDControl     _translatePID;
-    protected PIDControl     _rotatePID;
+    private   PIDControl     _translatePID;
+    private   PIDControl     _rotatePID;
 
     private   Vector         _origin;
 
-    protected SwerveModule[] _swerveModules;
+    private   SwerveModule[] _swerveModules;
     private   double         _maxModuleDistance;
 
     private   double         _rotateSetpoint;
@@ -33,10 +33,7 @@ public abstract class Drive extends SubsystemBase
         _maxModuleDistance  = 0;
 
         _rotateSetpoint     = 0;
-    }
 
-    public void init()
-    {
         resetEncoders();
         setOrigin(0, 0);
         resetOdometer();
@@ -116,11 +113,6 @@ public abstract class Drive extends SubsystemBase
     public Vector getOrigin() 
     {
         return _origin;
-    }
-
-    public SwerveModule getSwerveModule(int index)
-    {
-        return _swerveModules[index];
     }
 
     public void translateInit(Vector targetTranslation, double distanceThreshold, double maxSpeed, double closeMaxSpeed, double minSpeed, boolean resetEncoders)

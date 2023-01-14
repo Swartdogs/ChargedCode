@@ -5,12 +5,12 @@ import com.revrobotics.CANSparkMax;
 import PIDControl.PIDControl;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 
-public abstract class SwerveModule extends Vector
+public class SwerveModule extends Vector
 {
-    protected CANSparkMax          _driveMotor;
-    protected CANSparkMax          _rotateMotor;
-    protected AnalogPotentiometer  _positionSensor;
-    protected PIDControl           _rotatePID;
+    private CANSparkMax          _driveMotor;
+    private CANSparkMax          _rotateMotor;
+    private AnalogPotentiometer  _positionSensor;
+    private PIDControl           _rotatePID;
     
     private double            _rotateSetpoint;
     private double            _driveSetpoint;
@@ -80,21 +80,6 @@ public abstract class SwerveModule extends Vector
         return _driveSetpoint;
     }
 
-    public CANSparkMax getDriveMotor()
-    {
-        return _driveMotor;
-    }
-
-    public CANSparkMax getRotateMotor()
-    {
-        return _rotateMotor;
-    }
-
-    public PIDControl getRotatePID()
-    {
-        return _rotatePID;
-    }
-
     public double getRelativeZero()
     {
         return _relativeZero;
@@ -107,7 +92,7 @@ public abstract class SwerveModule extends Vector
 
     public double getDrivePosition()
     {
-        return _positionSensor.get();
+        return _driveMotor.get();
     }
 
     public void resetDrivePosition()
