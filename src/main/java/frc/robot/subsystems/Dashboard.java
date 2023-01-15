@@ -1,7 +1,11 @@
 package frc.robot.subsystems;
 
+import java.util.EnumSet;
+
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableEvent;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -14,17 +18,17 @@ public class Dashboard extends SubsystemBase
     {
         var x = Shuffleboard.getTab("Dashboard");
         _x = x.add("button", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-    }
 
-    @Override
-    public void periodic() 
-    {
-        boolean x = (_x.getBoolean(false));
-        
-        if (x)
+        var y = NetworkTableInstance.getDefault();
+        y.addListener(_x, EnumSet.of(NetworkTableEvent.Kind.kValueRemote), z->
         {
-         System.out.println("Pressed");
-         _x.setBoolean(false);
-        }
+            boolean a = (_x.getBoolean(false));
+        
+            if (a)
+            {
+             _x.setBoolean(false);
+             System.out.println("Pressed");
+            }
+        });
     }
 }
