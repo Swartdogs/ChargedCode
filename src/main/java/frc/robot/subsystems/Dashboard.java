@@ -13,22 +13,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Dashboard extends SubsystemBase 
 {
-    private GenericEntry _x;
     public Dashboard() 
     {
-        var x = Shuffleboard.getTab("Dashboard");
-        _x = x.add("button", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+        var tab = Shuffleboard.getTab("Dashboard");
+        var buttonEntry = tab.add("button", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+        var button2Entry = tab.add("button2", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
 
-        var y = NetworkTableInstance.getDefault();
-        y.addListener(_x, EnumSet.of(NetworkTableEvent.Kind.kValueRemote), z->
-        {
-            boolean a = (_x.getBoolean(false));
-        
-            if (a)
-            {
-             _x.setBoolean(false);
-             System.out.println("Pressed");
-            }
-        });
+
+        var button = new DashboardButton(buttonEntry);
+        button.whenPressed(()-> System.out.println("pressed"));
+
+        var button2 = new DashboardButton(button2Entry);
+        button2.whenPressed(()-> System.out.println("hello"));
     }
 }
