@@ -1,116 +1,135 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.ModuleConstants;
 
-public class Drive 
+public class Drive extends SubsystemBase
 {
-    private final CANSparkMax        _driveMotor;
-    private final CANSparkMax        _rotateMotor;
+    private static Drive _instance;
 
-    private final RelativeEncoder    _driveEncoder;
-    private final RelativeEncoder    _rotateEncoder;
-
-    private final PIDController      _rotatePIDController;
-
-    private final AnalogInput        _absoluteEncoder;
-    private final boolean            _absoluteEncoderReversed;
-    private final double             _absoluteEncoderOffsetRad;
-
-    public Drive(int driveMotorID, int rotateMotorID, boolean driveMotorReversed, boolean rotateMotorReversed, 
-                 int absoluteEncoderID, double absoluteEncoderOffset, boolean absoluteEncoderReversed)
+    public static Drive getInstance()
     {
-        this._absoluteEncoderOffsetRad = absoluteEncoderOffset;
-        this._absoluteEncoderReversed  = absoluteEncoderReversed;
-        _absoluteEncoder               = new AnalogInput(absoluteEncoderID);
-
-        _driveMotor                    = new CANSparkMax(driveMotorID, MotorType.kBrushless);
-        _rotateMotor                   = new CANSparkMax(rotateMotorID, MotorType.kBrushless);
-
-        _driveMotor.setInverted(driveMotorReversed);
-        _rotateMotor.setInverted(rotateMotorReversed);
-
-        _driveEncoder                  = _driveMotor.getEncoder();
-        _rotateEncoder                 = _rotateMotor.getEncoder();
-
-        _driveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderRot2Meter);
-        _driveEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderRPM2MeterPerSec);
-        _rotateEncoder.setPositionConversionFactor(ModuleConstants.kRotateEncoderRot2Rad);
-        _rotateEncoder.setVelocityConversionFactor(ModuleConstants.kRotateEncoderRPM2RadPerSec);
-
-        _rotatePIDController           = new PIDController(ModuleConstants.kPRotate, 0, 0);
-        _rotatePIDController.enableContinuousInput(-Math.PI, Math.PI);
-
-        resetEncoders();
-    }
-
-    public double getDrivePosition()
-    {
-        return _driveEncoder.getPosition();
-    }
-
-    public double getRotatePosition()
-    {
-        return _rotateEncoder.getPosition();
-    }
-
-    public double getDriveVelocity()
-    {
-        return _driveEncoder.getVelocity();
-    }
-
-    public double getRotateVelocity()
-    {
-        return _rotateEncoder.getVelocity();
-    }
-
-    public double getAbsoluteEncoderRad()
-    {
-        double angle = _absoluteEncoder.getVoltage() / RobotController.getCurrent5V();
-        angle *= 2.0 * Math.PI;
-        angle -= _absoluteEncoderOffsetRad;
-
-        return angle * (_absoluteEncoderReversed ? -1.0 : 1.0);
-    }
-
-    public void resetEncoders()
-    {
-        _driveEncoder.setPosition(0);
-        _rotateEncoder.setPosition(getAbsoluteEncoderRad());
-    }
-
-    public SwerveModuleState getState()
-    {
-        return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getRotatePosition()));
-    }
-
-    public void setDesiredState(SwerveModuleState state)
-    {
-        if(Math.abs(state.speedMetersPerSecond) < 0.001)
+        if (_instance == null)
         {
-            stop();
-            return;
+            _instance = new Drive();
         }
 
-        state = SwerveModuleState.optimize(state, getState().angle);
-        _driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
-        _rotateMotor.set(_rotatePIDController.calculate(getRotatePosition(), state.angle.getRadians()));
-        SmartDashboard.putString("Swerve[" + _absoluteEncoder.getChannel() + "] state", state.toString());
+        return _instance;
     }
 
-    public void stop()
-    {
-        _driveMotor.set(0);
-        _rotateMotor.set(0);
+    private final SwerveModule _frontLeft = new SwerveModule(
+            DriveConstants.kFrontLeftDriveMotorPort,
+            DriveConstants.kFrontLeftTurningMotorPort,
+            DriveConstants.kFrontLeftDriveEncoderReversed,
+            DriveConstants.kFrontLeftTurningEncoderReversed,
+            DriveConstants.kFrontLeftDriveAbsoluteEncoderPort,
+            DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetRad,
+            DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed);
+
+    private final SwerveModule _frontRight = new SwerveModule(
+            DriveConstants.kFrontRightDriveMotorPort,
+            DriveConstants.kFrontRightTurningMotorPort,
+            DriveConstants.kFrontRightDriveEncoderReversed,
+            DriveConstants.kFrontRightTurningEncoderReversed,
+            DriveConstants.kFrontRightDriveAbsoluteEncoderPort,
+            DriveConstants.kFrontRightDriveAbsoluteEncoderOffsetRad,
+            DriveConstants.kFrontRightDriveAbsoluteEncoderReversed);
+
+    private final SwerveModule _backLeft = new SwerveModule(
+            DriveConstants.kBackLeftDriveMotorPort,
+            DriveConstants.kBackLeftTurningMotorPort,
+            DriveConstants.kBackLeftDriveEncoderReversed,
+            DriveConstants.kBackLeftTurningEncoderReversed,
+            DriveConstants.kBackLeftDriveAbsoluteEncoderPort,
+            DriveConstants.kBackLeftDriveAbsoluteEncoderOffsetRad,
+            DriveConstants.kBackLeftDriveAbsoluteEncoderReversed);
+
+    private final SwerveModule _backRight = new SwerveModule(
+            DriveConstants.kBackRightDriveMotorPort,
+            DriveConstants.kBackRightTurningMotorPort,
+            DriveConstants.kBackRightDriveEncoderReversed,
+            DriveConstants.kBackRightTurningEncoderReversed,
+            DriveConstants.kBackRightDriveAbsoluteEncoderPort,
+            DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad,
+            DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
+
+    private final AHRS _gyro = new AHRS(SPI.Port.kMXP);
+    private final SwerveDriveOdometry _odometer = new SwerveDriveOdometry(DriveConstants.kDriveKinematics, new Rotation2d(0), getSwerveModulePositions());
+
+    private Drive() {
+        new Thread(() -> {
+            try {
+                Thread.sleep(1000);
+                zeroHeading();
+            } catch (Exception e) {
+            }
+        }).start();
     }
+
+    public SwerveModulePosition[] getSwerveModulePositions()
+    {
+        return new SwerveModulePosition[]{
+            _frontLeft.getPosition(),
+            _frontRight.getPosition(),
+            _backLeft.getPosition(),
+            _backRight.getPosition()
+        };
+    }
+
+    public void zeroHeading()
+    {
+        _gyro.reset();
+    }
+
+    public double getHeading()
+    {
+        return Math.IEEEremainder(_gyro.getAngle(), 360);
+    }
+
+    public Rotation2d getRotation2d()
+    {
+        return Rotation2d.fromDegrees(getHeading());
+    }
+
+    public Pose2d getPose()
+    {
+        return _odometer.getPoseMeters();
+    }
+
+    public void resetOdometry(Pose2d pose)
+    {
+        _odometer.resetPosition(getRotation2d(), getSwerveModulePositions(), pose);
+    }
+
+    @Override
+    public void periodic()
+    {
+        _odometer.update(getRotation2d(), getSwerveModulePositions());
+    }
+
+    public void stopMotors()
+    {
+        _frontLeft.stop();
+        _frontRight.stop();
+        _backLeft.stop();
+        _backRight.stop();
+    }
+
+    public void setModuleStates(SwerveModuleState[] state)
+    {
+        SwerveDriveKinematics.desaturateWheelSpeeds(state, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
+        _frontLeft.setDesiredState(state[0]);
+        _frontRight.setDesiredState(state[1]);
+        _backLeft.setDesiredState(state[2]);
+        _backRight.setDesiredState(state[3]);
+    } 
 }
