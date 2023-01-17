@@ -5,8 +5,8 @@ public class Vector
     private double _x;
     private double _y;
     
-    private double _r;
-    private double _theta;
+    private double _magnitude;
+    private double _heading;
 
     public Vector()
     {
@@ -15,25 +15,10 @@ public class Vector
 
     public Vector(double x, double y)
     {
-        this(x, y, true);
-    }
+        _x = x;
+        _y = y;
 
-    public Vector(double first, double second, boolean isCartesian)
-    {
-        if (isCartesian)
-        {
-            _x = first;
-            _y = second;
-            
-            updatePolar();
-        }
-        else
-        {
-            _r     = first;
-            _theta = second;
-
-            updateCartesian();
-        }
+        updatePolar();
     }
 
     public Vector clone()
@@ -65,26 +50,26 @@ public class Vector
         updatePolar();
     }
 
-    public double getR()
+    public double getMagnitude()
     {
-        return _r;
+        return _magnitude;
     }
 
-    public void setR(double r)
+    public void setMagnitude(double magnitude)
     {
-        _r = r;
+        _magnitude = magnitude;
 
         updateCartesian();
     }
 
-    public double getTheta()
+    public double getHeading()
     {
-        return _theta;
+        return _heading;
     }
 
-    public void setTheta(double theta)
+    public void setHeading(double heading)
     {
-        _theta = normalizeAngle(theta);
+        _heading = Math.IEEEremainder(heading, 360);
 
         updateCartesian();
     }
@@ -102,24 +87,24 @@ public class Vector
         setCartesianPosition(_x + dx, _y + dy);
     }
 
-    public void setPolarPosition(double r, double theta)
+    public void setPolarPosition(double magnitude, double heading)
     {
-        _r     = r;
-        _theta = normalizeAngle(theta);
+        _magnitude = magnitude;
+        _heading   = Math.IEEEremainder(heading, 360);
 
         updateCartesian();
     }
 
-    public void translatePolarPosition(double dr, double dtheta)
+    public void translatePolarPosition(double dMagnitude, double dHeading)
     {
-        setPolarPosition(_r + dr, _theta + dtheta);
+        setPolarPosition(_magnitude + dMagnitude, _heading + dHeading);
     }
 
     public Vector multiply(double scalar)
     {
         Vector v = clone();
 
-        v._r *= scalar;
+        v._magnitude *= scalar;
 
         v.updateCartesian();
 
@@ -130,7 +115,7 @@ public class Vector
     {
         Vector v = clone();
 
-        v._r /= scalar;
+        v._magnitude /= scalar;
 
         v.updateCartesian();
 
@@ -149,24 +134,14 @@ public class Vector
 
     private void updateCartesian()
     {
-        _y = _r * Math.cos(Math.toRadians(_theta));
-        _x = _r * Math.sin(Math.toRadians(_theta));
+        _y = _magnitude * Math.cos(Math.toRadians(_heading));
+        _x = _magnitude * Math.sin(Math.toRadians(_heading));
     }
 
     private void updatePolar()
     {
-        _r     = Math.sqrt((_x * _x) + (_y * _y));
-        _theta = normalizeAngle(Math.toDegrees(Math.atan2(_x, _y)));
-    }
-
-    public static double normalizeAngle(double angle)
-    {
-        if (angle < 0)
-        {
-            angle += 360 * (((int)angle / -360) + 1);
-        }
-
-        return angle % 360;
+        _magnitude     = Math.sqrt((_x * _x) + (_y * _y));
+        _heading = Math.IEEEremainder(Math.toDegrees(Math.atan2(_x, _y)), 360);
     }
 
     @Override

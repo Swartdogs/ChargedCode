@@ -2,114 +2,130 @@ package frc.robot.subsystems.drive;
 
 import com.kauailabs.navx.frc.AHRS;
 
-import PIDControl.PIDControl;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
-public abstract class Drive extends SubsystemBase
+public class Drive extends SubsystemBase
 {
-    protected AHRS           _gyro;
-    private   double         _gyroOffset;
+    private static Drive _instance;
 
-    protected PIDControl     _translatePID;
-    protected PIDControl     _rotatePID;
+    public static Drive getInstance()
+    {
+        if (_instance == null)
+        {
+            _instance = new Drive();
+        }
 
-    private   Vector         _origin;
+        return _instance;
+    }
 
-    protected SwerveModule[] _swerveModules;
-    private   double         _maxModuleDistance;
+    private AHRS           _gyro; // navX2
+    private double         _gyroOffset; // angle to adjust gyro by for zeroing
 
-    private   double         _rotateSetpoint;
+    private Vector         _origin; // origin of rotation relative to the center of the robot frame
 
-    private   Vector         _odometer;
+    private SwerveModule[] _swerveModules; // all of the swerve modules
 
-    private   Vector         _targetTranslation; 
-    private   double         _translationDistanceThreshold;
-    private   double         _translationCloseMaxSpeed;
+    private double         _oldRotationHeading; // used to calculate angular velocity
+    private double         _rotationHeading; // current direction (heading) that the front of the robot is facing
 
-    public Drive() 
+    private double         _rotationVelocity; // how fast are we turning?
+
+    private Vector         _oldPosition; // used to calculate the translation velocity
+    private Vector         _position; // current odometer reading
+
+    private Vector         _velocity; // change in odometer reading
+
+    private Drive()
     {
         _origin             = new Vector();
 
-        _maxModuleDistance  = 0;
+        //_gyro = new AHRS(SPI.Port.kMXP);
 
-        _rotateSetpoint     = 0;
+        SwerveModule fl = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2, 1, 2, 0);// FIXME
+        SwerveModule fr = new SwerveModule( Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2, 5, 6, 3);
+        SwerveModule bl = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2, -Constants.Drive.BASE_LENGTH / 2, 3, 4, 1);
+        SwerveModule br = new SwerveModule( Constants.Drive.BASE_WIDTH / 2, -Constants.Drive.BASE_LENGTH / 2, 7, 8, 2);
+
+        _swerveModules = new SwerveModule[]// turn the swerve modules into an array, so they can be easily accessed, with an arbitrary number of them
+        { 
+            fl, 
+            fr,
+            bl,
+            br 
+        };
+
+        setOrigin(0, 0);// rotate around the center of the robot, by default
+        resetOdometer();// initialize the odometer to 0, 0
     }
 
-    public void init()
-    {
-        resetEncoders();
-        setOrigin(0, 0);
-        resetOdometer();
-    }
-
-    public void drive(double drive, double strafe, double rotate)
-    {
-        drive(drive, strafe, rotate, true);
-    }
-
-    public void drive(double drive, double strafe, double rotate, boolean absolute)
+    public void chassisDrive(double drive, double strafe, double rotate)
     {
         Vector translateVector = new Vector(strafe, drive);
-    
-        drive(translateVector, rotate, absolute);
-    }
-
-    public void drive(Vector translateVector, double rotate, boolean absolute)
-    {
-        if (absolute)
-        {
-            translateVector.setTheta(translateVector.getTheta() - getHeading());
-        }
-
+        
         drive(translateVector, rotate);
     }
 
-    public void drive(Vector translateVector, double rotate)
+    public void fieldDrive(double x, double y, double rotate)
+    {
+        Vector translateVector = new Vector(x, y);
+
+        translateVector.translatePolarPosition(0, -getHeading());
+        
+        drive(translateVector, rotate);
+    }
+
+    private void drive(Vector translateVector, double rotate)
     {
         Vector[] moduleCommands = new Vector[_swerveModules.length];
 
-        double maxSpeed = 1;
+        double maxSpeed = 0;
 
         for (int i = 0; i < _swerveModules.length; i++)
         {
             Vector modulePosition = _swerveModules[i].subtract(_origin);
-            Vector rotateVector = new Vector(modulePosition.getY(), -modulePosition.getX()).multiply(rotate / _maxModuleDistance);
+            Vector rotateVector = new Vector(modulePosition.getY(), -modulePosition.getX());// clockwise perp.
+            rotateVector = rotateVector.multiply(rotate / 180 * Math.PI);
             Vector outputVector = translateVector.add(rotateVector);
 
             moduleCommands[i] = outputVector;
 
-            maxSpeed = Math.max(maxSpeed, moduleCommands[i].getR());
+            maxSpeed = Math.max(maxSpeed, moduleCommands[i].getMagnitude());
         }
 
         for (int i = 0; i < moduleCommands.length; i++)
         {
-            moduleCommands[i] = moduleCommands[i].divide(maxSpeed);
+            if (maxSpeed > Constants.Drive.MAX_DRIVE_SPEED)
+            {
+                moduleCommands[i] = moduleCommands[i].divide(maxSpeed / Constants.Drive.MAX_DRIVE_SPEED);// divide by canstant to keep scale max at constant
+            }
 
             _swerveModules[i].drive(moduleCommands[i]);
         }
     }
 
+    public void zeroModuleRotations()
+    {
+        for (int i = 0; i < _swerveModules.length; i++)
+        {
+            _swerveModules[i].zeroEncoder();
+        }
+    }
+
     public void setOrigin(double x, double y)
     {
-        setOrigin(new Vector(x, y));
-        
+        setOrigin(new Vector(x, y));   
     }
 
     public void setOrigin(Vector newOrigin)
     {
         _origin = newOrigin;
 
-        _maxModuleDistance = 0;
-
         for (int i = 0; i < _swerveModules.length; i++)
         {
             Vector modulePosition = _swerveModules[i].clone();
             modulePosition = modulePosition.subtract(_origin);
-
-            if (modulePosition.getR() > _maxModuleDistance)
-            {
-                _maxModuleDistance = modulePosition.getR();
-            }
         }
     }
 
@@ -118,100 +134,15 @@ public abstract class Drive extends SubsystemBase
         return _origin;
     }
 
-    public SwerveModule getSwerveModule(int index)
-    {
-        return _swerveModules[index];
-    }
-
-    public void translateInit(Vector targetTranslation, double distanceThreshold, double maxSpeed, double closeMaxSpeed, double minSpeed, boolean resetEncoders)
-    {
-        _targetTranslation = targetTranslation;
-        _translationDistanceThreshold = distanceThreshold;
-        _translationCloseMaxSpeed = closeMaxSpeed;
-
-        maxSpeed = Math.abs(maxSpeed);
-        minSpeed = Math.abs(minSpeed);
-
-        if (resetEncoders) 
-        {
-            resetEncoders();
-        }
-
-        Vector translateErrorVector = _targetTranslation.subtract(getOdometer());
-
-        _translatePID.setSetpoint(0, translateErrorVector.getR());
-        _translatePID.setOutputRange(0, maxSpeed, minSpeed);
-    }
-
-    public Vector translateExec()
-    {
-        Vector translateErrorVector = _targetTranslation.subtract(getOdometer());
-
-        if (translateErrorVector.getR() > _translationDistanceThreshold)
-        {
-            translateErrorVector.setR(_translatePID.calculate(-translateErrorVector.getR()));
-        }
-
-        else
-        {
-            translateErrorVector.setR(Math.min(_translatePID.calculate(-translateErrorVector.getR()), _translationCloseMaxSpeed));
-        }
-
-        return translateErrorVector;
-    }
-
-    public boolean translateIsFinished()
-    {
-        return _translatePID.atSetpoint();
-    }
-
-    public void rotateInit(double heading, double maxSpeed)
-    {
-        maxSpeed = Math.abs(maxSpeed);
-
-        _rotateSetpoint = heading;
-
-        double PIDPosition = Math.toRadians(_rotateSetpoint - getHeading());
-        PIDPosition /= 2;
-        PIDPosition = Math.sin(PIDPosition) * (Math.cos(PIDPosition) / -Math.abs(Math.cos(PIDPosition)));
-
-        _rotatePID.setSetpoint(0, PIDPosition);
-        _rotatePID.setOutputRange(-maxSpeed, maxSpeed);
-    }
-
-    public double rotateExec()
-    {
-        double PIDPosition = Math.toRadians(_rotateSetpoint - getHeading());
-        PIDPosition /= 2;
-        PIDPosition = Math.sin(PIDPosition) * (Math.cos(PIDPosition) / -Math.abs(Math.cos(PIDPosition)));
-        return _rotatePID.calculate(PIDPosition);
-    }
-
-    public boolean rotateIsFinished()
-    {
-        return _rotatePID.atSetpoint();
-    }
-
     public double getHeading()
     {
-        return normalizeAngle(_gyro.getAngle() + _gyroOffset);
+        //return Math.IEEEremainder(_gyro.getAngle() + _gyroOffset, 360);
+        return 0;
     }
 
-    public double getPIDHeading()
+    public double getHeadingVelocity()
     {
-        double heading = getHeading();
-
-        if ((_rotateSetpoint - heading) > 180)
-        {
-            heading += 360;
-        }
-
-        else if ((_rotateSetpoint - heading) < -180)
-        {
-            heading -= 360;
-        }
-
-        return heading;
+        return _rotationVelocity;
     }
 
     public void setGyro(double heading) 
@@ -220,52 +151,22 @@ public abstract class Drive extends SubsystemBase
         _gyroOffset = heading;
     }
 
-    public void resetEncoders()
-    {
-        for (SwerveModule swerveModule : _swerveModules)
-        {
-            swerveModule.setPosition(0.0);
-            swerveModule.resetDrivePosition();
-            
-        }
-    }
-
-    private double normalizeAngle(double angle)
-    {
-        if (angle < 0)
-        {
-            angle += 360 * (((int)angle / -360) + 1);
-        }
-
-        angle %= 360;
-
-        if (angle > 180)
-        {
-            angle -= 360;
-        }
-
-        return angle;
-    }
-
     @Override
     public void periodic()
     {
         updateOdometry();
 
-        for (int i = 0; i < _swerveModules.length; i++)
-        {
-            _swerveModules[i].drive();
-        }
+        System.out.println(getPosition());
     }
 
     public void resetOdometer()
     {
-        resetOdometer(new Vector());
+        setPosition(new Vector());
     }
 
-    public void resetOdometer(Vector newPosition)
+    public void setPosition(Vector newPosition)
     {
-        _odometer = newPosition;
+        _position = newPosition;
 
         for (int i = 0; i < _swerveModules.length; i++)
         {
@@ -273,13 +174,25 @@ public abstract class Drive extends SubsystemBase
         }
     }
 
-    public Vector getOdometer()
+    public Vector getPosition()
     {
-        return _odometer;
+        return _position;
+    }
+
+    public Vector getVelocity()
+    {
+        return _velocity;
     }
 
     public void updateOdometry()
     {
+        _oldRotationHeading = _rotationHeading;
+        _rotationHeading = getHeading();
+
+        _rotationVelocity = (_rotationHeading - _oldRotationHeading) * Constants.LOOPS_PER_SECOND;
+
+        _oldPosition = _position;
+
         Vector change = new Vector();
 
         for (int i = 0; i < _swerveModules.length; i++)
@@ -287,10 +200,12 @@ public abstract class Drive extends SubsystemBase
             change = change.add(_swerveModules[i].getOffset());
         }
 
-        change = change.divide(_swerveModules.length);
+        change.setCartesianPosition(change.getX() / _swerveModules.length, change.getY() / _swerveModules.length);
 
         change.translatePolarPosition(0.0, getHeading());
 
-        _odometer = _odometer.add(change);
+        _position = _position.add(change);
+
+        _velocity = new Vector((_position.getX() - _oldPosition.getX()) * Constants.LOOPS_PER_SECOND, (_position.getY() - _oldPosition.getY()) * Constants.LOOPS_PER_SECOND);
     }
 }
