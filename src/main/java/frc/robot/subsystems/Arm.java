@@ -92,6 +92,17 @@ public class Arm extends SubsystemBase
        _extensionPid.setSetpoint(position, getExtensionPosition());
     }
 
+    public void resetExtension()
+    {
+        _extensionPidActive = false;
+        _linearMotor.set(-0.5);
+
+        if(_limitSwitch.get())
+        {
+            _linearMotor.set(0);
+        }
+    }
+
     public void setShoulderAngle(double angle)
     {
         _shoulderPid.setSetpoint(angle, getShoulderAngle());
