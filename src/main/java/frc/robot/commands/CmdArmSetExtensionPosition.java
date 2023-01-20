@@ -8,23 +8,17 @@ import frc.robot.subsystems.Arm;
 public class CmdArmSetExtensionPosition extends InstantCommand 
 {
     private final Arm            _armSubsystem;
-    private final DoubleSupplier _extensionPosition;
+    private final Double _extensionPosition;
 
-    public CmdArmSetExtensionPosition(Arm armSubsystem, DoubleSupplier extensionPosition) 
+    public CmdArmSetExtensionPosition(Double extensionPosition) 
     {
         _armSubsystem      = Arm.getInstance();
         _extensionPosition = extensionPosition;
     }   
 
     @Override
-    public void execute() 
+    public void initialize() 
     {
-        _armSubsystem.setExtensionMotorPosition(_extensionPosition.getAsDouble());
-    }
-
-    @Override
-    public boolean isFinished()
-    {
-        return true;
+        _armSubsystem.setExtensionMotorPosition(_extensionPosition);
     }
 }

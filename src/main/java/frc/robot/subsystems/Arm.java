@@ -9,10 +9,11 @@ import PIDControl.PIDControl.Coefficient;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Arm extends SubsystemBase 
 {
-    public static Arm _instance;
+    private static Arm _instance;
 
     public static Arm getInstance()
     {
@@ -24,23 +25,28 @@ public class Arm extends SubsystemBase
         return _instance;
     }
 
+    //Extension Motor
     private DigitalInput     _limitSwitch;
-    private DutyCycleEncoder _pitchEncoder;
     private CANSparkMax      _linearMotor;
-    private CANSparkMax      _pitchMotor;
-    private CANSparkMax      _followerPitchMotor;
-    private PIDControl       _shoulderPid;
-    private boolean          _extensionPidActive;
-    private PIDControl       _extensionPid;
     private RelativeEncoder  _extensionEncoder;
+    private PIDControl       _extensionPid;
+    private boolean          _extensionPidActive;
 
-    public Arm() 
+    //Shoulder Motor
+    private DutyCycleEncoder _pitchEncoder;
+    private CANSparkMax      _pitchMotor;
+    private CANSparkMax      followerPitchMotor;
+    private PIDControl       _shoulderPid;
+    
+   
+
+    private Arm() 
     {
-        _limitSwitch        = new DigitalInput(0);
-        _pitchEncoder       = new DutyCycleEncoder(1);
-        _linearMotor        = new CANSparkMax(0, MotorType.kBrushless);
-        _pitchMotor         = new CANSparkMax(1, MotorType.kBrushless);
-        _followerPitchMotor = new CANSparkMax(2, MotorType.kBrushless);
+        _limitSwitch        = new DigitalInput(Constants.Arm.LIMIT_SWITCH_CHANNEL);
+        _pitchEncoder       = new DutyCycleEncoder(Constants.Arm.PITCH_ENCODER_CHANNEL);
+        _linearMotor        = new CANSparkMax(Constants.Arm.LINEAR_MOTOR_CAN_ID, MotorType.kBrushless);
+        _pitchMotor         = new CANSparkMax(Constants.Arm.PITCH_MOTOR_CAN_ID, MotorType.kBrushless);
+        followerPitchMotor  = new CANSparkMax(Constants.Arm.FOLLOWER_PITCH_MOTOR_CAN_ID, MotorType.kBrushless);
         _extensionPidActive = false; 
         _extensionPid       = new PIDControl();
         _shoulderPid        = new PIDControl();
@@ -62,7 +68,7 @@ public class Arm extends SubsystemBase
 
         _extensionEncoder.setPositionConversionFactor(0);
 
-        _followerPitchMotor.follow(_pitchMotor, true);
+        followerPitchMotor.follow(_pitchMotor, true);
     }
 
     public boolean isLimitSwitchPressed()
@@ -77,7 +83,7 @@ public class Arm extends SubsystemBase
 
     public double getShoulderAngle()
     {
-        return _pitchEncoder.get() - 45;
+        return _pitchEncoder.get();
     }
 
     public void setExtensionMotorSpeed(double speed)
@@ -90,17 +96,6 @@ public class Arm extends SubsystemBase
     {
        _extensionPidActive = true;
        _extensionPid.setSetpoint(position, getExtensionPosition());
-    }
-
-    public void resetExtension()
-    {
-        _extensionPidActive = false;
-        _linearMotor.set(-0.5);
-
-        if(_limitSwitch.get())
-        {
-            _linearMotor.set(0);
-        }
     }
 
     public void setShoulderAngle(double angle)
