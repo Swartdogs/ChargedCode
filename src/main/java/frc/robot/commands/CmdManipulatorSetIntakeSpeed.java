@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
 import frc.robot.subsystems.Manipulator;
 
 public class CmdManipulatorSetIntakeSpeed extends CommandBase 
@@ -26,7 +25,7 @@ public class CmdManipulatorSetIntakeSpeed extends CommandBase
     {
         if(_manipulatorSubsystem.isIntakeSensorActive())
         {
-            _manipulatorSubsystem.setIntakeSpeed(Constants.Manipulator.INTAKE_HOLD_SPEED);
+            _manipulatorSubsystem.setIntakeSpeed(0);
         }
     }
 }

@@ -36,6 +36,5 @@ public final class Constants
         public static final double GRASP_MAX_POSITION      =    0.0;
         public static final int INTAKE_MOTOR_CAN_ID        =      0;
         public static final int INTAKE_SENSOR_PORT         =      0;
-        public static final double INTAKE_HOLD_SPEED       =    0.0;
     }
 }
