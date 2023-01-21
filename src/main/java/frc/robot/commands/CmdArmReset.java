@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.RobotLog;
 
 public class CmdArmReset extends CommandBase 
 {
@@ -13,6 +14,12 @@ public class CmdArmReset extends CommandBase
     }
 
     @Override
+    public void initialize()
+    {
+        RobotLog.getInstance().log("Initializing Arm Extension Reset");
+    }
+
+    @Override
     public void execute() 
     {
         _armSubsystem.setExtensionMotorSpeed(-0.5);
@@ -21,6 +28,7 @@ public class CmdArmReset extends CommandBase
     @Override
     public void end(boolean interrupted)
     {
+        RobotLog.getInstance().log("Arm Extension Reset");
         _armSubsystem.setExtensionMotorSpeed(0);
         _armSubsystem.setExtensionEncoderPosition(0);
     }
