@@ -1,10 +1,17 @@
 package frc.robot.subsystems;
 
+import java.nio.file.Path;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Vision extends SubsystemBase
@@ -37,15 +44,29 @@ public class Vision extends SubsystemBase
 
     public Transform2d getTargetPosition()
     {
-        var transformToTarget = _latestResult.getBestTarget().getBestCameraToTarget();
+        Transform3d transformToTarget = _latestResult.getBestTarget().getBestCameraToTarget();
 
-        return new Transform2d()
+        return new Transform2d();
     }
 
     @Override
     public void periodic()
     {
         _latestResult = _camera.getLatestResult();
-
+       
+        PhotonTrackedTarget target = _latestResult.getBestTarget();
+    
+        double targetRange = PhotonUtils.calculateDistanceToTargetMeters(0.921, 0.2794, 0, Units.degreesToRadians(_latestResult.getBestTarget().getPitch()));
+            
+        System.out.println( targetRange);
     }    
+    
+    
+
+
+    
+
+    
 }
+
+
