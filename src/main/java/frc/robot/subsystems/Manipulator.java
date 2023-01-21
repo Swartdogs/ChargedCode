@@ -28,14 +28,17 @@ public class Manipulator extends SubsystemBase
     private CANSparkMax      _wristMotor;
     private DutyCycleEncoder _wristEncoder;
     private PIDControl       _wristPID;
+
     //Twist Motion Controls
     private CANSparkMax      _twistMotor;
     private DutyCycleEncoder _twistEncoder;
     private PIDControl       _twistPID;
+    
     //Hand Controls
     private CANSparkMax      _graspMotor;
     private DutyCycleEncoder _graspEncoder;
     private PIDControl       _graspPID;
+    
     //Intake Controls
     private CANSparkMax      _intakeMotor;
     private DigitalInput     _intakeSensor;
@@ -45,14 +48,17 @@ public class Manipulator extends SubsystemBase
         _wristMotor         = new CANSparkMax(Constants.Manipulator.WRIST_MOTOR_CAN_ID, MotorType.kBrushless);
         _wristEncoder       = new DutyCycleEncoder(Constants.Manipulator.WRIST_ENCODER_PORT);
         _wristPID           = new PIDControl();
+
         _twistMotor         = new CANSparkMax(Constants.Manipulator.TWIST_MOTOR_CAN_ID, MotorType.kBrushless);
         _twistEncoder       = new DutyCycleEncoder(Constants.Manipulator.TWIST_ENCODER_PORT);
         _twistPID           = new PIDControl();
+
         _graspMotor         = new CANSparkMax(Constants.Manipulator.GRASP_MOTOR_CAN_ID, MotorType.kBrushless);
-        _intakeMotor        = new CANSparkMax(Constants.Manipulator.INTAKE_MOTOR_CAN_ID, MotorType.kBrushless);
-        _intakeSensor       = new DigitalInput(Constants.Manipulator.INTAKE_SENSOR_PORT);
         _graspEncoder       = new DutyCycleEncoder(Constants.Manipulator.GRASP_ENCODER_PORT);
         _graspPID           = new PIDControl();
+
+        _intakeMotor        = new CANSparkMax(Constants.Manipulator.INTAKE_MOTOR_CAN_ID, MotorType.kBrushless);
+        _intakeSensor       = new DigitalInput(Constants.Manipulator.INTAKE_SENSOR_PORT);
 
         _wristPID.setCoefficient(Coefficient.P, 0, 0, 0);
         _wristPID.setCoefficient(Coefficient.I, 0, 0, 0);
@@ -113,7 +119,7 @@ public class Manipulator extends SubsystemBase
 
     public boolean isIntakeSensorActive()
     {
-        return _intakeSensor.get();    
+        return !_intakeSensor.get();    
     }
 
     @Override
