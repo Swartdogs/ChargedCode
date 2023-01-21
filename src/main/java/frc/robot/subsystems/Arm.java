@@ -103,6 +103,11 @@ public class Arm extends SubsystemBase
         _shoulderPid.setSetpoint(angle, getShoulderAngle());
     }
 
+    public void setExtensionEncoderPosition(double positon)
+    {
+        _extensionEncoder.setPosition(positon);
+    }
+
     @Override 
     public void periodic()
     {
@@ -113,5 +118,4 @@ public class Arm extends SubsystemBase
             _linearMotor.set(_extensionPid.calculate(getExtensionPosition()));
         }
     }
-
 }

@@ -6,10 +6,10 @@ import frc.robot.subsystems.Arm;
 
 public class CmdArmSetShoulderAngle extends InstantCommand
 {
-    private final Arm            _armSubsystem;
-    private final Double _shoulderAngle;
+    private final Arm     _armSubsystem;
+    private final double  _shoulderAngle;
 
-    public CmdArmSetShoulderAngle(Double shoulderAngle) 
+    public CmdArmSetShoulderAngle(double shoulderAngle) 
     {
         _armSubsystem  = Arm.getInstance();
         _shoulderAngle = shoulderAngle;
