@@ -35,16 +35,17 @@ public class Arm extends SubsystemBase
     //Shoulder Motor
     private DutyCycleEncoder _pitchEncoder;
     private CANSparkMax      _pitchMotor;
-    private CANSparkMax      followerPitchMotor;
     private PIDControl       _shoulderPid;
     
+    @SuppressWarnings("resource")
     private Arm() 
     {
+        CANSparkMax followerPitchMotor  = new CANSparkMax(Constants.Arm.FOLLOWER_PITCH_MOTOR_CAN_ID, MotorType.kBrushless);
+        
         _limitSwitch        = new DigitalInput(Constants.Arm.LIMIT_SWITCH_CHANNEL);
         _pitchEncoder       = new DutyCycleEncoder(Constants.Arm.PITCH_ENCODER_CHANNEL);
         _linearMotor        = new CANSparkMax(Constants.Arm.LINEAR_MOTOR_CAN_ID, MotorType.kBrushless);
         _pitchMotor         = new CANSparkMax(Constants.Arm.PITCH_MOTOR_CAN_ID, MotorType.kBrushless);
-        followerPitchMotor  = new CANSparkMax(Constants.Arm.FOLLOWER_PITCH_MOTOR_CAN_ID, MotorType.kBrushless);
         _extensionPidActive = false; 
         _extensionPid       = new PIDControl();
         _shoulderPid        = new PIDControl();
