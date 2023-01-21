@@ -38,8 +38,6 @@ public class Arm extends SubsystemBase
     private CANSparkMax      followerPitchMotor;
     private PIDControl       _shoulderPid;
     
-   
-
     private Arm() 
     {
         _limitSwitch        = new DigitalInput(Constants.Arm.LIMIT_SWITCH_CHANNEL);

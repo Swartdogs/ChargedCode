@@ -19,14 +19,15 @@ public class CmdArmReset extends CommandBase
     }
 
     @Override
-    public boolean isFinished() 
-    {
-        return _armSubsystem.isLimitSwitchPressed();
-    }
-
     public void end(boolean interrupted)
     {
         _armSubsystem.setExtensionMotorSpeed(0);
         _armSubsystem.setExtensionEncoderPosition(0);
+    }
+
+    @Override
+    public boolean isFinished() 
+    {
+        return _armSubsystem.isLimitSwitchPressed();
     }
 }
