@@ -3,11 +3,12 @@ package frc.robot.commands;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import PIDControl.PIDControl;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
 
-public class CmdDriveWithJoystick extends CommandBase 
+public class CmdDriveWithJoystick extends CommandBase
 {
     DoubleSupplier _xInput;// joystick axis for x/strafe
     DoubleSupplier _yInput;// joystick axis for y/drive
@@ -28,9 +29,41 @@ public class CmdDriveWithJoystick extends CommandBase
     public void execute()
     {
         // get our inputs from the joystick, and convert them to velocities
-        double x = _xInput.getAsDouble() * Constants.Drive.MAX_DRIVE_SPEED;
-        double y = _yInput.getAsDouble() * Constants.Drive.MAX_DRIVE_SPEED;
-        double r = _rInput.getAsDouble() * Constants.Drive.MAX_ROTATE_SPEED;
+        double x = _xInput.getAsDouble() * 0.8;
+        double y = _yInput.getAsDouble() * 0.8;
+        double r = _rInput.getAsDouble() * 0.8;
+
+        r = r * Math.abs(r);
+
+        if (Math.abs(x) > 0.05)
+        {
+            x = (x - 0.05 * Math.signum(x)) / 0.95;
+        }
+
+        else 
+        {
+            x = 0;
+        }
+
+        if (Math.abs(y) > 0.05)
+        {
+            y = (y - 0.05 * Math.signum(y)) / 0.95;
+        }
+
+        else 
+        {
+            y = 0;
+        }
+
+        if (Math.abs(r) > 0.10)
+        {
+            r = (r - 0.1 * Math.signum(r)) / 0.90;
+        }
+
+        else 
+        {
+            r = 0;
+        }
 
         boolean robotCentric = _robotCentricInput.getAsBoolean();
 

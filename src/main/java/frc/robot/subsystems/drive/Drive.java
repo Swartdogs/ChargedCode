@@ -1,9 +1,13 @@
 package frc.robot.subsystems.drive;
 
 import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.ADIS16448_IMU;
+import edu.wpi.first.wpilibj.ADIS16448_IMU.CalibrationTime;
+import edu.wpi.first.wpilibj.ADIS16448_IMU.IMUAxis;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants;
 
 public class Drive extends SubsystemBase
@@ -20,21 +24,18 @@ public class Drive extends SubsystemBase
         return _instance;
     }
 
-    private AHRS           _gyro; // navX2
+    //private AHRS           _gyro; // navX2
+    private ADIS16448_IMU  _gyro;
     private double         _gyroOffset; // angle to adjust gyro by for zeroing
 
     private Vector         _origin; // origin of rotation relative to the center of the robot frame
 
     private SwerveModule[] _swerveModules; // all of the swerve modules
 
-    private double         _oldRotationHeading; // used to calculate angular velocity
-    private double         _rotationHeading; // current direction (heading) that the front of the robot is facing
-
+    // odometry
+    private double         _rotationHeading; // used to calculate angular velocity
     private double         _rotationVelocity; // how fast are we turning?
-
-    private Vector         _oldPosition; // used to calculate the translation velocity
     private Vector         _position; // current odometer reading
-
     private Vector         _velocity; // change in odometer reading
 
     private Drive()
@@ -42,11 +43,12 @@ public class Drive extends SubsystemBase
         _origin             = new Vector();
 
         //_gyro = new AHRS(SPI.Port.kMXP);
+        _gyro = new ADIS16448_IMU(IMUAxis.kX, SPI.Port.kMXP, CalibrationTime._4s);
 
-        SwerveModule fl = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2, 1, 2, 0);// FIXME
-        SwerveModule fr = new SwerveModule( Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2, 5, 6, 3);
-        SwerveModule bl = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2, -Constants.Drive.BASE_LENGTH / 2, 3, 4, 1);
-        SwerveModule br = new SwerveModule( Constants.Drive.BASE_WIDTH / 2, -Constants.Drive.BASE_LENGTH / 2, 7, 8, 2);
+        SwerveModule fl = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2, 37.5, 0.0, 1, 2, 0);// FIXME
+        SwerveModule fr = new SwerveModule( Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2, -150.2, 0.0, 5, 6, 3);
+        SwerveModule bl = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2, -Constants.Drive.BASE_LENGTH / 2, -158.2, 180.0, 3, 4, 1);
+        SwerveModule br = new SwerveModule( Constants.Drive.BASE_WIDTH / 2, -Constants.Drive.BASE_LENGTH / 2, -53.3, 180.0, 7, 8, 2);
 
         _swerveModules = new SwerveModule[]// turn the swerve modules into an array, so they can be easily accessed, with an arbitrary number of them
         { 
@@ -85,8 +87,8 @@ public class Drive extends SubsystemBase
         for (int i = 0; i < _swerveModules.length; i++)
         {
             Vector modulePosition = _swerveModules[i].subtract(_origin);
-            Vector rotateVector = new Vector(modulePosition.getY(), -modulePosition.getX());// clockwise perp.
-            rotateVector = rotateVector.multiply(rotate / 180 * Math.PI);
+            Vector rotateVector = new Vector(modulePosition.getY(), -modulePosition.getX());// clockwise 90 deg.
+            rotateVector = rotateVector.multiply(rotate / Constants.Drive.TYPICAL_MODULE_DIST);
             Vector outputVector = translateVector.add(rotateVector);
 
             moduleCommands[i] = outputVector;
@@ -96,9 +98,9 @@ public class Drive extends SubsystemBase
 
         for (int i = 0; i < moduleCommands.length; i++)
         {
-            if (maxSpeed > Constants.Drive.MAX_DRIVE_SPEED)
+            if (maxSpeed > 1)
             {
-                moduleCommands[i] = moduleCommands[i].divide(maxSpeed / Constants.Drive.MAX_DRIVE_SPEED);// divide by canstant to keep scale max at constant
+                moduleCommands[i] = moduleCommands[i].divide(maxSpeed);
             }
 
             _swerveModules[i].drive(moduleCommands[i]);
@@ -137,7 +139,8 @@ public class Drive extends SubsystemBase
     public double getHeading()
     {
         //return Math.IEEEremainder(_gyro.getAngle() + _gyroOffset, 360);
-        return 0;
+        return Math.IEEEremainder(-_gyro.getGyroAngleX() + _gyroOffset, 360);
+        //return 0;
     }
 
     public double getHeadingVelocity()
@@ -156,7 +159,9 @@ public class Drive extends SubsystemBase
     {
         updateOdometry();
 
-        System.out.println(getPosition());
+        //System.out.println(getPosition());
+        //System.out.println(String.format("X: %6.2f, Y: %6.2f, Z: %6.2f", _gyro.getGyroAngleX(), _gyro.getGyroAngleY(), _gyro.getGyroAngleZ()));
+        System.out.println(String.format("Gyro: %6.2f, Field Position: %s, Chassis Velocity: %s", getHeading(), getFieldPosition(), getChassisVelocity()));
     }
 
     public void resetOdometer()
@@ -170,34 +175,43 @@ public class Drive extends SubsystemBase
 
         for (int i = 0; i < _swerveModules.length; i++)
         {
-            _swerveModules[i].resetDrivePosition();
+            _swerveModules[i].updateOdometry();
         }
     }
 
-    public Vector getPosition()
+    public Vector getFieldPosition()
     {
         return _position;
     }
 
-    public Vector getVelocity()
+    public Vector getFieldVelocity()
     {
         return _velocity;
     }
 
+    public Vector getChassisVelocity()
+    {
+        Vector chassisVelocity = _velocity.clone();
+        chassisVelocity.translatePolarPosition(0, _rotationHeading);
+
+        return chassisVelocity;
+    }
+
     public void updateOdometry()
     {
-        _oldRotationHeading = _rotationHeading;
-        _rotationHeading = getHeading();
+        // calculate angular velocity
+        double newRotationHeading = getHeading();
 
-        _rotationVelocity = (_rotationHeading - _oldRotationHeading) * Constants.LOOPS_PER_SECOND;
+        _rotationVelocity = (newRotationHeading - _rotationHeading) * Constants.LOOPS_PER_SECOND;
 
-        _oldPosition = _position;
+        _rotationHeading = newRotationHeading;
 
+        // calculate new position and velocity
         Vector change = new Vector();
 
         for (int i = 0; i < _swerveModules.length; i++)
         {
-            change = change.add(_swerveModules[i].getOffset());
+            change = change.add(_swerveModules[i].updateOdometry());
         }
 
         change.setCartesianPosition(change.getX() / _swerveModules.length, change.getY() / _swerveModules.length);
@@ -206,6 +220,8 @@ public class Drive extends SubsystemBase
 
         _position = _position.add(change);
 
-        _velocity = new Vector((_position.getX() - _oldPosition.getX()) * Constants.LOOPS_PER_SECOND, (_position.getY() - _oldPosition.getY()) * Constants.LOOPS_PER_SECOND);
+        _velocity = new Vector(
+                               (change.getX()) * Constants.LOOPS_PER_SECOND,
+                               (change.getY()) * Constants.LOOPS_PER_SECOND);
     }
 }
