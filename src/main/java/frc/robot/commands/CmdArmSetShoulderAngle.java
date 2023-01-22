@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.RobotLog;
 
 public class CmdArmSetShoulderAngle extends InstantCommand
 {
@@ -17,6 +18,7 @@ public class CmdArmSetShoulderAngle extends InstantCommand
     @Override
     public void initialize() 
     {
+        RobotLog.getInstance().log("Setting arm shoulder angle to " + _shoulderAngle);
         _armSubsystem.setShoulderAngle(_shoulderAngle);
     }
 }
