@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.Manipulator;
+import frc.robot.subsystems.RobotLog;
 
 public class CmdManipulatorSetGraspPosition extends InstantCommand 
 {
@@ -17,6 +18,7 @@ public class CmdManipulatorSetGraspPosition extends InstantCommand
     @Override
     public void initialize() 
     {
+        RobotLog.getInstance().log("Setting grasp to " + _graspPosition);
         _manipulatorSubsystem.setGraspPosition(_graspPosition);
     }
 }
