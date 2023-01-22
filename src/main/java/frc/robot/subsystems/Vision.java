@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.io.IOException;
 import java.nio.file.Path;
 
 import org.photonvision.PhotonCamera;
@@ -49,7 +50,7 @@ public class Vision extends SubsystemBase
         return new Transform2d();
     }
 
-    @Override
+  @Override
     public void periodic()
     {
         _latestResult = _camera.getLatestResult();
@@ -58,8 +59,25 @@ public class Vision extends SubsystemBase
     
         double targetRange = PhotonUtils.calculateDistanceToTargetMeters(0.921, 0.2794, 0, Units.degreesToRadians(_latestResult.getBestTarget().getPitch()));
             
-        System.out.println( targetRange);
+       if (_latestResult.hasTargets() == true)
+       {
+        System.out.print(targetRange);
+       }
     }    
+    public AprilTagFieldLayout aprilTagFieldLayout()
+    {
+        AprilTagFieldLayout aprilTagFieldLayout = null;
+        try
+        {
+        aprilTagFieldLayout = new AprilTagFieldLayout((Path) AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile));
+        }
+        catch(IOException e)
+        {
+
+        }
+
+        return aprilTagFieldLayout;
+    }
     
     
 
