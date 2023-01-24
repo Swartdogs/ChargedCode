@@ -35,6 +35,7 @@ public class Drive extends SubsystemBase
     // odometry
     private double         _rotationHeading; // used to calculate angular velocity
     private double         _rotationVelocity; // how fast are we turning?
+
     private Vector         _position; // current odometer reading
     private Vector         _velocity; // change in odometer reading
 
@@ -159,7 +160,6 @@ public class Drive extends SubsystemBase
     {
         updateOdometry();
 
-        //System.out.println(getPosition());
         //System.out.println(String.format("X: %6.2f, Y: %6.2f, Z: %6.2f", _gyro.getGyroAngleX(), _gyro.getGyroAngleY(), _gyro.getGyroAngleZ()));
         System.out.println(String.format("Gyro: %6.2f, Field Position: %s, Chassis Velocity: %s", getHeading(), getFieldPosition(), getChassisVelocity()));
     }

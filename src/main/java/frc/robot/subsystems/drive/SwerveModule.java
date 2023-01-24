@@ -49,11 +49,11 @@ public class SwerveModule extends Vector
         _rotateMotor          = new CANSparkMax(rotateMotorCanId, MotorType.kBrushless);
         _rotateSensor         = new AnalogPotentiometer(rotateSensorPort, 360 / 0.92, (360 - 360 / 0.92) / 2.0); // copied from 2021
 
+        _rotateMotor.restoreFactoryDefaults(); // doesn't matter how the sparkmax has been previously set up
+
         // the sensor is attached by a gear, so the drive motor must be inverted to counteract that
         // rotating the module more right should result in a more positive sensor reading (heading)
-        
-        // SET INVERTED DOES NOTHING;;;; DONT
-        //_rotateMotor.setInverted(true);
+        //_rotateMotor.setInverted(false);
 
         _rotatePID = new PIDControl();
 
@@ -90,12 +90,12 @@ public class SwerveModule extends Vector
 
         if (_rotatePID.atSetpoint())
         {
-            _rotateMotor.setVoltage(0);
+            _rotateMotor.stopMotor();
         }
         else
         {
             //_rotateMotor.setVoltage(0.2 * 12);
-            _rotateMotor.setVoltage(-rotateSpeed * 12);// setVoltage(speed * 12) is similar to set(speed); counteracts battery drain
+            _rotateMotor.setVoltage(rotateSpeed * 12);// setVoltage(speed * 12) is similar to set(speed); counteracts battery drain
         }
 
         _driveMotor.set(TalonFXControlMode.PercentOutput, driveSpeed);
