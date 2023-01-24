@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Calendar;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -12,6 +13,18 @@ import frc.robot.Constants.GameMode;
 
 public class RobotLog extends SubsystemBase
 {
+    private static RobotLog _instance;
+
+    public static RobotLog getInstance()
+    {
+        if(_instance == null) 
+        {
+            _instance = new RobotLog(String.format("/home/lvuser/Log_%d.txt", Calendar.getInstance().getTime().getTime()));
+        }
+
+        return _instance;
+    }
+
     private static final String TIME_LINE           = "-".repeat(Constants.RobotLog.NUM_DIGITS_IN_TIME + 2);
 
     private static final String TIME_BOUNDARY       = "+" + TIME_LINE + "+" + TIME_LINE;
