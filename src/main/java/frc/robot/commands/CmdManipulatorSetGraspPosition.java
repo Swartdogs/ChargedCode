@@ -18,7 +18,7 @@ public class CmdManipulatorSetGraspPosition extends InstantCommand
     @Override
     public void initialize() 
     {
-        RobotLog.getInstance().log("Setting grasp to " + _graspPosition);
+        RobotLog.getInstance().log(String.format("Setting grasp to %6.2f", _graspPosition));
         _manipulatorSubsystem.setGraspPosition(_graspPosition);
     }
 }

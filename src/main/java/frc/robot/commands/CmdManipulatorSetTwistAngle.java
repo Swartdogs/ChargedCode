@@ -18,7 +18,7 @@ public class CmdManipulatorSetTwistAngle extends InstantCommand
     @Override
     public void initialize() 
     {
-        RobotLog.getInstance().log("Setting twist angle to " + _twistAngle);
+        RobotLog.getInstance().log(String.format("Setting twist angle to %6.2f", _twistAngle));
         _manipulatorSubsystem.setTwistAngle(_twistAngle);
     }
 }

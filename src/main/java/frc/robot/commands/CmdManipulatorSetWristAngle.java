@@ -18,7 +18,7 @@ public class CmdManipulatorSetWristAngle extends InstantCommand
     @Override
     public void initialize() 
     {
-        RobotLog.getInstance().log("Setting wrist angle to " + _wristAngle);
+        RobotLog.getInstance().log(String.format("Setting wrist angle to %6.2f", _wristAngle));
         _manipulatorSubsystem.setWristAngle(_wristAngle);
     }
 }
