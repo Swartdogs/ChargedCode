@@ -27,10 +27,10 @@ public class SwerveModule extends Vector
 
     private double            _drivePosition;
 
-    public SwerveModule(double x,// (positive right) relative to the center of the robot 
-                        double y,// (positive forward) relative to the center of the robot
-                        double defaultRelativeZero,// default zeroing position
-                        double resetOffset,// for physically rotated modules, reset the offsets at a different angle
+    public SwerveModule(double x,                   // (positive right) relative to the center of the robot 
+                        double y,                   // (positive forward) relative to the center of the robot
+                        double defaultRelativeZero, // default zeroing position
+                        double resetOffset,         // for physically rotated modules, reset the offsets at a different angle
                         int driveMotorCanId,
                         int rotateMotorCanId,
                         int rotateSensorPort)
@@ -49,11 +49,9 @@ public class SwerveModule extends Vector
         _rotateMotor          = new CANSparkMax(rotateMotorCanId, MotorType.kBrushless);
         _rotateSensor         = new AnalogPotentiometer(rotateSensorPort, 360 / 0.92, (360 - 360 / 0.92) / 2.0); // copied from 2021
 
+        // TODO: Drive Motor for new robot
+        // _driveMotor.restoreFactoryDefaults();
         _rotateMotor.restoreFactoryDefaults(); // doesn't matter how the sparkmax has been previously set up
-
-        // the sensor is attached by a gear, so the drive motor must be inverted to counteract that
-        // rotating the module more right should result in a more positive sensor reading (heading)
-        //_rotateMotor.setInverted(false);
 
         _rotatePID = new PIDControl();
 
@@ -67,7 +65,7 @@ public class SwerveModule extends Vector
 
         _rotatePID.setOutputRange(-1, 1);
 
-        _rotatePID.setSetpointDeadband(2.5);// deadband recommended online by other teams
+        _rotatePID.setSetpointDeadband(2.5);// 5 degree deadband recommended online by other teams
     }
 
     /**
@@ -94,7 +92,6 @@ public class SwerveModule extends Vector
         }
         else
         {
-            //_rotateMotor.setVoltage(0.2 * 12);
             _rotateMotor.setVoltage(rotateSpeed * 12);// setVoltage(speed * 12) is similar to set(speed); counteracts battery drain
         }
 

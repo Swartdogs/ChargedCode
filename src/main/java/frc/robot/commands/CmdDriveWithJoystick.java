@@ -8,10 +8,12 @@ import frc.robot.subsystems.drive.Drive;
 
 public class CmdDriveWithJoystick extends CommandBase
 {
-    DoubleSupplier _xInput;// joystick axis for x/strafe
-    DoubleSupplier _yInput;// joystick axis for y/drive
-    DoubleSupplier _rInput;// joystick axis for rotation
-    BooleanSupplier _robotCentricInput;// button for field/robot centered driving
+    private Drive _drive = Drive.getInstance(); 
+
+    private DoubleSupplier  _xInput;           // joystick axis for x/strafe
+    private DoubleSupplier  _yInput;           // joystick axis for y/drive
+    private DoubleSupplier  _rInput;           // joystick axis for rotation
+    private BooleanSupplier _robotCentricInput;// button for field/robot centered driving
 
     public CmdDriveWithJoystick(DoubleSupplier xInput, DoubleSupplier yInput, DoubleSupplier rInput, BooleanSupplier robotCentricInput)
     {
@@ -20,73 +22,57 @@ public class CmdDriveWithJoystick extends CommandBase
         _rInput            = rInput;
         _robotCentricInput = robotCentricInput;
 
-        addRequirements(Drive.getInstance());
+        addRequirements(_drive);
     }
 
     @Override
     public void execute()
     {
-        // get our inputs from the joystick, and convert them to velocities
-        double x = _xInput.getAsDouble() * 0.8;
-        double y = _yInput.getAsDouble() * 0.8;
-        double r = _rInput.getAsDouble() * 0.8;
-
-        r = r * Math.abs(r);
-
-        if (Math.abs(x) > 0.05)
-        {
-            x = (x - 0.05 * Math.signum(x)) / 0.95;
-        }
-
-        else 
-        {
-            x = 0;
-        }
-
-        if (Math.abs(y) > 0.05)
-        {
-            y = (y - 0.05 * Math.signum(y)) / 0.95;
-        }
-
-        else 
-        {
-            y = 0;
-        }
-
-        if (Math.abs(r) > 0.10)
-        {
-            r = (r - 0.1 * Math.signum(r)) / 0.90;
-        }
-
-        else 
-        {
-            r = 0;
-        }
+        // get our inputs from the joystick
+        double x = _xInput.getAsDouble();
+        double y = _yInput.getAsDouble();
+        double r = _rInput.getAsDouble();
 
         boolean robotCentric = _robotCentricInput.getAsBoolean();
+        
+        // apply deadbands
+        r = r * Math.abs(r);// square rotation input
+
+        x = applyDeadband(x, 0.05);
+        y = applyDeadband(y, 0.05);
+        r = applyDeadband(r, 0.10);
 
         // actually drive the robot
-        Drive drive = Drive.getInstance();
-
         if (robotCentric)
         {
-            drive.chassisDrive(y, x, r);
+            _drive.chassisDrive(y, x, r);
         }
         else
         {
-            drive.fieldDrive(x, y, r);
+            _drive.fieldDrive(x, y, r);
         }
     }
 
     @Override
     public void end(boolean interrupted)
     {
-        Drive.getInstance().chassisDrive(0, 0, 0);
+        _drive.chassisDrive(0, 0, 0);
     }
 
     @Override
     public boolean isFinished() 
     {
         return false;
+    }
+
+    private double applyDeadband(double input, double deadband) {
+        double output = 0;
+
+        if (Math.abs(input) > deadband)
+        {
+            output = (input - (deadband * Math.signum(input))) / (1.0 - deadband);
+        }
+
+        return output;
     }
 }

@@ -22,31 +22,6 @@ public class CmdDrivePath extends CommandBase {
     PIDControl _rotatePID;
 
     public CmdDrivePath(String file) {
-        // initialize PID controllers
-        _xPID = new PIDControl();
-        _yPID = new PIDControl();
-        _rotatePID = new PIDControl();
-
-        _rotatePID.setInputRange(0, 360);
-        _rotatePID.setContinuous(true);
-
-        _xPID.setOutputRange(-Constants.Drive.MAX_DRIVE_SPEED, -Constants.Drive.MAX_DRIVE_SPEED);
-        _yPID.setOutputRange(-Constants.Drive.MAX_DRIVE_SPEED, -Constants.Drive.MAX_DRIVE_SPEED);
-        _rotatePID.setOutputRange(-Constants.Drive.MAX_ROTATE_SPEED, Constants.Drive.MAX_ROTATE_SPEED);
-
-        _xPID.setCoefficient(Coefficient.P, 0.0, 0.8, 0.0);
-        _xPID.setCoefficient(Coefficient.I, 0.0, 0.0, 0.0);
-        _xPID.setCoefficient(Coefficient.D, 0.0, 0.0, 0.0);
-        
-        _yPID.setCoefficient(Coefficient.P, 0.0, 0.8, 0.0);
-        _yPID.setCoefficient(Coefficient.I, 0.0, 0.0, 0.0);
-        _yPID.setCoefficient(Coefficient.D, 0.0, 0.0, 0.0);
-
-        _rotatePID.setCoefficient(Coefficient.P, 0.0, 0.8, 0.0);
-        _rotatePID.setCoefficient(Coefficient.P, 0.0, 0.0, 0.0);
-        _rotatePID.setCoefficient(Coefficient.P, 0.0, 0.0, 0.0);
-
-
         // load path from file
         try {
             BufferedReader reader = new BufferedReader(

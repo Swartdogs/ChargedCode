@@ -1,16 +1,10 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.drive.Drive;
 
-public class CmdDriveResetEncoders extends CommandBase 
+public class CmdDriveResetEncoders extends InstantCommand 
 {
-
-    public CmdDriveResetEncoders()
-    {
-        
-    }
-
     @Override
     public void initialize()
     {
@@ -18,15 +12,8 @@ public class CmdDriveResetEncoders extends CommandBase
     }
 
     @Override
-    public boolean isFinished() 
-    {
-        return true;
-    }
-
-    @Override
     public boolean runsWhenDisabled()
     {
         return true;
     }
-
 }
