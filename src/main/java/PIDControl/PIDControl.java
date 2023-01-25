@@ -37,29 +37,29 @@ public class PIDControl
     private CoefficientValues _kI;
     private CoefficientValues _kD;
 
-    private IFeedForward m_feedForward;
+    private IFeedForward _feedForward;
 
     public PIDControl()
     {
-        _kP           = new CoefficientValues();
-        _kP.threshold = 0;
-        _kP.kAbove    = 0;
-        _kP.kBelow    = 0;
-        _kP.kNow      = 0;
+        _kP                = new CoefficientValues();
+        _kP.threshold      = 0;
+        _kP.kAbove         = 0;
+        _kP.kBelow         = 0;
+        _kP.kNow           = 0;
 
-        _kI           = new CoefficientValues();
-        _kI.threshold = 0;
-        _kI.kAbove    = 0;
-        _kI.kBelow    = 0;
-        _kI.kNow      = 0;
+        _kI                = new CoefficientValues();
+        _kI.threshold      = 0;
+        _kI.kAbove         = 0;
+        _kI.kBelow         = 0;
+        _kI.kNow           = 0;
 
-        _kD           = new CoefficientValues();
-        _kD.threshold = 0;
-        _kD.kAbove    = 0;
-        _kD.kBelow    = 0;
-        _kD.kNow      = 0;
+        _kD                = new CoefficientValues();
+        _kD.threshold      = 0;
+        _kD.kAbove         = 0;
+        _kD.kBelow         = 0;
+        _kD.kNow           = 0;
 
-        m_feedForward = null;
+        _feedForward       = null;
 
         _deadband          =  0.0;
         _errorIsPositive   =  false;
@@ -145,9 +145,9 @@ public class PIDControl
             System.out.println(String.format("P: %4.2f, I: %4.2f, D: %4.2f", _kP.kNow * error, _kI.kNow * _errorTotal, _kD.kNow * errorDiff));
         }
 
-        if (m_feedForward != null)
+        if (_feedForward != null)
         {
-            output += m_feedForward.calculate(_setpoint);
+            output += _feedForward.calculate(_setpoint);
         }
 
         if (_useRamp)
@@ -194,7 +194,7 @@ public class PIDControl
 
     public void setFeedForward(IFeedForward feedForward)
     {
-        m_feedForward = feedForward;
+        _feedForward = feedForward;
     }
 
     public void setCoefficient(Coefficient kWhich, double errorThreshold, double kAbove, double kBelow)
