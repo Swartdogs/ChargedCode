@@ -1,21 +1,8 @@
 package frc.robot.subsystems;
 
-import java.io.IOException;
-import java.nio.file.Path;
-
 import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
-
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Vision extends SubsystemBase
@@ -43,9 +30,14 @@ public class Vision extends SubsystemBase
 
     } 
 
-    public boolean hasTargets()
+    public boolean hasTargets0()
     {
         return _latestResult0.hasTargets();
+    }
+    
+    public boolean hasTargets1()
+    {   
+        return _latestResult1.hasTargets();
     }
     
   @Override
@@ -53,28 +45,7 @@ public class Vision extends SubsystemBase
     {
         _latestResult0 = _camera0.getLatestResult();
         _latestResult1 = _camera1.getLatestResult();
-    
-        double targetRange = PhotonUtils.calculateDistanceToTargetMeters(0.921, 0.2794, 0, Units.degreesToRadians(_latestResult0.getBestTarget().getPitch()));
-            
-       if (_latestResult0.hasTargets() == true)
-       {
-        System.out.print(targetRange);
-       }
     }    
-    public AprilTagFieldLayout aprilTagFieldLayout()
-    {
-        AprilTagFieldLayout aprilTagFieldLayout = null;
-        try
-        {
-        aprilTagFieldLayout = new AprilTagFieldLayout((Path) AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile));
-        }
-        catch(IOException e)
-        {
-
-        }
-
-        return aprilTagFieldLayout;
-    }
     public double skew0()
     {
         PhotonTrackedTarget target0 = _latestResult0.getBestTarget();
@@ -111,30 +82,5 @@ public class Vision extends SubsystemBase
         PhotonTrackedTarget target1 = _latestResult1.getBestTarget();
         double pitch1 = target1.getPitch();
         return pitch1;
-    }
-    
-    public Pose3d robotPose1()
-    {
-        PhotonTrackedTarget target1 = _latestResult1.getBestTarget();
-        Transform3d cameraToRobot1 = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0));
-        Pose3d robotPose1 = PhotonUtils.estimateFieldToRobotAprilTag(target1.getBestCameraToTarget(), aprilTagFieldLayout().getTagPose(target1.getFiducialId()).get(), cameraToRobot1);
-        return robotPose1;
-    }
-
-
-    public void targets()
-    {
-        PhotonTrackedTarget target0 = _latestResult0.getBestTarget();
-        PhotonTrackedTarget target1 = _latestResult1.getBestTarget();
-    }
-    
-    
-    
-
-
-    
-
-    
+    } 
 }
-
-
