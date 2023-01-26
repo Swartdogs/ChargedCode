@@ -33,7 +33,8 @@ public final class Constants
     public static class Manipulator
     {
         public static final int     WRIST_MOTOR_CAN_ID      =   0;
-        public static final int     WRIST_ENCODER_PORT      =   0;
+        public static final int     WRIST_UPPER_SWITCH_PORT =   0;
+        public static final int     WRIST_LOWER_SWITCH_PORT =   0;
         public static final double  WRIST_MIN_ANGLE         =  -120.0;
         public static final double  WRIST_MAX_ANGLE         =   120.0;
         public static final int     TWIST_MOTOR_CAN_ID      =   0;

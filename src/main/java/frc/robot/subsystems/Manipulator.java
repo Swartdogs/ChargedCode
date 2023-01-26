@@ -26,7 +26,8 @@ public class Manipulator extends SubsystemBase
 
     //Wrist Controls
     private CANSparkMax      _wristMotor;
-    private DutyCycleEncoder _wristEncoder;
+    private DigitalInput     _wristUpperSwitch;
+    private DigitalInput     _wristLowerSwitch;
     private PIDControl       _wristPID;
 
     //Twist Motion Controls
@@ -41,7 +42,8 @@ public class Manipulator extends SubsystemBase
     private Manipulator()
     {
         _wristMotor         = new CANSparkMax(Constants.Manipulator.WRIST_MOTOR_CAN_ID, MotorType.kBrushless);
-        _wristEncoder       = new DutyCycleEncoder(Constants.Manipulator.WRIST_ENCODER_PORT);
+        _wristUpperSwitch   = new DigitalInput(Constants.Manipulator.WRIST_UPPER_SWITCH_PORT);
+        _wristLowerSwitch   = new DigitalInput(Constants.Manipulator.WRIST_LOWER_SWITCH_PORT);
         _wristPID           = new PIDControl();
 
         _twistMotor         = new CANSparkMax(Constants.Manipulator.TWIST_MOTOR_CAN_ID, MotorType.kBrushless);
@@ -71,9 +73,29 @@ public class Manipulator extends SubsystemBase
         _wristPID.setSetpoint(position, getWristAngle());
     }
 
+    public void setWristSpeed(double speed)
+    {
+        _wristMotor.set(speed);
+    }
+
+    public void setWristResetAngle(double position)
+    {
+        _wristMotor.getEncoder().setPosition(position);
+    }
+
     public double getWristAngle()
     {
-        return _wristEncoder.get();
+        return _wristMotor.getEncoder().getPosition();
+    }
+
+    public boolean isUpperWristSwitchActive()
+    {
+        return _wristUpperSwitch.get();
+    }
+
+    public boolean isLowerWristSwitchActive()
+    {
+        return _wristLowerSwitch.get();
     }
 
     public void setTwistAngle(double position)
@@ -97,9 +119,16 @@ public class Manipulator extends SubsystemBase
     }
 
     @Override
-    public void periodic() 
+    public void periodic()
     {
-        _wristMotor.set(_wristPID.calculate(getWristAngle()));
+        double wristSpeed = _wristPID.calculate(getWristAngle());
+
+        if((isUpperWristSwitchActive() && wristSpeed > 0) || (isLowerWristSwitchActive() && wristSpeed < 0))
+        {
+            wristSpeed = 0;
+        }
+
         _twistMotor.set(_twistPID.calculate(getTwistAngle()));
+        _wristMotor.set(wristSpeed);
     }
 }
