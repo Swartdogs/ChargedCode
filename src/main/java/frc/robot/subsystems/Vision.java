@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Vision extends SubsystemBase
@@ -19,68 +18,64 @@ public class Vision extends SubsystemBase
         return _instance;
     }
    
-    private final PhotonCamera _camera0 = new PhotonCamera("camera1");
-    private final PhotonCamera _camera1 = new PhotonCamera("camera2");
-    private PhotonPipelineResult _latestResult0 = new PhotonPipelineResult();
-    private PhotonPipelineResult _latestResult1 = new PhotonPipelineResult();
-    
-   
-    private Vision()
-    {
+    private final PhotonCamera   _frontCam;
+    private final PhotonCamera   _rearCam;
+    private PhotonPipelineResult _frontLatestResult;
+    private PhotonPipelineResult _rearLatestResult;
 
+    
+    public Vision()
+    {
+        _frontCam          = new PhotonCamera("camera1");
+        _rearCam           = new PhotonCamera("camera2");
+        _frontLatestResult = new PhotonPipelineResult(); 
+        _rearLatestResult  = new PhotonPipelineResult();
     } 
 
-    public boolean hasTargets0()
+    public boolean frontCamHasTargets()
     {
-        return _latestResult0.hasTargets();
+        return _frontLatestResult.hasTargets();
     }
     
-    public boolean hasTargets1()
+    public boolean rearCamHasTargets()
     {   
-        return _latestResult1.hasTargets();
+        return _rearLatestResult.hasTargets();
     }
     
-  @Override
+    public double frontSkew()
+    {
+        return _frontLatestResult.getBestTarget().getSkew();
+    }
+ 
+    public double frontYaw()
+    {
+        return _frontLatestResult.getBestTarget().getYaw();
+    }
+   
+    public double frontPitch()
+    {
+        return _frontLatestResult.getBestTarget().getPitch();
+    }
+    
+    public double rearSkew()
+    {
+        return _rearLatestResult.getBestTarget().getSkew();
+    }
+  
+    public double rearYaw()
+    {
+        return _rearLatestResult.getBestTarget().getYaw();
+    }
+   
+    public double rearPitch()
+    {
+        return _rearLatestResult.getBestTarget().getPitch();
+    } 
+   
+    @Override
     public void periodic()
     {
-        _latestResult0 = _camera0.getLatestResult();
-        _latestResult1 = _camera1.getLatestResult();
+        _frontLatestResult = _frontCam.getLatestResult();
+        _rearLatestResult = _rearCam.getLatestResult();
     }    
-    public double skew0()
-    {
-        PhotonTrackedTarget target0 = _latestResult0.getBestTarget();
-        double skew0 = target0.getSkew();
-        return skew0;
-    }
-    public double yaw0()
-    {
-        PhotonTrackedTarget target0 = _latestResult0.getBestTarget();
-        double yaw0 = target0.getYaw();
-        return yaw0;
-    }
-    public double pitch0()
-    {
-        PhotonTrackedTarget target0 = _latestResult0.getBestTarget();
-        double pitch0 = target0.getPitch();
-        return pitch0;
-    }
-    
-    public double skew1()
-    {
-        PhotonTrackedTarget target1 = _latestResult1.getBestTarget();
-        double skew1 = target1.getSkew();
-        return skew1;
-    }
-    public double yaw1()
-    {
-        PhotonTrackedTarget target1 = _latestResult1.getBestTarget();
-        double yaw1 = target1.getYaw();
-        return yaw1;
-    }
-    public double pitch1()
-    {
-        PhotonTrackedTarget target1 = _latestResult1.getBestTarget();
-        double pitch1 = target1.getPitch();
-        return pitch1;
-    } 
 }
