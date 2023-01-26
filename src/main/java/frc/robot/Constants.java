@@ -34,16 +34,12 @@ public final class Constants
     {
         public static final int     WRIST_MOTOR_CAN_ID      =   0;
         public static final int     WRIST_ENCODER_PORT      =   0;
-        public static final double  WRIST_MIN_ANGLE         =  -90.0;
-        public static final double  WRIST_MAX_ANGLE         =   90.0;
+        public static final double  WRIST_MIN_ANGLE         =  -120.0;
+        public static final double  WRIST_MAX_ANGLE         =   120.0;
         public static final int     TWIST_MOTOR_CAN_ID      =   0;
         public static final int     TWIST_ENCODER_PORT      =   0;
         public static final double  TWIST_MIN_ROTATION      =  -180.0;
         public static final double  TWIST_MAX_ROTATION      =   180.0;
-        public static final int     GRASP_MOTOR_CAN_ID      =   0;
-        public static final int     GRASP_ENCODER_PORT      =   0;
-        public static final double  GRASP_MIN_POSITION      =   0.0;
-        public static final double  GRASP_MAX_POSITION      =   0.0;
         public static final int     INTAKE_MOTOR_CAN_ID     =   0;
         public static final int     INTAKE_SENSOR_PORT      =   0;
         public static final double  EJECT_TIME              =   0;

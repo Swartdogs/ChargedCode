@@ -34,11 +34,6 @@ public class Manipulator extends SubsystemBase
     private DutyCycleEncoder _twistEncoder;
     private PIDControl       _twistPID;
     
-    //Hand Controls
-    private CANSparkMax      _graspMotor;
-    private DutyCycleEncoder _graspEncoder;
-    private PIDControl       _graspPID;
-    
     //Intake Controls
     private CANSparkMax      _intakeMotor;
     private DigitalInput     _intakeSensor;
@@ -52,10 +47,6 @@ public class Manipulator extends SubsystemBase
         _twistMotor         = new CANSparkMax(Constants.Manipulator.TWIST_MOTOR_CAN_ID, MotorType.kBrushless);
         _twistEncoder       = new DutyCycleEncoder(Constants.Manipulator.TWIST_ENCODER_PORT);
         _twistPID           = new PIDControl();
-
-        _graspMotor         = new CANSparkMax(Constants.Manipulator.GRASP_MOTOR_CAN_ID, MotorType.kBrushless);
-        _graspEncoder       = new DutyCycleEncoder(Constants.Manipulator.GRASP_ENCODER_PORT);
-        _graspPID           = new PIDControl();
 
         _intakeMotor        = new CANSparkMax(Constants.Manipulator.INTAKE_MOTOR_CAN_ID, MotorType.kBrushless);
         _intakeSensor       = new DigitalInput(Constants.Manipulator.INTAKE_SENSOR_PORT);
@@ -73,13 +64,6 @@ public class Manipulator extends SubsystemBase
         _twistPID.setInputRange(Constants.Manipulator.TWIST_MIN_ROTATION, Constants.Manipulator.TWIST_MAX_ROTATION);
         _twistPID.setOutputRange(-1, 1);
         _twistPID.setSetpointDeadband(1);
-
-        _graspPID.setCoefficient(Coefficient.P, 0, 0, 0);
-        _graspPID.setCoefficient(Coefficient.I, 0, 0, 0);
-        _graspPID.setCoefficient(Coefficient.D, 0, 0, 0);
-        _graspPID.setInputRange(Constants.Manipulator.GRASP_MIN_POSITION, Constants.Manipulator.GRASP_MAX_POSITION);
-        _graspPID.setOutputRange(-1, 1);
-        _graspPID.setSetpointDeadband(1);
     }
 
     public void setWristAngle(double position)
@@ -102,16 +86,6 @@ public class Manipulator extends SubsystemBase
         return _twistEncoder.get();
     }
 
-    public void setGraspPosition(double position)
-    {
-        _graspPID.setSetpoint(position, getGraspPosition());
-    }
-
-    public double getGraspPosition()
-    {
-        return _graspEncoder.get();
-    }
-
     public void setIntakeSpeed(double speed)
     {
         _intakeMotor.set(speed);
@@ -127,6 +101,5 @@ public class Manipulator extends SubsystemBase
     {
         _wristMotor.set(_wristPID.calculate(getWristAngle()));
         _twistMotor.set(_twistPID.calculate(getTwistAngle()));
-        _graspMotor.set(_graspPID.calculate(getGraspPosition()));
     }
 }
