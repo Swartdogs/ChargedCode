@@ -36,10 +36,12 @@ public class Dashboard extends SubsystemBase
         var shoulderAngle = armLayout.add("ShoulderAngle", 0).withPosition(0, 0).withSize(4,1).withWidget(BuiltInWidgets.kTextView);
         var extensionDistance = armLayout.add("ExtensionDistance", 0).withPosition(4, 0).withSize(4, 1).withWidget(BuiltInWidgets.kTextView);
         var intakeLayout = tab.getLayout("IntakeLayout", BuiltInLayouts.kGrid).withPosition(9, 5).withSize(8, 4);
-        var wristAngle = armLayout.add("WristAngle", 0).withPosition(0, 0).withSize(4, 1).withWidget(BuiltInWidgets.kTextView);
-        var twistAngle = armLayout.add("TwistAngle", 0).withPosition(0, 2).withSize(4, 1).withWidget(BuiltInWidgets.kTextView);
-        var hasGamePiece = armLayout.add("HasGamePiece", false).withPosition(4, 0).withSize(4, 1).withWidget(BuiltInWidgets.kBooleanBox);
+        var wristAngle = intakeLayout.add("WristAngle", 0).withPosition(0, 0).withSize(4, 1).withWidget(BuiltInWidgets.kTextView);
+        var twistAngle = intakeLayout.add("TwistAngle", 0).withPosition(0, 2).withSize(4, 1).withWidget(BuiltInWidgets.kTextView);
+        var hasGamePiece = intakeLayout.add("HasGamePiece", false).withPosition(4, 0).withSize(4, 1).withWidget(BuiltInWidgets.kBooleanBox);
+        var autonomousOptions = tab.getLayout("Autonomous", BuiltInLayouts.kGrid).withPosition(18, 2).withSize(9,7);
         
+
         // What is a default value for a camerastream?
         //var camera = tab.add("Camera", false).withPosition(0, 0).withSize(10, 10).withWidget(BuiltInWidgets.kCameraStream);
     }
