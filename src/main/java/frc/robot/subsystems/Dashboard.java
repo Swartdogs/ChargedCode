@@ -42,5 +42,30 @@ public class Dashboard extends SubsystemBase
         
         // What is a default value for a camerastream?
         //var camera = tab.add("Camera", false).withPosition(0, 0).withSize(10, 10).withWidget(BuiltInWidgets.kCameraStream);
+
+        var settingsTab                 = Shuffleboard.getTab("Settings");
+
+        //Drive
+        var driveSettingsLayout         = settingsTab.getLayout("Drive Subsystem", BuiltInLayouts.kGrid).withPosition(0, 0).withSize(4, 2);
+        var setFLAngle                  = driveSettingsLayout.add("FL Angle", 0.0).withPosition(0, 0).withSize(2,2).withWidget(BuiltInWidgets.kTextView);
+        var setFRAngle                  = driveSettingsLayout.add("FR Angle", 0.0).withPosition(2, 0).withSize(2,2).withWidget(BuiltInWidgets.kTextView);
+        var setBLAngle                  = driveSettingsLayout.add("BL Angle", 0.0).withPosition(0, 2).withSize(2,2).withWidget(BuiltInWidgets.kTextView);
+        var setBRAngle                  = driveSettingsLayout.add("BR Angle", 0.0).withPosition(2, 2).withSize(2,2).withWidget(BuiltInWidgets.kTextView);
+        
+        //Vision
+        
+        //Arm
+        var armSettingsLayout           = settingsTab.getLayout("Arm Subsystem", BuiltInLayouts.kGrid).withPosition(0, 4).withSize(4, 2);
+        var setArmExtension             = armSettingsLayout.add("Arm Extension", 0.0);
+        var setArmAngle                 = armSettingsLayout.add("Arm Angle", 0.0);
+
+        //Manipulator
+        var manipulatorSettingsLayout   = settingsTab.getLayout("Manipulator Subsystem", BuiltInLayouts.kGrid).withPosition(4, 0).withSize(9, 2);
+        var setWristMinAngle            = manipulatorSettingsLayout.add("Wrist Min", -120.0).withPosition(0, 2).withSize(3, 2).withWidget(BuiltInWidgets.kTextView);
+        var setWristMaxAngle            = manipulatorSettingsLayout.add("Wrist Max", 120.0).withPosition(0, 0).withSize(3, 2).withWidget(BuiltInWidgets.kTextView);
+        var setTwistMinRotation         = manipulatorSettingsLayout.add("Twist Min", -180.0).withPosition(1, 2).withSize(3, 2).withWidget(BuiltInWidgets.kTextView);
+        var setTwistMaxRotation         = manipulatorSettingsLayout.add("Twist Max", 180.0).withPosition(1, 0).withSize(3, 2).withWidget(BuiltInWidgets.kTextView);
+        var setEjectTime                = manipulatorSettingsLayout.add("Eject Time", 0.0).withPosition(2, 2).withSize(3, 2).withWidget(BuiltInWidgets.kTextView);
+        var setIntakeSpeed              = manipulatorSettingsLayout.add("Intake Speed", 0.0).withPosition(2, 0).withSize(3, 2).withWidget(BuiltInWidgets.kTextView);
     }
 }

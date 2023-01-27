@@ -3,5 +3,31 @@
     "types": {
       "/FMSInfo": "FMSInfo"
     }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "Shuffleboard": {
+        "Settings": {
+          "Arm Subsystem": {
+            "open": true
+          },
+          "Drive Subsystem": {
+            "open": true
+          },
+          "Manipulator Subsystem": {
+            "open": true
+          },
+          "open": true
+        },
+        "open": true
+      }
+    }
+  },
+  "Plot": {
+    "Plot <0>": {
+      "window": {
+        "visible": false
+      }
+    }
   }
 }
