@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.Manipulator;
+import frc.robot.subsystems.RobotLog;
 
 public class CmdManipulatorSetTwistAngle extends InstantCommand 
 {
@@ -17,6 +18,7 @@ public class CmdManipulatorSetTwistAngle extends InstantCommand
     @Override
     public void initialize() 
     {
+        RobotLog.getInstance().log(String.format("Setting twist angle to %6.2f", _twistAngle));
         _manipulatorSubsystem.setTwistAngle(_twistAngle);
     }
 }
