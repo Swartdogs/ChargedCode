@@ -9,6 +9,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 public class DashboardButton
 {
     private GenericEntry _entry;
+    
     public DashboardButton(GenericEntry entry)
     {
         _entry = entry;

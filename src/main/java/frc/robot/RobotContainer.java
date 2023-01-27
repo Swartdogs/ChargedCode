@@ -13,7 +13,7 @@ public class RobotContainer
 
     private void configureBindings() 
     {
-        var D = new Dashboard();
+        
     }
 
     public Command getAutonomousCommand() 
