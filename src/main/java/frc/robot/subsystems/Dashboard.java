@@ -8,6 +8,8 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -18,11 +20,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Dashboard extends SubsystemBase 
 {
+    private GenericEntry _allianceBox;
+
     public Dashboard() 
     {
         var tab = Shuffleboard.getTab("Dashboard");
         
-        var allianceBox = tab.add("AllianceColorBox", false).withPosition(0, 0).withSize(28, 1).withWidget(BuiltInWidgets.kBooleanBox);
+        _allianceBox = tab.add("AllianceColorBox", false).withPosition(0, 0).withSize(28, 1).withWidget(BuiltInWidgets.kBooleanBox).withProperties(Map.of("Color when true", "blue", "Color when false", "red")).getEntry();
         
         var visionLayout = tab.getLayout("VisionBox", BuiltInLayouts.kGrid).withPosition(0, 2).withSize(8, 2).withProperties(Map.of("Number of columns", 2, "Number of rows", 1, "Label position", "TOP")); 
         var hasTargetBox = visionLayout.add("hasTargetBox", false).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kBooleanBox);
@@ -80,4 +84,11 @@ public class Dashboard extends SubsystemBase
         // What is a default value for a camerastream?
         //var camera = tab.add("Camera", false).withPosition(0, 0).withSize(10, 10).withWidget(BuiltInWidgets.kCameraStream);
     }
+
+    @Override
+    public void periodic()
+    {
+        _allianceBox.setBoolean(DriverStation.getAlliance() == Alliance.Blue);
+    }
+
 }
