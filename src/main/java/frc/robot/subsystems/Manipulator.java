@@ -97,9 +97,9 @@ public class Manipulator extends SubsystemBase
     }
 
     @Override
-    public void periodic() 
+    public void periodic()
     {
-        _wristMotor.set(_wristPID.calculate(getWristAngle()));
         _twistMotor.set(_twistPID.calculate(getTwistAngle()));
+        _wristMotor.set(_wristPID.calculate(getWristAngle()));
     }
 }

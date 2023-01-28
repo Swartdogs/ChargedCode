@@ -2,5 +2,5 @@ package PIDControl;
 
 public interface IFeedForward
 {
-    public double calculateFeedForward();
+    public double calculate(double setpoint);
 }
