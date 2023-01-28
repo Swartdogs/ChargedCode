@@ -11,8 +11,9 @@ public class RobotContainer
         configureBindings();
     }
 
-    private void configureBindings() {
-        var D = new Dashboard();
+    private void configureBindings() 
+    {
+        Dashboard.getInstance();
     }
 
     public Command getAutonomousCommand() 

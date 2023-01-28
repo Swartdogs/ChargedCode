@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.text.DecimalFormat;
 import java.util.EnumSet;
 import java.util.Map;
 
@@ -20,9 +21,25 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Dashboard extends SubsystemBase 
 {
-    private GenericEntry _allianceBox;
+    private static Dashboard _instance;
 
-    public Dashboard() 
+    public static Dashboard getInstance()
+    {
+        if (_instance == null)
+        {
+            _instance = new Dashboard();
+        }
+
+        return _instance;
+    }
+
+    private GenericEntry _allianceBox;
+    private GenericEntry _shoulderAngle;
+    private GenericEntry _extensionDistance;
+    private GenericEntry _wristAngle;
+    private GenericEntry _twistAngle;
+
+    private Dashboard() 
     {
         var tab = Shuffleboard.getTab("Dashboard");
         
@@ -44,33 +61,15 @@ public class Dashboard extends SubsystemBase
         var blAngle = swerveAnglesLayout.add("BL", 0).withPosition(0, 1).withSize(1,1).withWidget(BuiltInWidgets.kTextView);
         
         var armLayout = tab.getLayout("Arm", BuiltInLayouts.kGrid).withPosition(8, 2).withSize(8,1).withProperties(Map.of("Number of columns", 2, "Number of rows", 1, "Label position", "TOP"));
-        var shoulderAngle = armLayout.add("ShoulderAngle", 0).withPosition(0, 0).withSize(1,1).withWidget(BuiltInWidgets.kTextView);
-        var extensionDistance = armLayout.add("ExtensionDistance", 0).withPosition(1, 0).withSize(1, 1).withWidget(BuiltInWidgets.kTextView);
+        _shoulderAngle = armLayout.add("ShoulderAngle", 0).withPosition(0, 0).withSize(1,1).withWidget(BuiltInWidgets.kTextView).getEntry();
+        _extensionDistance = armLayout.add("ExtensionDistance", 0).withPosition(1, 0).withSize(1, 1).withWidget(BuiltInWidgets.kTextView).getEntry();
        
         var intakeLayout = tab.getLayout("IntakeLayout", BuiltInLayouts.kGrid).withPosition(8, 5).withSize(8, 4).withProperties(Map.of("Number of columns", 2, "Number of rows", 2, "Label position", "TOP"));
-        var wristAngle = intakeLayout.add("WristAngle", 0).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kTextView);
-        var twistAngle = intakeLayout.add("TwistAngle", 0).withPosition(0, 1).withSize(1, 1).withWidget(BuiltInWidgets.kTextView);
+        _wristAngle = intakeLayout.add("WristAngle", 0).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kTextView).getEntry();
+        _twistAngle = intakeLayout.add("TwistAngle", 0).withPosition(0, 1).withSize(1, 1).withWidget(BuiltInWidgets.kTextView).getEntry();
         var hasGamePiece = intakeLayout.add("HasGamePiece", false).withPosition(1, 0).withSize(1, 2).withWidget(BuiltInWidgets.kBooleanBox);
         
         var autonomousOptions = tab.getLayout("Autonomous", BuiltInLayouts.kGrid).withPosition(16, 2).withSize(12,7).withProperties(Map.of("Number of columns", 1, "Number of rows", 4, "Label position", "LEFT"));
-        SendableChooser<Integer> startPositionChooser = new SendableChooser<Integer>();
-        startPositionChooser.addOption("Position 1", 1);
-        startPositionChooser.addOption("Position 2", 2);
-        startPositionChooser.addOption("Position 3", 3);
-        var startPosition = autonomousOptions.add("Start Position", startPositionChooser).withPosition(0, 0).withSize(1,1).withWidget(BuiltInWidgets.kComboBoxChooser);
-        
-        SendableChooser<Integer> gamePiecesChooser = new SendableChooser<Integer>();
-        gamePiecesChooser.addOption("0", 0);
-        gamePiecesChooser.addOption("1", 1);
-        gamePiecesChooser.addOption("2", 2);
-        gamePiecesChooser.addOption("3", 3);
-        gamePiecesChooser.addOption("4", 4);
-        var gamePieces = autonomousOptions.add("Number Of Pieces", gamePiecesChooser).withPosition(0, 1).withSize(1,1).withWidget(BuiltInWidgets.kSplitButtonChooser);
-
-        SendableChooser<Boolean> balanceChooser = new SendableChooser<Boolean>();
-        balanceChooser.addOption("true", true);
-        balanceChooser.addOption("false", false);
-        var balance = autonomousOptions.add("Balance Options", balanceChooser).withPosition(0, 2).withSize(1,1).withWidget(BuiltInWidgets.kComboBoxChooser);
 
         SendableChooser<Integer> delayChooser = new SendableChooser<Integer>();
         delayChooser.addOption("0", 0);
@@ -79,7 +78,26 @@ public class Dashboard extends SubsystemBase
         delayChooser.addOption("3", 3);
         delayChooser.addOption("4", 4);
         delayChooser.addOption("5", 5);
-        var delay = autonomousOptions.add("Delay Options", delayChooser).withPosition(0, 3).withSize(1,1).withWidget(BuiltInWidgets.kSplitButtonChooser);
+        var delay = autonomousOptions.add("Delay Options", delayChooser).withPosition(0, 0).withSize(1,1).withWidget(BuiltInWidgets.kSplitButtonChooser);
+
+        SendableChooser<Integer> startPositionChooser = new SendableChooser<Integer>();
+        startPositionChooser.addOption("Position 1", 1);
+        startPositionChooser.addOption("Position 2", 2);
+        startPositionChooser.addOption("Position 3", 3);
+        var startPosition = autonomousOptions.add("Start Position", startPositionChooser).withPosition(0, 1).withSize(1,1).withWidget(BuiltInWidgets.kComboBoxChooser);
+        
+        SendableChooser<Integer> gamePiecesChooser = new SendableChooser<Integer>();
+        gamePiecesChooser.addOption("0", 0);
+        gamePiecesChooser.addOption("1", 1);
+        gamePiecesChooser.addOption("2", 2);
+        gamePiecesChooser.addOption("3", 3);
+        gamePiecesChooser.addOption("4", 4);
+        var gamePieces = autonomousOptions.add("Number Of Pieces", gamePiecesChooser).withPosition(0, 2).withSize(1,1).withWidget(BuiltInWidgets.kSplitButtonChooser);
+
+        SendableChooser<Boolean> balanceChooser = new SendableChooser<Boolean>();
+        balanceChooser.addOption("true", true);
+        balanceChooser.addOption("false", false);
+        var balance = autonomousOptions.add("Balance Options", balanceChooser).withPosition(0, 3).withSize(1,1).withWidget(BuiltInWidgets.kComboBoxChooser);
 
         // What is a default value for a camerastream?
         //var camera = tab.add("Camera", false).withPosition(0, 0).withSize(10, 10).withWidget(BuiltInWidgets.kCameraStream);
@@ -88,7 +106,13 @@ public class Dashboard extends SubsystemBase
     @Override
     public void periodic()
     {
+        //final DecimalFormat dfZero = new DecimalFormat("0.00");
+
         _allianceBox.setBoolean(DriverStation.getAlliance() == Alliance.Blue);
+        _shoulderAngle.setDouble(Double.parseDouble((String.format("%6.2f", Arm.getInstance().getShoulderAngle()))));
+        _extensionDistance.setDouble(Double.parseDouble((String.format("%6.2f", Arm.getInstance().getExtensionPosition()))));
+        _wristAngle.setDouble(Double.parseDouble((String.format("%6.2f", Manipulator.getInstance().getWristAngle()))));
+        _twistAngle.setDouble(Double.parseDouble((String.format("%6.2f", Manipulator.getInstance().getTwistAngle()))));
     }
 
 }
