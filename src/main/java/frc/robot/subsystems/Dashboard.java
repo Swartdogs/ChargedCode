@@ -1,23 +1,16 @@
 package frc.robot.subsystems;
 
-import java.text.DecimalFormat;
-import java.util.EnumSet;
 import java.util.Map;
 
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableEvent;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.Drive;
 
 public class Dashboard extends SubsystemBase 
 {
@@ -38,6 +31,10 @@ public class Dashboard extends SubsystemBase
     private GenericEntry _extensionDistance;
     private GenericEntry _wristAngle;
     private GenericEntry _twistAngle;
+    private GenericEntry _hasTargetBox;
+    private GenericEntry _targetID;
+    private GenericEntry _heading;
+    private GenericEntry _odometer;
 
     private Dashboard() 
     {
@@ -46,13 +43,12 @@ public class Dashboard extends SubsystemBase
         _allianceBox = tab.add("AllianceColorBox", false).withPosition(0, 0).withSize(28, 1).withWidget(BuiltInWidgets.kBooleanBox).withProperties(Map.of("Color when true", "blue", "Color when false", "red")).getEntry();
         
         var visionLayout = tab.getLayout("VisionBox", BuiltInLayouts.kGrid).withPosition(0, 2).withSize(8, 2).withProperties(Map.of("Number of columns", 2, "Number of rows", 1, "Label position", "TOP")); 
-        var hasTargetBox = visionLayout.add("hasTargetBox", false).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kBooleanBox);
-        var targetID = visionLayout.add("TargetID", 0).withPosition(1, 0).withSize(1, 1).withWidget(BuiltInWidgets.kTextView);
+        _hasTargetBox = visionLayout.add("hasTargetBox", false).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kBooleanBox).getEntry();
+        _targetID = visionLayout.add("TargetID", 0).withPosition(1, 0).withSize(1, 1).withWidget(BuiltInWidgets.kTextView).getEntry();
 
         var driveBaseLayout = tab.getLayout("DriveBaseLayout", BuiltInLayouts.kGrid).withPosition(0, 5).withSize(4, 4).withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"));
-        //var heading = driveBaseLayout.add("Heading", 0).withProperties(Map.of("Min", -2, "Max", 12)).withSize(4, 1).withPosition(0, 0).withWidget(BuiltInWidgets.kNumberBar);
-        var heading = driveBaseLayout.add("Heading", 0).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kTextView);
-        var odometer = driveBaseLayout.add("Odometer", "(0,0)").withPosition(0, 1).withSize(1,1).withWidget(BuiltInWidgets.kTextView);
+        _heading = driveBaseLayout.add("Heading", 0).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kTextView).getEntry();
+        _odometer = driveBaseLayout.add("Odometer", "(0,0)").withPosition(0, 1).withSize(1,1).withWidget(BuiltInWidgets.kTextView).getEntry();
        
         var swerveAnglesLayout = tab.getLayout("SwerveAngles", BuiltInLayouts.kGrid).withPosition(4, 5).withSize(4, 4).withProperties(Map.of("Number of columns", 2, "Number of rows", 2, "Label position", "TOP"));
         var frAngle = swerveAnglesLayout.add("FR", 0).withPosition(1, 0).withSize(1,1).withWidget(BuiltInWidgets.kTextView);
@@ -113,6 +109,10 @@ public class Dashboard extends SubsystemBase
         _extensionDistance.setDouble(Double.parseDouble((String.format("%6.2f", Arm.getInstance().getExtensionPosition()))));
         _wristAngle.setDouble(Double.parseDouble((String.format("%6.2f", Manipulator.getInstance().getWristAngle()))));
         _twistAngle.setDouble(Double.parseDouble((String.format("%6.2f", Manipulator.getInstance().getTwistAngle()))));
+        _hasTargetBox.setBoolean(Vision.getInstance().frontCamHasTargets()|| Vision.getInstance().rearCamHasTargets());
+        //_targetID.setDouble(Double.parseDouble((String.format("%6.2f", Vision.getInstance().get()))));
+        _heading.setDouble(Double.parseDouble((String.format("%6.2f", frc.robot.subsystems.drive.Drive.getInstance().getHeading()))));
+        _odometer.setString((String.format("%s", frc.robot.subsystems.drive.Drive.getInstance().getFieldPosition())));
     }
 
 }
