@@ -38,6 +38,14 @@ public class Manipulator extends SubsystemBase
     private CANSparkMax      _intakeMotor;
     private DigitalInput     _intakeSensor;
 
+    //Settings
+    private double           _wristMinAngle;
+    private double           _wristMaxAngle;
+    private double           _twistMinRotation;
+    private double           _twistMaxRotation;
+    private double           _ejectTime;
+    private double           _intakeSpeed;
+
     private Manipulator()
     {
         _wristMotor         = new CANSparkMax(Constants.Manipulator.WRIST_MOTOR_CAN_ID, MotorType.kBrushless);
@@ -50,6 +58,13 @@ public class Manipulator extends SubsystemBase
 
         _intakeMotor        = new CANSparkMax(Constants.Manipulator.INTAKE_MOTOR_CAN_ID, MotorType.kBrushless);
         _intakeSensor       = new DigitalInput(Constants.Manipulator.INTAKE_SENSOR_PORT);
+
+        _wristMinAngle      = Constants.Manipulator.WRIST_MAX_ANGLE;
+        _wristMaxAngle      = Constants.Manipulator.WRIST_MIN_ANGLE;
+        _twistMinRotation   = Constants.Manipulator.TWIST_MIN_ROTATION;
+        _twistMaxRotation   = Constants.Manipulator.TWIST_MAX_ROTATION;
+        _ejectTime          = Constants.Manipulator.EJECT_TIME;
+        _intakeSpeed        = Constants.Manipulator.INTAKE_SPEED;
 
         _wristPID.setCoefficient(Coefficient.P, 0, 0, 0);
         _wristPID.setCoefficient(Coefficient.I, 0, 0, 0);
@@ -76,6 +91,21 @@ public class Manipulator extends SubsystemBase
         return _wristEncoder.get();
     }
 
+    public void enableIntake()
+    {
+        _intakeMotor.set(_intakeSpeed);
+    }
+
+    public void disableIntake()
+    {
+        _intakeMotor.set(0);
+    }
+
+    public void reverseIntake()
+    {
+        _intakeMotor.set(-_intakeSpeed);
+    }
+
     public void setTwistAngle(double position)
     {
         _twistPID.setSetpoint(position, getTwistAngle());
@@ -86,14 +116,49 @@ public class Manipulator extends SubsystemBase
         return _twistEncoder.get();
     }
 
-    public void setIntakeSpeed(double speed)
-    {
-        _intakeMotor.set(speed);
-    }
-
     public boolean isIntakeSensorActive()
     {
         return !_intakeSensor.get();    
+    }
+
+    //Settings Functions
+    public void setWristMinAngle(double angle)
+    {
+        _wristMinAngle = angle;
+        _wristPID.setInputRange(_wristMinAngle, _wristMaxAngle);
+    }
+
+    public void setWristMaxAngle(double angle)
+    {
+        _wristMaxAngle = angle;
+        _wristPID.setInputRange(_wristMinAngle, _wristMaxAngle);
+    }
+
+    public void setTwistMinRotation(double rotation)
+    {
+        _twistMinRotation = rotation;
+        _twistPID.setInputRange(_twistMinRotation, _twistMaxRotation);
+    }
+
+    public void setTwistMaxRotation(double rotation)
+    {
+        _twistMaxRotation = rotation;
+        _twistPID.setInputRange(_twistMinRotation, _twistMaxRotation);
+    }
+
+    public void setEjectTime(double time)
+    {
+        _ejectTime = time;
+    }
+
+    public double getEjectTime()
+    {
+        return _ejectTime;
+    }
+
+    public void setIntakeSpeed(double speed)
+    {
+        _intakeSpeed = speed;
     }
 
     @Override

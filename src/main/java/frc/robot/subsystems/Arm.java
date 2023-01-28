@@ -37,6 +37,11 @@ public class Arm extends SubsystemBase
     private CANSparkMax      _pitchMotor;
     private PIDControl       _shoulderPid;
     
+    //Settings
+    private double           _shoulderMinAngle;
+    private double           _shoulderMaxAngle;
+    private double           _armMaxPosition;
+    
     @SuppressWarnings("resource")
     private Arm() 
     {
@@ -50,6 +55,10 @@ public class Arm extends SubsystemBase
         _extensionPid       = new PIDControl();
         _shoulderPid        = new PIDControl();
         _extensionEncoder   = _linearMotor.getEncoder();
+
+        _shoulderMinAngle   = Constants.Arm.SHOULDER_MIN_ANGLE;
+        _shoulderMaxAngle   = Constants.Arm.SHOULDER_MAX_ANGLE;
+        _armMaxPosition     = Constants.Arm.ARM_MAX_EXTENSION;
 
         _shoulderPid.setCoefficient(Coefficient.P, 0, 0, 0);
         _shoulderPid.setCoefficient(Coefficient.I, 0, 0, 0);
@@ -105,6 +114,25 @@ public class Arm extends SubsystemBase
     public void setExtensionEncoderPosition(double positon)
     {
         _extensionEncoder.setPosition(positon);
+    }
+
+    //Settings Functions
+    public void setMinShoulderAngle(double angle)
+    {
+        _shoulderMinAngle = angle;
+        _shoulderPid.setInputRange(_shoulderMinAngle, _shoulderMaxAngle);
+    }
+
+    public void setMaxShoulderAngle(double angle)
+    {
+        _shoulderMaxAngle = angle;
+        _shoulderPid.setInputRange(_shoulderMinAngle, _shoulderMaxAngle);
+    }
+
+    public void setMaxArmPosition(double position)
+    {
+        _armMaxPosition = position;
+        _extensionPid.setInputRange(0, _armMaxPosition);
     }
 
     @Override 
