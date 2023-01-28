@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.commands.CmdDriveWithJoystick;
-import frc.robot.commands.CmdDriveBalance;
+//import frc.robot.commands.CmdDriveBalance;
 import frc.robot.commands.CmdDriveResetEncoders;
 import frc.robot.commands.CmdDriveResetOdometer;
 import frc.robot.commands.CmdDriveToPosition;
@@ -33,7 +33,7 @@ public class RobotContainer
 
         new JoystickButton(driveJoy, 3).onTrue(new CmdDriveToPosition(new Vector(), 0));
 
-        new JoystickButton(driveJoy, 6).onTrue(new CmdDriveBalance());
+        //new JoystickButton(driveJoy, 6).onTrue(new CmdDriveBalance());
 
         configureBindings();
     }
