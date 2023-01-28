@@ -43,23 +43,24 @@ public class Drive extends SubsystemBase
     * https://www.desmos.com/calculator/rfa3bzdv3c
     */
 
-    private double _rotationVelocityVariance;
+    //private double _rotationVelocityVariance;
 
-    private double _positionVariance;
-    private double _velocityVariance;
+    //private double _positionVariance;
+    //private double _velocityVariance;
 
     private Drive()
     {
         _origin             = new Vector();
 
-        _gyro = new AHRS(SPI.Port.kMXP);
+        _gyro               = new AHRS(SPI.Port.kMXP);
 
-        SwerveModule fl = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2, 37.5, 0.0, 1, 2, 0);// FIXME: update for the new robot base
-        SwerveModule fr = new SwerveModule( Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2, -150.2, 0.0, 5, 6, 3);
-        SwerveModule bl = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2, -Constants.Drive.BASE_LENGTH / 2, -158.2, 180.0, 3, 4, 1);
-        SwerveModule br = new SwerveModule( Constants.Drive.BASE_WIDTH / 2, -Constants.Drive.BASE_LENGTH / 2, -53.3, 180.0, 7, 8, 2);
+        // FIXME: update for the new robot base
+        SwerveModule fl     = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2, 37.5, 0.0, 1, 2, 0);
+        SwerveModule fr     = new SwerveModule( Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2, -150.2, 0.0, 5, 6, 3);
+        SwerveModule bl     = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2, -Constants.Drive.BASE_LENGTH / 2, -158.2, 180.0, 3, 4, 1);
+        SwerveModule br     = new SwerveModule( Constants.Drive.BASE_WIDTH / 2, -Constants.Drive.BASE_LENGTH / 2, -53.3, 180.0, 7, 8, 2);
 
-        _swerveModules = new SwerveModule[]// turn the swerve modules into an array, so they can be easily accessed, with an arbitrary number of them
+        _swerveModules = new SwerveModule[]
         { 
             fl, 
             fr,
@@ -97,7 +98,7 @@ public class Drive extends SubsystemBase
         {
             Vector modulePosition = _swerveModules[i].subtract(_origin);
             Vector rotateVector = new Vector(modulePosition.getY(), -modulePosition.getX());    // clockwise 90 deg.
-            rotateVector = rotateVector.multiply(rotate / Constants.Drive.TYPICAL_MODULE_DIST);
+            rotateVector = rotateVector.multiply(rotate / Constants.Drive.TYPICAL_MODULE_DIST); // FIXME: calculate max module dist
             Vector outputVector = translateVector.add(rotateVector);
 
             moduleCommands[i] = outputVector;
@@ -226,10 +227,10 @@ public class Drive extends SubsystemBase
 
         processPosition.add(_velocity.divide(Constants.LOOPS_PER_SECOND));
 
-        _positionVariance += 4 + (_velocityVariance / Constants.LOOPS_PER_SECOND);// process variance
-        _velocityVariance += 4;// assume that velocity is constant (it isn't)
+        //_positionVariance += 4 + (_velocityVariance / Constants.LOOPS_PER_SECOND);// process variance
+        //_velocityVariance += 4;// assume that velocity is constant (it isn't)
 
-        _rotationVelocityVariance += 4;
+        //_rotationVelocityVariance += 4;
 
         // read sensors
         // calculate angular velocity
@@ -253,10 +254,10 @@ public class Drive extends SubsystemBase
         change.divide(_swerveModules.length);// to average (same as dividing each component)
         squaredChange.divide(_swerveModules.length);
 
-        double xVariance = squaredChange.getX() - change.getX() * change.getX();
-        double yVariance = squaredChange.getY() - change.getY() * change.getY();
+        //double xVariance = squaredChange.getX() - change.getX() * change.getX();
+        //double yVariance = squaredChange.getY() - change.getY() * change.getY();
 
-        double sensorTranslationVariance = Math.sqrt(xVariance * xVariance + yVariance * yVariance);
+        //double sensorTranslationVariance = Math.sqrt(xVariance * xVariance + yVariance * yVariance);
 
         change.translatePolarPosition(0.0, getHeading());// field centric change
 

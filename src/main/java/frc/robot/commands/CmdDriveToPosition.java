@@ -26,7 +26,8 @@ public class CmdDriveToPosition extends CommandBase
         _yPID = new PIDControl();
         _rotatePID = new PIDControl();
 
-        for (PIDControl pid : new PIDControl[] { _xPID, _yPID }) {
+        for (PIDControl pid : new PIDControl[] { _xPID, _yPID })
+        {
             pid.setCoefficient(Coefficient.P, 0.0, 0.012, 0.0);// based on previous code
             pid.setCoefficient(Coefficient.I, 5.0, 0.0, 0.001);
             pid.setCoefficient(Coefficient.D, 0.0, 0.008, 0.0);

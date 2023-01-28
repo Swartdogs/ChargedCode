@@ -65,7 +65,8 @@ public class CmdDriveWithJoystick extends CommandBase
         return false;
     }
 
-    private double applyDeadband(double input, double deadband) {
+    private double applyDeadband(double input, double deadband)
+    {
         double output = 0;
 
         if (Math.abs(input) > deadband)

@@ -82,8 +82,10 @@ public class SwerveModule extends Vector
 
         _rotatePID.setSetpoint(_rotateSetpoint, currentHeading);
 
-        double rotateSpeed = _rotatePID.calculate(currentHeading);// calling setSetpoint() then calculate() causes previous error to always be the same as the current error, meaning the Derivative coefficient will do nothing
+        // calling setSetpoint() then calculate() causes previous error to always be the same as the current error, meaning the Derivative coefficient will do nothing
+        double rotateSpeed = _rotatePID.calculate(currentHeading);
 
+        // invert if facing 180 off setpoint (continuous rotation), also scale if it's perpendicular
         double driveSpeed = _driveSpeedSetpoint * Math.cos(Math.toRadians(currentHeading - _rotateSetpoint));
 
         if (_rotatePID.atSetpoint())
@@ -92,12 +94,11 @@ public class SwerveModule extends Vector
         }
         else
         {
-            _rotateMotor.setVoltage(rotateSpeed * 12);// setVoltage(speed * 12) is similar to set(speed); counteracts battery drain
+            // setVoltage(speed * 12) is similar to set(speed); counteracts battery drain
+            _rotateMotor.setVoltage(rotateSpeed * Constants.MOTOR_VOLTAGE);
         }
 
         _driveMotor.set(TalonFXControlMode.PercentOutput, driveSpeed);
-        //System.out.println(String.format("rotate Setpoint: %6.2f, current heading: %6.2f", _rotateSetpoint, currentHeading));
-        //System.out.println(String.format("Heading: %6.2f, PID Setpoint: %6.2f, PID Error: %6.2f, PID Output: %6.2f", getHeading(), _rotateSetpoint, _rotatePID.getError(), rotateSpeed));
     }
 
     public double getHeading()
@@ -111,7 +112,6 @@ public class SwerveModule extends Vector
     public void zeroEncoder()
     {
         _rotationZero = Math.IEEEremainder(-_rotateSensor.get() - _resetOffset, 360);
-        System.out.println(_rotationZero);
     }
 
     /**
@@ -153,8 +153,7 @@ public class SwerveModule extends Vector
 
         double newDrivePosition = getDrivePosition();
 
-        change.setMagnitude((newDrivePosition - _drivePosition));
-        change.setHeading(getHeading());
+        change.setPolarPosition((newDrivePosition - _drivePosition), getHeading());
 
         _drivePosition = newDrivePosition;
 

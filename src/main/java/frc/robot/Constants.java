@@ -2,7 +2,8 @@ package frc.robot;
 
 public final class Constants 
 {
-    public static final int LOOPS_PER_SECOND               = 50;
+    public static final int    LOOPS_PER_SECOND            = 50;
+    public static final double MOTOR_VOLTAGE               = 12.0;
 
     public static enum GameMode
     {
