@@ -34,6 +34,23 @@ public final class Constants
         public static final double TYPICAL_MODULE_DIST       = Math.sqrt((BASE_WIDTH/2)*(BASE_WIDTH/2)+(BASE_LENGTH/2)*(BASE_LENGTH/2));
     }
 
+    public static class Vision
+    {
+        public static final double CAMERA_HEIGHT = 0.0; // height from the floor
+        public static final double CAMERA_TILT = 0.0; // angle of elevation
+
+
+        // field layout https://firstfrc.blob.core.windows.net/frc2023/FieldAssets/2023LayoutMarkingDiagram.pdf
+        public static final double GRID_TAG_HEIGHT       = 18.22;
+        public static final double SUBSTATION_TAG_HIEGTH = 27.38;
+        public static final double GRID_TAG_1_X          = 42.19;   // from scoring table
+        public static final double GRID_TAG_2_X          = 108.19;
+        public static final double GRID_TAG_3_X          = 174.19;
+        public static final double SUBSTATION_TAG_X      = 311.35;
+        public static final double GRID_TAG_Y            = 285.16;  // assumes the center line is 0, 40.45" from DS wall
+        public static final double SUBSTATION_TAG_Y      = 14.25;
+    }
+
     public static class Arm
     {
         public static final int LIMIT_SWITCH_CHANNEL        = 0;

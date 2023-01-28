@@ -43,10 +43,11 @@ public class Drive extends SubsystemBase
     * https://www.desmos.com/calculator/rfa3bzdv3c
     */
 
-    //private double _rotationVelocityVariance;
+    private double _rotationHeadingVariance;
+    private double _rotationVelocityVariance;
 
-    //private double _positionVariance;
-    //private double _velocityVariance;
+    private double _positionVariance;
+    private double _velocityVariance;
 
     private Drive()
     {
@@ -182,7 +183,7 @@ public class Drive extends SubsystemBase
     {
         updateOdometry();
 
-        System.out.println(String.format("Yaw: %6.2f, Pitch: %6.2f, Roll: %6.2f", _gyro.getYaw(), _gyro.getPitch(), _gyro.getRoll()));
+        //System.out.println(String.format("Yaw: %6.2f, Pitch: %6.2f, Roll: %6.2f; Velocity: %s", _gyro.getYaw(), _gyro.getPitch(), _gyro.getRoll(), getChassisVelocity()));
         //System.out.println(String.format("Gyro: %6.2f, Field Position: %s, Chassis Velocity: %s", getHeading(), getFieldPosition(), getChassisVelocity()));
     }
 
@@ -218,6 +219,26 @@ public class Drive extends SubsystemBase
         chassisVelocity.translatePolarPosition(0, _rotationHeading);
 
         return chassisVelocity;
+    }
+
+    public void fusePosition(Vector inputPosition, double inputVariance)
+    {
+
+    }
+
+    public void fuseVelocity(Vector inputVelocity, double inputVariance)
+    {
+
+    }
+
+    public void fuseHeading(double inputHeading, double inputVariance)
+    {
+
+    }
+
+    public void fuseRotationVelocity(double inputRotation, double inputVariance)
+    {
+        
     }
 
     public void updateOdometry()
@@ -264,13 +285,22 @@ public class Drive extends SubsystemBase
         Vector sensorPosition = _position.add(change);
         Vector sensorVelocity = change.multiply(Constants.LOOPS_PER_SECOND);
 
+        Vector velocityChange = sensorVelocity.subtract(_velocity);
+
+        double sensorVelocityVariance = velocityChange.getMagnitude();
+
         // TODO: test variances for position input and for odometry calculation
         //System.out.println(String.format("Process: %s; Sensor: %s; Sensor Variance: %6.2f, Heading: %6.2f", processPosition, sensorPosition, sensorTranslationVariance, _rotationHeading));
 
         // TODO: fuse process and sensor values
         _position = sensorPosition;
         _rotationVelocity = sensorRotationVelocity;
-        _velocity = sensorVelocity;
 
+        _velocity = _velocity.multiply(sensorVelocityVariance).add(sensorVelocity.multiply(_velocityVariance));
+        _velocity = _velocity.divide(_velocityVariance + sensorVelocityVariance);
+
+        // fuse variances
+        _velocityVariance = (_velocityVariance * sensorVelocityVariance) / (_velocityVariance + sensorVelocityVariance);
+        System.out.println(String.format("Velocity Variance: %6.2f, New Velocity Variance; %6.2f, velocity: %s", _velocityVariance, sensorVelocityVariance, _velocity));
     }
 }

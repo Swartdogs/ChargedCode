@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.drive.Vector;
 
 public class Vision extends SubsystemBase
 {
@@ -46,12 +47,12 @@ public class Vision extends SubsystemBase
     {
         return _frontLatestResult.getBestTarget().getSkew();
     }
- 
+    
     public double frontYaw()
     {
         return _frontLatestResult.getBestTarget().getYaw();
     }
-   
+    
     public double frontPitch()
     {
         return _frontLatestResult.getBestTarget().getPitch();
@@ -61,21 +62,31 @@ public class Vision extends SubsystemBase
     {
         return _rearLatestResult.getBestTarget().getSkew();
     }
-  
+    
     public double rearYaw()
     {
         return _rearLatestResult.getBestTarget().getYaw();
     }
-   
+    
     public double rearPitch()
     {
         return _rearLatestResult.getBestTarget().getPitch();
-    } 
-   
+    }
+    
+    private Vector getTargetFieldPosition(int id)
+    {
+        return new Vector();
+    }
+
+    private double distanceToTaget(int id, double pitch)
+    {
+        return 0.0;
+    }
+    
     @Override
     public void periodic()
     {
         _frontLatestResult = _frontCam.getLatestResult();
         _rearLatestResult = _rearCam.getLatestResult();
-    }    
+    }
 }
