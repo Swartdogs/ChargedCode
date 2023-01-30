@@ -71,7 +71,7 @@ public class Dashboard extends SubsystemBase
         _twistAngle            = intakeLayout.add("Twist Angle", 0).withPosition(0, 1).withSize(1, 1).withWidget(BuiltInWidgets.kTextView).getEntry();
         _hasGamePiece          = intakeLayout.add("Has Game Piece", false).withPosition(1, 0).withSize(1, 2).withWidget(BuiltInWidgets.kBooleanBox).getEntry();
         
-        var autonomousOptions  = tab.getLayout("Autonomous", BuiltInLayouts.kGrid).withPosition(16, 2).withSize(12, 7).withProperties(Map.of("Number of columns", 1, "Number of rows", 4, "Label position", "LEFT"));
+        var autonomousOptions  = tab.getLayout("Autonomous", BuiltInLayouts.kGrid).withPosition(21, 2).withSize(7, 7).withProperties(Map.of("Number of columns", 1, "Number of rows", 4, "Label position", "LEFT"));
 
         SendableChooser<Integer> delayChooser = new SendableChooser<Integer>();
         delayChooser.addOption("0", 0);
