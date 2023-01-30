@@ -177,6 +177,11 @@ public class Drive extends SubsystemBase
         _gyroOffset = heading;
     }
 
+    public double getModuleHeading(int index)    
+    {
+        return _swerveModules[index].getHeading();
+    }
+
     @Override
     public void periodic()
     {

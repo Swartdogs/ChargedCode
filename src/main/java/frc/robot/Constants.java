@@ -32,6 +32,11 @@ public final class Constants
         public static final double MAX_ROTATE_SPEED          = 400;   // deg/s
 
         public static final double TYPICAL_MODULE_DIST       = Math.sqrt((BASE_WIDTH/2)*(BASE_WIDTH/2)+(BASE_LENGTH/2)*(BASE_LENGTH/2));
+
+        public static final int FL_INDEX = 0;
+        public static final int FR_INDEX = 1;
+        public static final int BL_INDEX = 2;
+        public static final int BR_INDEX = 3;
     }
 
     public static class Arm
