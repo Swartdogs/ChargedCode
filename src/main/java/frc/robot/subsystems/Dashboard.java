@@ -62,14 +62,14 @@ public class Dashboard extends SubsystemBase
         _brAngle               = swerveAnglesLayout.add("BR", 0).withPosition(1, 1).withSize(1, 1).withWidget(BuiltInWidgets.kTextView).getEntry();
         _blAngle               = swerveAnglesLayout.add("BL", 0).withPosition(0, 1).withSize(1, 1).withWidget(BuiltInWidgets.kTextView).getEntry();
         
-        var armLayout          = tab.getLayout("Arm", BuiltInLayouts.kGrid).withPosition(8, 2).withSize(8, 1).withProperties(Map.of("Number of columns", 2, "Number of rows", 1, "Label position", "TOP"));
+        var armLayout          = tab.getLayout("Arm", BuiltInLayouts.kGrid).withPosition(8, 2).withSize(7, 1).withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"));
         _shoulderAngle         = armLayout.add("Shoulder Angle", 0).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kDial).withProperties(Map.of("Min", -135, "Max", 135, "Show text", false)).getEntry();
-        _extensionDistance     = armLayout.add("Extension Distance", 0).withPosition(1, 0).withSize(1, 1).withWidget(BuiltInWidgets.kNumberBar).withProperties(Map.of("Min", 0, "Max", 48, "Show text", false)).getEntry();
+        _extensionDistance     = armLayout.add("Extension Distance", 0).withPosition(0, 1).withSize(1, 1).withWidget(BuiltInWidgets.kNumberBar).withProperties(Map.of("Min", 0, "Max", 48, "Show text", false)).getEntry();
        
-        var intakeLayout       = tab.getLayout("Intake Layout", BuiltInLayouts.kGrid).withPosition(8, 5).withSize(8, 4).withProperties(Map.of("Number of columns", 2, "Number of rows", 2, "Label position", "TOP"));
+        var intakeLayout       = tab.getLayout("Intake Layout", BuiltInLayouts.kGrid).withPosition(15, 2).withSize(6, 7).withProperties(Map.of("Number of columns", 1, "Number of rows", 3, "Label position", "TOP"));
         _wristAngle            = intakeLayout.add("Wrist Angle", 0).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kTextView).getEntry();
         _twistAngle            = intakeLayout.add("Twist Angle", 0).withPosition(0, 1).withSize(1, 1).withWidget(BuiltInWidgets.kTextView).getEntry();
-        _hasGamePiece          = intakeLayout.add("Has Game Piece", false).withPosition(1, 0).withSize(1, 2).withWidget(BuiltInWidgets.kBooleanBox).getEntry();
+        _hasGamePiece          = intakeLayout.add("Has Game Piece", false).withPosition(0, 2).withSize(1, 2).withWidget(BuiltInWidgets.kBooleanBox).getEntry();
         
         var autonomousOptions  = tab.getLayout("Autonomous", BuiltInLayouts.kGrid).withPosition(21, 2).withSize(7, 7).withProperties(Map.of("Number of columns", 1, "Number of rows", 4, "Label position", "LEFT"));
 
