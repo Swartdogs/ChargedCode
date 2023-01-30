@@ -14,6 +14,7 @@
     "**/.factorypath": true,
     "**/*~": true
   },
+  "java.format.settings.url": ".vscode/java-style.xml",
   "java.test.config": [
     {
       "name": "WPIlibUnitTests",
