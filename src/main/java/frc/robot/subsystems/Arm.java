@@ -68,6 +68,8 @@ public class Arm extends SubsystemBase
         _extensionEncoder.setPositionConversionFactor(0);
 
         followerPitchMotor.follow(_pitchMotor, true);
+
+        RobotLog.getInstance().log("Created Arm Subsystem");
     }
 
     public boolean isLimitSwitchPressed()

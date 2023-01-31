@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
+import frc.robot.subsystems.RobotLog;
 
 public class Drive extends SubsystemBase
 {
@@ -70,6 +71,8 @@ public class Drive extends SubsystemBase
 
         setOrigin(0, 0);    // rotate around the center of the robot, by default
         resetOdometer();    // initialize the odometer to 0, 0
+
+        RobotLog.getInstance().log("Created Drive Subsystem");
     }
 
     public void chassisDrive(double drive, double strafe, double rotate)

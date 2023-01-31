@@ -10,6 +10,7 @@ import PIDControl.PIDControl.Coefficient;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import frc.robot.Constants;
+import frc.robot.subsystems.RobotLog;
 
 public class SwerveModule extends Vector
 {
@@ -66,6 +67,8 @@ public class SwerveModule extends Vector
         _rotatePID.setOutputRange(-1, 1);
 
         _rotatePID.setSetpointDeadband(2.5);// 5 degree deadband recommended online by other teams
+
+        RobotLog.getInstance().log("Created Swerve Module");
     }
 
     /**

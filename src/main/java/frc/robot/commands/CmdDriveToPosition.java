@@ -3,6 +3,7 @@ package frc.robot.commands;
 import PIDControl.PIDControl;
 import PIDControl.PIDControl.Coefficient;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.RobotLog;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.Vector;
 
@@ -57,6 +58,8 @@ public class CmdDriveToPosition extends CommandBase
         _xPID.setSetpoint(_targetPosition.getX(), fieldPosition.getX(), true);
         _yPID.setSetpoint(_targetPosition.getY(), fieldPosition.getY(), true);
         _rotatePID.setSetpoint(   _targetHeading,  _drive.getHeading(), true);
+
+        RobotLog.getInstance().log("Driving to " + _targetPosition + " with heading " + _targetHeading);
     }
 
     @Override
@@ -75,6 +78,8 @@ public class CmdDriveToPosition extends CommandBase
     public void end(boolean interrupted) 
     {
         _drive.chassisDrive(0, 0, 0);
+
+        RobotLog.getInstance().log("Drove to " + _targetPosition + " with heading " + _targetHeading);
     }
 
     @Override
