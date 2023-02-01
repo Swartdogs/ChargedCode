@@ -67,8 +67,6 @@ public class SwerveModule extends Vector
         _rotatePID.setOutputRange(-1, 1);
 
         _rotatePID.setSetpointDeadband(2.5);// 5 degree deadband recommended online by other teams
-
-        RobotLog.getInstance().log("Created Swerve Module");
     }
 
     /**
