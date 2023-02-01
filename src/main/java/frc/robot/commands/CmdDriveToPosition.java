@@ -59,7 +59,7 @@ public class CmdDriveToPosition extends CommandBase
         _yPID.setSetpoint(_targetPosition.getY(), fieldPosition.getY(), true);
         _rotatePID.setSetpoint(   _targetHeading,  _drive.getHeading(), true);
 
-        RobotLog.getInstance().log("Driving to " + _targetPosition + " with heading " + _targetHeading + " Currently at " +  Drive.getInstance().getFieldPosition() + " With heading " + Drive.getInstance().getHeading());
+        RobotLog.getInstance().log(String.format("Drive to position: Current position and heading: %s, %6.2f ; Target position and heading: %s, %6.2f", _drive.getFieldPosition().toString(), _drive.getHeading(), _targetPosition.toString(), _targetHeading));
     }
 
     @Override
@@ -79,7 +79,7 @@ public class CmdDriveToPosition extends CommandBase
     {
         _drive.chassisDrive(0, 0, 0);
 
-        RobotLog.getInstance().log("Wanted to go to " + _targetPosition + " with heading " + _targetHeading + " currently at " +  Drive.getInstance().getFieldPosition() + " with heading " + Drive.getInstance().getHeading());
+        RobotLog.getInstance().log(String.format("Drive to position: Current position and heading: %s, %6.2f ; Target position and heading: %s, %6.2f", _drive.getFieldPosition().toString(), _drive.getHeading(), _targetPosition.toString(), _targetHeading));
     }
 
     @Override
