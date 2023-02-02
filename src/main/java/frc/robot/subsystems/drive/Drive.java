@@ -51,15 +51,14 @@ public class Drive extends SubsystemBase
 
     private Drive()
     {
-        _origin             = new Vector();
+        _origin = new Vector();
 
-        _gyro               = new AHRS(SPI.Port.kMXP);
+        _gyro   = new AHRS(SPI.Port.kMXP);
 
-        // FIXME: update for the new robot base
-        SwerveModule fl     = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2, 37.5, 0.0, 1, 2, 0);
-        SwerveModule fr     = new SwerveModule( Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2, -150.2, 0.0, 5, 6, 3);
-        SwerveModule bl     = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2, -Constants.Drive.BASE_LENGTH / 2, -158.2, 180.0, 3, 4, 1);
-        SwerveModule br     = new SwerveModule( Constants.Drive.BASE_WIDTH / 2, -Constants.Drive.BASE_LENGTH / 2, -53.3, 180.0, 7, 8, 2);
+        SwerveModule fl = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2,    0.0, -90.0, Constants.Drive.FL_DRIVE_CAN_ID, Constants.Drive.FL_ROTATE_CAN_ID, Constants.Drive.FL_ROTATE_SENSOR_PORT);
+        SwerveModule fr = new SwerveModule( Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2,    0.0,  90.0, Constants.Drive.FR_DRIVE_CAN_ID, Constants.Drive.FR_ROTATE_CAN_ID, Constants.Drive.FR_ROTATE_SENSOR_PORT);
+        SwerveModule bl = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2, -Constants.Drive.BASE_LENGTH / 2,    0.0, -90.0, Constants.Drive.BL_DRIVE_CAN_ID, Constants.Drive.BL_ROTATE_CAN_ID, Constants.Drive.BL_ROTATE_SENSOR_PORT);
+        SwerveModule br = new SwerveModule( Constants.Drive.BASE_WIDTH / 2, -Constants.Drive.BASE_LENGTH / 2,    0.0,  90.0, Constants.Drive.BR_DRIVE_CAN_ID, Constants.Drive.BR_ROTATE_CAN_ID, Constants.Drive.BR_ROTATE_SENSOR_PORT);
 
         _swerveModules = new SwerveModule[]
         { 
@@ -301,6 +300,6 @@ public class Drive extends SubsystemBase
 
         // fuse variances
         _velocityVariance = (_velocityVariance * sensorVelocityVariance) / (_velocityVariance + sensorVelocityVariance);
-        System.out.println(String.format("Velocity Variance: %6.2f, New Velocity Variance; %6.2f, velocity: %s", _velocityVariance, sensorVelocityVariance, _velocity));
+        //System.out.println(String.format("Velocity Variance: %6.2f, New Velocity Variance; %6.2f, velocity: %s", _velocityVariance, sensorVelocityVariance, _velocity));
     }
 }

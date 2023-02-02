@@ -32,22 +32,45 @@ public final class Constants
         public static final double MAX_ROTATE_SPEED          = 400;   // deg/s
 
         public static final double TYPICAL_MODULE_DIST       = Math.sqrt((BASE_WIDTH/2)*(BASE_WIDTH/2)+(BASE_LENGTH/2)*(BASE_LENGTH/2));
+
+        public static final int    FL_DRIVE_CAN_ID           = 1;
+        public static final int    FL_ROTATE_CAN_ID          = 2;
+        public static final int    FR_DRIVE_CAN_ID           = 3;
+        public static final int    FR_ROTATE_CAN_ID          = 4;
+        public static final int    BR_DRIVE_CAN_ID           = 5;
+        public static final int    BR_ROTATE_CAN_ID          = 6;
+        public static final int    BL_DRIVE_CAN_ID           = 7;
+        public static final int    BL_ROTATE_CAN_ID          = 8;
+
+        public static final int    FL_ROTATE_SENSOR_PORT     = 3;
+        public static final int    FR_ROTATE_SENSOR_PORT     = 2;
+        public static final int    BR_ROTATE_SENSOR_PORT     = 1;
+        public static final int    BL_ROTATE_SENSOR_PORT     = 0;
     }
 
     public static class Vision
     {
-        public static final double CAMERA_HEIGHT = 0.0; // height from the floor
-        public static final double CAMERA_TILT = 0.0; // angle of elevation
+        public static final double FRONT_CAMERA_HEIGHT = 0.0;   // height from the floor
+        public static final double FRONT_CAMERA_YAW = 0.0;      // heading
+        public static final double FRONT_CAMERA_TILT = 0.0;     // angle of elevation
+        public static final double FRONT_CAMERA_X = 2.0;        // inches right on the robot frame
+        public static final double FRONT_CAMERA_Y = 3.0;        // inches forward on the robot from
+
+        public static final double REAR_CAMERA_HEIGHT = 0.0;   // height from the floor
+        public static final double REAR_CAMERA_YAW = 0.0;      // heading
+        public static final double REAR_CAMERA_TILT = 0.0;     // angle of elevation
+        public static final double REAR_CAMERA_X = 2.0;        // inches right on the robot frame
+        public static final double REAR_CAMERA_Y = 3.0;        // inches forward on the robot from
 
 
         // field layout https://firstfrc.blob.core.windows.net/frc2023/FieldAssets/2023LayoutMarkingDiagram.pdf
         public static final double GRID_TAG_HEIGHT       = 18.22;
-        public static final double SUBSTATION_TAG_HIEGTH = 27.38;
-        public static final double GRID_TAG_1_X          = 42.19;   // from scoring table
-        public static final double GRID_TAG_2_X          = 108.19;
-        public static final double GRID_TAG_3_X          = 174.19;
+        public static final double SUBSTATION_TAG_HEIGHT = 27.38;
+        public static final double GRID_TAG_1_Y          = -116.0;   // found about 1/4" difference between 2 different calculations
+        public static final double GRID_TAG_2_Y          = -50.0;
+        public static final double GRID_TAG_3_Y          = 16.0;
         public static final double SUBSTATION_TAG_X      = 311.35;
-        public static final double GRID_TAG_Y            = 285.16;  // assumes the center line is 0, 40.45" from DS wall
+        public static final double GRID_TAG_X            = 285.16;  // assumes the center line is 0, 40.45" from DS wall
         public static final double SUBSTATION_TAG_Y      = 14.25;
     }
 

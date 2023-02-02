@@ -13,8 +13,8 @@ import frc.robot.Constants;
 
 public class SwerveModule extends Vector
 {
-    //private CANSparkMax          _driveMotor;
-    private TalonFX                _driveMotor;
+    private CANSparkMax          _driveMotor;
+    //private TalonFX                _driveMotor;
     private CANSparkMax          _rotateMotor;
     private AnalogPotentiometer  _rotateSensor;
     private PIDControl           _rotatePID;
@@ -37,20 +37,19 @@ public class SwerveModule extends Vector
     {
         super(x, y);
 
-        _rotateSetpoint       = 0;
-        _driveSpeedSetpoint   = 0;
+        _rotateSetpoint      = 0;
+        _driveSpeedSetpoint  = 0;
 
-        _rotationZero         = defaultRelativeZero;
-        _resetOffset          = resetOffset;
+        _rotationZero        = defaultRelativeZero;
+        _resetOffset         = resetOffset;
 
-        _drivePosition        = 0;
+        _drivePosition       = 0;
 
-        _driveMotor           = new TalonFX(driveMotorCanId);
-        _rotateMotor          = new CANSparkMax(rotateMotorCanId, MotorType.kBrushless);
-        _rotateSensor         = new AnalogPotentiometer(rotateSensorPort, 360 / 0.92, (360 - 360 / 0.92) / 2.0); // copied from 2021
+        _driveMotor          = new CANSparkMax(driveMotorCanId,  MotorType.kBrushless);
+        _rotateMotor         = new CANSparkMax(rotateMotorCanId, MotorType.kBrushless);
+        _rotateSensor        = new AnalogPotentiometer(rotateSensorPort, 360 / 0.92, (360 - 360 / 0.92) / 2.0); // copied from 2021
 
-        // TODO: Drive Motor for new robot
-        // _driveMotor.restoreFactoryDefaults();
+        _driveMotor.restoreFactoryDefaults();
         _rotateMotor.restoreFactoryDefaults(); // doesn't matter how the sparkmax has been previously set up
 
         _rotatePID = new PIDControl();
@@ -98,7 +97,7 @@ public class SwerveModule extends Vector
             _rotateMotor.setVoltage(rotateSpeed * Constants.MOTOR_VOLTAGE);
         }
 
-        _driveMotor.set(TalonFXControlMode.PercentOutput, driveSpeed);
+        _driveMotor.setVoltage(driveSpeed * Constants.MOTOR_VOLTAGE);
     }
 
     public double getHeading()
@@ -112,6 +111,7 @@ public class SwerveModule extends Vector
     public void zeroEncoder()
     {
         _rotationZero = Math.IEEEremainder(-_rotateSensor.get() - _resetOffset, 360);
+        System.out.println(String.format("%6.2f", _rotationZero));
     }
 
     /**
@@ -138,8 +138,8 @@ public class SwerveModule extends Vector
      */
     public double getDrivePosition()
     {
-        //return _driveMotor.getEncoder().getPosition();
-        return _driveMotor.getSelectedSensorPosition() * Constants.Drive.DRIVE_ENCODER_TO_DISTANCE;
+        return _driveMotor.getEncoder().getPosition() * Constants.Drive.DRIVE_ENCODER_TO_DISTANCE;
+        //return _driveMotor.getSelectedSensorPosition() * Constants.Drive.DRIVE_ENCODER_TO_DISTANCE;
     }
 
     /**
