@@ -25,6 +25,32 @@ public class Arm extends SubsystemBase
         return _instance;
     }
 
+    public enum ArmPosition
+    {
+        High(0, 0), //FIXME Plug in the correct vectors once robot gets built
+        Middle(0, 0),
+        Low(0, 0);
+
+        private double _distance;
+        private double _angle;
+
+        private ArmPosition(double distance, double angle)
+        {
+            _distance = distance;
+            _angle = angle;
+        }
+
+        public double getDistance()
+        {
+            return _distance;
+        }
+        
+        public double getAngle()
+        {
+            return _angle;
+        }
+    }
+    
     //Extension Motor
     private DigitalInput     _limitSwitch;
     private CANSparkMax      _linearMotor;
@@ -37,6 +63,8 @@ public class Arm extends SubsystemBase
     private CANSparkMax      _pitchMotor;
     private PIDControl       _shoulderPid;
     
+    private ArmPosition _armPosition;
+
     @SuppressWarnings("resource")
     private Arm() 
     {
@@ -100,6 +128,26 @@ public class Arm extends SubsystemBase
     public void setShoulderAngle(double angle)
     {
         _shoulderPid.setSetpoint(angle, getShoulderAngle());
+    }
+
+    public boolean shoulderAtAngle()
+    {
+        return _shoulderPid.atSetpoint();
+    }
+
+    public boolean extensionAtDistance()
+    {
+        return _extensionPid.atSetpoint();
+    }
+
+    public void setArmPosition(ArmPosition position)
+    {
+        _armPosition = position;
+    }
+
+    public ArmPosition getArmPosition()
+    {
+        return _armPosition;
     }
 
     public void setExtensionEncoderPosition(double positon)
