@@ -33,6 +33,11 @@ public final class Constants
 
         public static final double TYPICAL_MODULE_DIST       = Math.sqrt((BASE_WIDTH/2)*(BASE_WIDTH/2)+(BASE_LENGTH/2)*(BASE_LENGTH/2));
 
+        public static final int FL_INDEX = 0;
+        public static final int FR_INDEX = 1;
+        public static final int BL_INDEX = 2;
+        public static final int BR_INDEX = 3;
+
         public static final int    FL_DRIVE_CAN_ID           = 1;
         public static final int    FL_ROTATE_CAN_ID          = 2;
         public static final int    FR_DRIVE_CAN_ID           = 3;
@@ -85,16 +90,16 @@ public final class Constants
  
     public static class Manipulator
     {
-        public static final int     WRIST_MOTOR_CAN_ID      =   0;
-        public static final int     WRIST_ENCODER_PORT      =   0;
-        public static final double  WRIST_MIN_ANGLE         =  -120.0;
-        public static final double  WRIST_MAX_ANGLE         =   120.0;
-        public static final int     TWIST_MOTOR_CAN_ID      =   0;
-        public static final int     TWIST_ENCODER_PORT      =   0;
+        public static final int     WRIST_MOTOR_CAN_ID      =   9;
+        public static final int     WRIST_ENCODER_PORT      =   5;
+        public static final double  WRIST_MIN_ANGLE         =  -90.0;
+        public static final double  WRIST_MAX_ANGLE         =   90.0;
+        public static final int     TWIST_MOTOR_CAN_ID      =   10;
+        public static final int     TWIST_ENCODER_PORT      =   6;
         public static final double  TWIST_MIN_ROTATION      =  -180.0;
         public static final double  TWIST_MAX_ROTATION      =   180.0;
-        public static final int     INTAKE_MOTOR_CAN_ID     =   0;
-        public static final int     INTAKE_SENSOR_PORT      =   0;
+        public static final int     INTAKE_MOTOR_CAN_ID     =   12;
+        public static final int     INTAKE_SENSOR_PORT      =   7;
         public static final double  EJECT_TIME              =   0;
         public static final double  INTAKE_SPEED            =   0;
     }

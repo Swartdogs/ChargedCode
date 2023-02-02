@@ -15,6 +15,7 @@ import frc.robot.commands.CmdDriveToPosition;
 
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.Vector;
+import frc.robot.subsystems.Dashboard;
 
 public class RobotContainer 
 {
@@ -46,7 +47,10 @@ public class RobotContainer
         configureBindings();
     }
 
-    private void configureBindings() {}
+    private void configureBindings() 
+    {
+        Dashboard.getInstance();
+    }
 
     public Command getAutonomousCommand() 
     {
