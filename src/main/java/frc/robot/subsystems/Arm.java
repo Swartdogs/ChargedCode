@@ -50,6 +50,12 @@ public class Arm extends SubsystemBase
             return _angle;
         }
     }
+
+    public enum ArmSide
+    {
+        Front,
+        Back
+    }
     
     //Extension Motor
     private DigitalInput     _limitSwitch;
@@ -64,6 +70,7 @@ public class Arm extends SubsystemBase
     private PIDControl       _shoulderPid;
     
     private ArmPosition _armPosition;
+    private ArmSide _armSide;
 
     @SuppressWarnings("resource")
     private Arm() 
@@ -148,6 +155,16 @@ public class Arm extends SubsystemBase
     public ArmPosition getArmPosition()
     {
         return _armPosition;
+    }
+
+    public void setArmSide(ArmSide armSide)
+    {
+        _armSide = armSide;
+    }
+
+    public ArmSide getArmSide()
+    {
+        return _armSide;
     }
 
     public void setExtensionEncoderPosition(double positon)
