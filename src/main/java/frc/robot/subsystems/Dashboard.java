@@ -17,7 +17,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
 
 public class Dashboard extends SubsystemBase 
-{   
+{
     private static Dashboard _instance;
 
     public static Dashboard getInstance()
