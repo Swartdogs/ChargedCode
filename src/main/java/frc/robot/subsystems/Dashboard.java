@@ -110,17 +110,24 @@ public class Dashboard extends SubsystemBase
         var settingsTab                 = Shuffleboard.getTab("Settings");
 
         //Drive
-        var driveSettingsLayout         = settingsTab.getLayout("Drive Subsystem", BuiltInLayouts.kGrid).withPosition(0, 0).withSize(4, 2);
+        var driveSettingsLayout         = settingsTab.getLayout("Drive Subsystem", BuiltInLayouts.kGrid).withPosition(0, 0).withSize(4, 3);
         var flOffset                    = driveSettingsLayout.add("FL Offset", 0.0).withPosition(0, 0).withSize(2,2).withWidget(BuiltInWidgets.kTextView).getEntry();
         var frOffset                    = driveSettingsLayout.add("FR Offset", 0.0).withPosition(2, 0).withSize(2,2).withWidget(BuiltInWidgets.kTextView).getEntry();
         var blOffset                    = driveSettingsLayout.add("BL Offset", 0.0).withPosition(0, 2).withSize(2,2).withWidget(BuiltInWidgets.kTextView).getEntry();
         var brOffset                    = driveSettingsLayout.add("BR Offset", 0.0).withPosition(2, 2).withSize(2,2).withWidget(BuiltInWidgets.kTextView).getEntry();
-        var resetSwerveModulesEntry     = driveSettingsLayout.add("Reset Swerve", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+        
+        var resetSwerveModulesEntry     = settingsTab.add("Reset Swerve Offset", false).withPosition(0, 4).withSize(4, 2).withWidget(BuiltInWidgets.kToggleButton).getEntry();
         var resetSwerveOffsetButton     = new DashboardButton(resetSwerveModulesEntry);
-        resetSwerveOffsetButton.whenPressed(() -> {});
+        resetSwerveOffsetButton.whenPressed(() -> {
+            Drive.getInstance().zeroModuleRotations();
+            flOffset.setDouble(Drive.getInstance().getModuleHeading(0));
+            frOffset.setDouble(Drive.getInstance().getModuleHeading(1));
+            blOffset.setDouble(Drive.getInstance().getModuleHeading(2));
+            brOffset.setDouble(Drive.getInstance().getModuleHeading(3));
+        });
 
         //Arm
-        var armSettingsLayout           = settingsTab.getLayout("Arm Subsystem", BuiltInLayouts.kGrid).withPosition(0, 4).withSize(4, 2);
+        var armSettingsLayout           = settingsTab.getLayout("Arm Subsystem", BuiltInLayouts.kGrid).withPosition(13, 0).withSize(4, 2);
         var armMaxExtension             = armSettingsLayout.add("Arm Extension", 0.0).getEntry();
         var armMinAngle                 = armSettingsLayout.add("Arm Min Angle", -90.0).getEntry();
         var armMaxAngle                 = armSettingsLayout.add("Arm Max Angle", 90.0).getEntry();
