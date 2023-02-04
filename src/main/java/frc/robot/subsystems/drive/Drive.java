@@ -56,11 +56,11 @@ public class Drive extends SubsystemBase
         _gyro               = new AHRS(SPI.Port.kMXP);
 
         // FIXME: update for the new robot base
-        SwerveModule fl     = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2, 37.5, 0.0, 1, 2, 0);
-        SwerveModule fr     = new SwerveModule( Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2, -150.2, 0.0, 5, 6, 3);
-        SwerveModule bl     = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2, -Constants.Drive.BASE_LENGTH / 2, -158.2, 180.0, 3, 4, 1);
-        SwerveModule br     = new SwerveModule( Constants.Drive.BASE_WIDTH / 2, -Constants.Drive.BASE_LENGTH / 2, -53.3, 180.0, 7, 8, 2);
-
+        SwerveModule fl     = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2, Constants.Drive.FL_OFFSET, 0.0, 1, 2, 0);
+        SwerveModule fr     = new SwerveModule( Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2, Constants.Drive.FR_OFFSET, 0.0, 5, 6, 3);
+        SwerveModule bl     = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2, -Constants.Drive.BASE_LENGTH / 2, Constants.Drive.BL_OFFSET, 180.0, 3, 4, 1);
+        SwerveModule br     = new SwerveModule( Constants.Drive.BASE_WIDTH / 2, -Constants.Drive.BASE_LENGTH / 2, Constants.Drive.BR_OFFSET, 180.0, 7, 8, 2);
+    
         _swerveModules = new SwerveModule[]
         { 
             fl, 
@@ -180,14 +180,9 @@ public class Drive extends SubsystemBase
         _gyroOffset = heading;
     }
 
-    public double getModuleHeading(int index)    
+    public SwerveModule getSwerveModule(int index)
     {
-        return _swerveModules[index].getHeading();
-    }
-
-    public double getModuleRelativeZero(int index)
-    {
-        return _swerveModules[index].getRelativeZero();
+        return _swerveModules[index];
     }
 
     @Override

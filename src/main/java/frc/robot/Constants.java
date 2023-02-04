@@ -37,6 +37,11 @@ public final class Constants
         public static final int FR_INDEX = 1;
         public static final int BL_INDEX = 2;
         public static final int BR_INDEX = 3;
+
+        public static final double FL_OFFSET = 37.5;
+        public static final double FR_OFFSET = -150.2;
+        public static final double BL_OFFSET = -158.2;
+        public static final double BR_OFFSET = -53.3;
     }
 
     public static class Arm

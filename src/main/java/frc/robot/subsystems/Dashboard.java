@@ -120,10 +120,10 @@ public class Dashboard extends SubsystemBase
         var resetSwerveOffsetButton     = new DashboardButton(resetSwerveOffsetEntry);
         resetSwerveOffsetButton.whenPressed(() -> {
             Drive.getInstance().zeroModuleRotations();
-            flOffset.setDouble(Drive.getInstance().getModuleRelativeZero(Constants.Drive.FL_INDEX));
-            frOffset.setDouble(Drive.getInstance().getModuleRelativeZero(Constants.Drive.FR_INDEX));
-            blOffset.setDouble(Drive.getInstance().getModuleRelativeZero(Constants.Drive.BL_INDEX));
-            brOffset.setDouble(Drive.getInstance().getModuleRelativeZero(Constants.Drive.BR_INDEX));
+            flOffset.setDouble(Drive.getInstance().getSwerveModule(Constants.Drive.FL_INDEX).getRelativeZero());
+            frOffset.setDouble(Drive.getInstance().getSwerveModule(Constants.Drive.FR_INDEX).getRelativeZero());
+            blOffset.setDouble(Drive.getInstance().getSwerveModule(Constants.Drive.BL_INDEX).getRelativeZero());
+            brOffset.setDouble(Drive.getInstance().getSwerveModule(Constants.Drive.BR_INDEX).getRelativeZero());
         });
 
         //Arm
@@ -140,7 +140,12 @@ public class Dashboard extends SubsystemBase
         var twistMaxRotation            = manipulatorSettingsLayout.add("Twist Max", 180.0).withPosition(1, 0).withSize(3, 2).withWidget(BuiltInWidgets.kTextView).getEntry();
         var ejectTime                   = manipulatorSettingsLayout.add("Eject Time", 0.0).withPosition(2, 2).withSize(3, 2).withWidget(BuiltInWidgets.kTextView).getEntry();
         var intakeSpeed                 = manipulatorSettingsLayout.add("Intake Speed", 0.0).withPosition(2, 0).withSize(3, 2).withWidget(BuiltInWidgets.kTextView).getEntry();
-        
+
+        registerCallback(flOffset, () -> Drive.getInstance().getSwerveModule(Constants.Drive.FL_INDEX).setRotationZero(flOffset.getDouble(Constants.Drive.FL_OFFSET)));
+        registerCallback(frOffset, () -> Drive.getInstance().getSwerveModule(Constants.Drive.FR_INDEX).setRotationZero(frOffset.getDouble(Constants.Drive.FR_OFFSET)));
+        registerCallback(blOffset, () -> Drive.getInstance().getSwerveModule(Constants.Drive.BL_INDEX).setRotationZero(blOffset.getDouble(Constants.Drive.BL_OFFSET)));
+        registerCallback(brOffset, () -> Drive.getInstance().getSwerveModule(Constants.Drive.BR_INDEX).setRotationZero(brOffset.getDouble(Constants.Drive.BR_OFFSET)));
+
         registerCallback(armMaxExtension, () -> Arm.getInstance().setMaxArmExtension(armMaxExtension.getDouble(Constants.Arm.ARM_MAX_EXTENSION)));
         registerCallback(armMinAngle, () -> Arm.getInstance().setMinShoulderAngle(armMinAngle.getDouble(Constants.Arm.SHOULDER_MIN_ANGLE)));
         registerCallback(armMaxAngle, () -> Arm.getInstance().setMaxShoulderAngle(armMaxAngle.getDouble(Constants.Arm.SHOULDER_MAX_ANGLE)));
@@ -177,10 +182,10 @@ public class Dashboard extends SubsystemBase
         _heading.setDouble(Double.parseDouble(String.format("%6.2f", Drive.getInstance().getHeading())));
         _odometer.setString(String.format("%s", Drive.getInstance().getFieldPosition()));
 
-        _frAngle.setDouble(Double.parseDouble(String.format("%6.2f", Drive.getInstance().getModuleHeading(Constants.Drive.FR_INDEX))));
-        _flAngle.setDouble(Double.parseDouble(String.format("%6.2f", Drive.getInstance().getModuleHeading(Constants.Drive.FL_INDEX))));
-        _brAngle.setDouble(Double.parseDouble(String.format("%6.2f", Drive.getInstance().getModuleHeading(Constants.Drive.BR_INDEX))));
-        _blAngle.setDouble(Double.parseDouble(String.format("%6.2f", Drive.getInstance().getModuleHeading(Constants.Drive.BL_INDEX))));
+        _frAngle.setDouble(Double.parseDouble(String.format("%6.2f", Drive.getInstance().getSwerveModule(Constants.Drive.FR_INDEX).getHeading())));
+        _flAngle.setDouble(Double.parseDouble(String.format("%6.2f", Drive.getInstance().getSwerveModule(Constants.Drive.FL_INDEX).getHeading())));
+        _brAngle.setDouble(Double.parseDouble(String.format("%6.2f", Drive.getInstance().getSwerveModule(Constants.Drive.BR_INDEX).getHeading())));
+        _blAngle.setDouble(Double.parseDouble(String.format("%6.2f", Drive.getInstance().getSwerveModule(Constants.Drive.BL_INDEX).getHeading())));
         
         _hasGamePiece.setBoolean(Manipulator.getInstance().isIntakeSensorActive());
     }
