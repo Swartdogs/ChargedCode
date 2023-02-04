@@ -37,6 +37,11 @@ public final class Constants
         public static final int FR_INDEX = 1;
         public static final int BL_INDEX = 2;
         public static final int BR_INDEX = 3;
+
+        public static final double FL_OFFSET = 37.5;
+        public static final double FR_OFFSET = -150.2;
+        public static final double BL_OFFSET = -158.2;
+        public static final double BR_OFFSET = -53.3;
     }
 
     public static class Arm
@@ -44,8 +49,11 @@ public final class Constants
         public static final int LIMIT_SWITCH_CHANNEL        = 0;
         public static final int PITCH_ENCODER_CHANNEL       = 1;
         public static final int LINEAR_MOTOR_CAN_ID         = 0;
-        public static final int PITCH_MOTOR_CAN_ID          = 19;  
-        public static final int FOLLOWER_PITCH_MOTOR_CAN_ID = 20;  
+        public static final int PITCH_MOTOR_CAN_ID          = 1;  
+        public static final int FOLLOWER_PITCH_MOTOR_CAN_ID = 20;
+        public static final double ARM_MAX_EXTENSION        = 200.0;
+        public static final double SHOULDER_MIN_ANGLE       = -180.0;
+        public static final double SHOULDER_MAX_ANGLE       = 180.0;  
     }
  
     public static class Manipulator
