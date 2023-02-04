@@ -11,7 +11,7 @@ import frc.robot.commands.CmdAutoRotate;
 import frc.robot.commands.CmdDriveResetEncoders;
 import frc.robot.commands.CmdDriveResetOdometer;
 import frc.robot.commands.CmdDriveToPosition;
-
+import frc.robot.subsystems.Dashboard;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.Vector;
 
@@ -24,7 +24,6 @@ public class RobotContainer
     //private JoystickButton _driveJoyButton6;
     private JoystickButton _driveJoyButton11;
 
-
     public RobotContainer()
     {
         _driveJoy = new Joystick(0);
@@ -34,6 +33,8 @@ public class RobotContainer
         _driveJoyButton3 = new JoystickButton(_driveJoy, 3);
         //_driveJoyButton6 = new JoystickButton(_driveJoy, 6);
         _driveJoyButton11 = new JoystickButton(_driveJoy, 11);
+        
+        Dashboard.getInstance();
     
         configureDefaultCommands();
         configureBindings();

@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.subsystems.RobotLog;
 import frc.robot.subsystems.drive.Drive;
 
 public class CmdDriveResetEncoders extends InstantCommand 
@@ -9,6 +10,8 @@ public class CmdDriveResetEncoders extends InstantCommand
     public void initialize()
     {
         Drive.getInstance().zeroModuleRotations();
+
+        RobotLog.getInstance().log("Reset Encoders");
     }
 
     @Override

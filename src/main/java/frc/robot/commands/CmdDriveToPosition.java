@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import frc.robot.subsystems.RobotLog;
 import frc.robot.subsystems.drive.Vector;
 
 public class CmdDriveToPosition extends DriveCommand 
@@ -23,6 +24,8 @@ public class CmdDriveToPosition extends DriveCommand
         _xPID.setSetpoint(_targetPosition.getX(), fieldPosition.getX(), true);
         _yPID.setSetpoint(_targetPosition.getY(), fieldPosition.getY(), true);
         _rotatePID.setSetpoint(   _targetHeading,  _drive.getHeading(), true);
+
+        RobotLog.getInstance().log(String.format("Drive to position: Current position and heading: %s, %6.2f ; Target position and heading: %s, %6.2f", _drive.getFieldPosition().toString(), _drive.getHeading(), _targetPosition.toString(), _targetHeading));
     }
 
     @Override
@@ -41,6 +44,8 @@ public class CmdDriveToPosition extends DriveCommand
     public void end(boolean interrupted) 
     {
         _drive.chassisDrive(0, 0, 0);
+
+        RobotLog.getInstance().log(String.format("Drive to position: Current position and heading: %s, %6.2f ; Target position and heading: %s, %6.2f", _drive.getFieldPosition().toString(), _drive.getHeading(), _targetPosition.toString(), _targetHeading));
     }
 
     @Override
