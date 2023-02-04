@@ -116,8 +116,8 @@ public class Dashboard extends SubsystemBase
         var blOffset                    = driveSettingsLayout.add("BL Offset", 0.0).withPosition(0, 2).withSize(2,2).withWidget(BuiltInWidgets.kTextView).getEntry();
         var brOffset                    = driveSettingsLayout.add("BR Offset", 0.0).withPosition(2, 2).withSize(2,2).withWidget(BuiltInWidgets.kTextView).getEntry();
         
-        var resetSwerveModulesEntry     = settingsTab.add("Reset Swerve Offset", false).withPosition(0, 4).withSize(4, 2).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-        var resetSwerveOffsetButton     = new DashboardButton(resetSwerveModulesEntry);
+        var resetSwerveOffsetEntry      = settingsTab.add("Reset Swerve Offset", false).withPosition(0, 4).withSize(4, 2).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+        var resetSwerveOffsetButton     = new DashboardButton(resetSwerveOffsetEntry);
         resetSwerveOffsetButton.whenPressed(() -> {
             Drive.getInstance().zeroModuleRotations();
             flOffset.setDouble(Drive.getInstance().getModuleHeading(0));
@@ -141,7 +141,7 @@ public class Dashboard extends SubsystemBase
         var ejectTime                   = manipulatorSettingsLayout.add("Eject Time", 0.0).withPosition(2, 2).withSize(3, 2).withWidget(BuiltInWidgets.kTextView).getEntry();
         var intakeSpeed                 = manipulatorSettingsLayout.add("Intake Speed", 0.0).withPosition(2, 0).withSize(3, 2).withWidget(BuiltInWidgets.kTextView).getEntry();
         
-        registerCallback(armMaxExtension, () -> Arm.getInstance().setMaxArmPosition(armMaxExtension.getDouble(Constants.Arm.ARM_MAX_EXTENSION)));
+        registerCallback(armMaxExtension, () -> Arm.getInstance().setMaxArmExtension(armMaxExtension.getDouble(Constants.Arm.ARM_MAX_EXTENSION)));
         registerCallback(armMinAngle, () -> Arm.getInstance().setMinShoulderAngle(armMinAngle.getDouble(Constants.Arm.SHOULDER_MIN_ANGLE)));
         registerCallback(armMaxAngle, () -> Arm.getInstance().setMaxShoulderAngle(armMaxAngle.getDouble(Constants.Arm.SHOULDER_MAX_ANGLE)));
 
