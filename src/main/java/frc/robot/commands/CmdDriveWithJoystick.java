@@ -35,13 +35,6 @@ public class CmdDriveWithJoystick extends CommandBase
 
         boolean robotCentric = _robotCentricInput.getAsBoolean();
         
-        // apply deadbands
-        r = r * Math.abs(r);// square rotation input
-
-        x = applyDeadband(x, 0.05);
-        y = applyDeadband(y, 0.05);
-        r = applyDeadband(r, 0.10);
-
         // actually drive the robot
         if (robotCentric)
         {
@@ -63,17 +56,5 @@ public class CmdDriveWithJoystick extends CommandBase
     public boolean isFinished() 
     {
         return false;
-    }
-
-    private double applyDeadband(double input, double deadband)
-    {
-        double output = 0;
-
-        if (Math.abs(input) > deadband)
-        {
-            output = (input - (deadband * Math.signum(input))) / (1.0 - deadband);
-        }
-
-        return output;
     }
 }
