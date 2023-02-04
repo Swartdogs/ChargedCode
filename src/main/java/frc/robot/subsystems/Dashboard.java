@@ -103,29 +103,37 @@ public class Dashboard extends SubsystemBase
         var balance = autonomousOptions.add("Balance Options", balanceChooser).withPosition(0, 3).withSize(1, 1).withWidget(BuiltInWidgets.kComboBoxChooser);
     
         _autonomousLog = autonomousOptions.add("Auto Log", "").withPosition(0, 4).withSize(1, 1).withWidget(BuiltInWidgets.kTextView).getEntry();
+
+        var settingsTab = Shuffleboard.getTab("settings");
+
+        var resetModuleZeroButtonEntry = settingsTab.add("reset modules", false).withWidget(BuiltInWidgets.kToggleButton).withPosition(0, 0).withSize(4, 4).getEntry();
+        var resetModuleZeroButton = new DashboardButton(resetModuleZeroButtonEntry);
+        resetModuleZeroButton.whenPressed(() -> {
+            Drive.getInstance().zeroModuleRotations();
+        });
     }
 
     @Override
     public void periodic()
     {
-        _allianceBox.setBoolean(DriverStation.getAlliance() == Alliance.Blue);
+        // _allianceBox.setBoolean(DriverStation.getAlliance() == Alliance.Blue);
 
-        _shoulderAngle.setDouble(Double.parseDouble(String.format("%6.2f", Arm.getInstance().getShoulderAngle())));
-        _extensionDistance.setDouble(Double.parseDouble(String.format("%6.2f", Arm.getInstance().getExtensionPosition())));
+        // _shoulderAngle.setDouble(Double.parseDouble(String.format("%6.2f", Arm.getInstance().getShoulderAngle())));
+        // _extensionDistance.setDouble(Double.parseDouble(String.format("%6.2f", Arm.getInstance().getExtensionPosition())));
 
-        _wristAngle.setDouble(Double.parseDouble(String.format("%6.2f", Manipulator.getInstance().getWristAngle())));
-        _twistAngle.setDouble(Double.parseDouble(String.format("%6.2f", Manipulator.getInstance().getTwistAngle())));
+        // _wristAngle.setDouble(Double.parseDouble(String.format("%6.2f", Manipulator.getInstance().getWristAngle())));
+        // _twistAngle.setDouble(Double.parseDouble(String.format("%6.2f", Manipulator.getInstance().getTwistAngle())));
 
-        _hasTargetBox.setBoolean(Vision.getInstance().frontCamHasTargets()|| Vision.getInstance().rearCamHasTargets());
+        // _hasTargetBox.setBoolean(Vision.getInstance().frontCamHasTargets()|| Vision.getInstance().rearCamHasTargets());
 
-        _heading.setDouble(Double.parseDouble(String.format("%6.2f", Drive.getInstance().getHeading())));
-        _odometer.setString(String.format("%s", Drive.getInstance().getFieldPosition()));
+        // _heading.setDouble(Double.parseDouble(String.format("%6.2f", Drive.getInstance().getHeading())));
+        // _odometer.setString(String.format("%s", Drive.getInstance().getFieldPosition()));
 
         _frAngle.setDouble(Double.parseDouble(String.format("%6.2f", Drive.getInstance().getModuleHeading(Constants.Drive.FR_INDEX))));
         _flAngle.setDouble(Double.parseDouble(String.format("%6.2f", Drive.getInstance().getModuleHeading(Constants.Drive.FL_INDEX))));
         _brAngle.setDouble(Double.parseDouble(String.format("%6.2f", Drive.getInstance().getModuleHeading(Constants.Drive.BR_INDEX))));
         _blAngle.setDouble(Double.parseDouble(String.format("%6.2f", Drive.getInstance().getModuleHeading(Constants.Drive.BL_INDEX))));
         
-        _hasGamePiece.setBoolean(Manipulator.getInstance().isIntakeSensorActive());
+        // _hasGamePiece.setBoolean(Manipulator.getInstance().isIntakeSensorActive());
     }
 }
