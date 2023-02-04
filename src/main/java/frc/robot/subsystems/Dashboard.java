@@ -120,10 +120,10 @@ public class Dashboard extends SubsystemBase
         var resetSwerveOffsetButton     = new DashboardButton(resetSwerveOffsetEntry);
         resetSwerveOffsetButton.whenPressed(() -> {
             Drive.getInstance().zeroModuleRotations();
-            flOffset.setDouble(Drive.getInstance().getModuleHeading(0));
-            frOffset.setDouble(Drive.getInstance().getModuleHeading(1));
-            blOffset.setDouble(Drive.getInstance().getModuleHeading(2));
-            brOffset.setDouble(Drive.getInstance().getModuleHeading(3));
+            flOffset.setDouble(Drive.getInstance().getModuleRelativeZero(Constants.Drive.FL_INDEX));
+            frOffset.setDouble(Drive.getInstance().getModuleRelativeZero(Constants.Drive.FR_INDEX));
+            blOffset.setDouble(Drive.getInstance().getModuleRelativeZero(Constants.Drive.BL_INDEX));
+            brOffset.setDouble(Drive.getInstance().getModuleRelativeZero(Constants.Drive.BR_INDEX));
         });
 
         //Arm

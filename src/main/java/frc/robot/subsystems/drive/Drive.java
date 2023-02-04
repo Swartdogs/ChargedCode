@@ -185,6 +185,11 @@ public class Drive extends SubsystemBase
         return _swerveModules[index].getHeading();
     }
 
+    public double getModuleRelativeZero(int index)
+    {
+        return _swerveModules[index].getRelativeZero();
+    }
+
     @Override
     public void periodic()
     {
