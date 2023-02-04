@@ -12,9 +12,10 @@ public class CmdAutoRotate extends DriveCommand
 
     public CmdAutoRotate(double desiredAngle, DoubleSupplier xInput,DoubleSupplier yInput, BooleanSupplier robotCentricInput) 
     {
-        _desiredAngle = desiredAngle;
-        _xInput       = xInput;
-        _yInput       = yInput;
+        _desiredAngle      = desiredAngle;
+        _xInput            = xInput;
+        _yInput            = yInput;
+        _robotCentricInput = robotCentricInput;
 
         addRequirements(_drive);
     }
