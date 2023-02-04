@@ -38,9 +38,9 @@ public class Arm extends SubsystemBase
     private PIDControl       _shoulderPid;
     
     //Settings
-    private double           _shoulderMinAngle;
-    private double           _shoulderMaxAngle;
-    private double           _armMaxPosition;
+    private double           _minShoulderAngle;
+    private double           _maxShoulderAngle;
+    private double           _maxArmExtension;
     
     @SuppressWarnings("resource")
     private Arm() 
@@ -56,9 +56,9 @@ public class Arm extends SubsystemBase
         _shoulderPid        = new PIDControl();
         _extensionEncoder   = _linearMotor.getEncoder();
 
-        _shoulderMinAngle   = Constants.Arm.SHOULDER_MIN_ANGLE;
-        _shoulderMaxAngle   = Constants.Arm.SHOULDER_MAX_ANGLE;
-        _armMaxPosition     = Constants.Arm.ARM_MAX_EXTENSION;
+        _minShoulderAngle   = Constants.Arm.SHOULDER_MIN_ANGLE;
+        _maxShoulderAngle   = Constants.Arm.SHOULDER_MAX_ANGLE;
+        _maxArmExtension    = Constants.Arm.ARM_MAX_EXTENSION;
 
         _shoulderPid.setCoefficient(Coefficient.P, 0, 0, 0);
         _shoulderPid.setCoefficient(Coefficient.I, 0, 0, 0);
@@ -121,20 +121,20 @@ public class Arm extends SubsystemBase
     //Settings Functions
     public void setMinShoulderAngle(double angle)
     {
-        _shoulderMinAngle = angle;
-        _shoulderPid.setInputRange(_shoulderMinAngle, _shoulderMaxAngle);
+        _minShoulderAngle = angle;
+        _shoulderPid.setInputRange(_minShoulderAngle, _maxShoulderAngle);
     }
 
     public void setMaxShoulderAngle(double angle)
     {
-        _shoulderMaxAngle = angle;
-        _shoulderPid.setInputRange(_shoulderMinAngle, _shoulderMaxAngle);
+        _maxShoulderAngle = angle;
+        _shoulderPid.setInputRange(_minShoulderAngle, _maxShoulderAngle);
     }
 
-    public void setMaxArmPosition(double position)
+    public void setMaxArmExtension(double position)
     {
-        _armMaxPosition = position;
-        _extensionPid.setInputRange(0, _armMaxPosition);
+        _maxArmExtension = position;
+        _extensionPid.setInputRange(0, _maxArmExtension);
     }
 
     @Override 
