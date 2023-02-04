@@ -10,7 +10,6 @@ import PIDControl.PIDControl.Coefficient;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import frc.robot.Constants;
-import frc.robot.subsystems.RobotLog;
 
 public class SwerveModule extends Vector
 {
