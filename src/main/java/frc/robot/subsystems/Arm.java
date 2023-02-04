@@ -27,28 +27,9 @@ public class Arm extends SubsystemBase
 
     public enum ArmPosition
     {
-        High(0, 0), //FIXME Plug in the correct vectors once robot gets built
-        Middle(0, 0),
-        Low(0, 0);
-
-        private double _distance;
-        private double _angle;
-
-        private ArmPosition(double distance, double angle)
-        {
-            _distance = distance;
-            _angle = angle;
-        }
-
-        public double getDistance()
-        {
-            return _distance;
-        }
-        
-        public double getAngle()
-        {
-            return _angle;
-        }
+        High,
+        Middle,
+        Low
     }
 
     public enum ArmSide

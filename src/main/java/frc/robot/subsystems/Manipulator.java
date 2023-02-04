@@ -23,7 +23,13 @@ public class Manipulator extends SubsystemBase
 
         return _instance;
     }
-
+   
+    public enum HandMode
+    {
+        Cube,
+        Cone
+    }
+    
     //Wrist Controls
     private CANSparkMax      _wristMotor;
     private DutyCycleEncoder _wristEncoder;
