@@ -1,8 +1,5 @@
 package frc.robot;
 
-import java.util.function.DoubleSupplier;
-
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -48,9 +45,9 @@ public class RobotContainer
         (
             new CmdDriveWithJoystick
             (
-                () -> getJoystickAxis(_driveJoy::getX, false, false, 0.05), 
-                () -> getJoystickAxis(_driveJoy::getY, true,  false, 0.05), 
-                () -> getJoystickAxis(_driveJoy::getZ, false, true,  0.10), 
+                () -> getJoystickAxis(_driveJoy.getX(), false, false, 0.05), 
+                () -> getJoystickAxis(_driveJoy.getY(), true,  false, 0.05), 
+                () -> getJoystickAxis(_driveJoy.getZ(), false, true,  0.10), 
                 () -> _driveJoy.getRawButton(1)
             )  
         );
@@ -63,8 +60,8 @@ public class RobotContainer
             new CmdAutoRotate
             (
                 90,  
-                () -> getJoystickAxis(_driveJoy::getX, false, false, 0.05), 
-                () -> getJoystickAxis(_driveJoy::getY, true,  false, 0.05),  
+                () -> getJoystickAxis(_driveJoy.getX(), false, false, 0.05), 
+                () -> getJoystickAxis(_driveJoy.getY(), true,  false, 0.05),  
                 () -> _driveJoy.getRawButton(1)
             )
         );
@@ -91,22 +88,18 @@ public class RobotContainer
         return output;
     }
 
-    private double getJoystickAxis(DoubleSupplier axis, boolean inverted, boolean squareInput, double deadband)
+    private double getJoystickAxis(double input, boolean inverted, boolean squareInput, double deadband)
     {
-        double output = axis.getAsDouble();
-
         if(inverted)
         {
-            output *= -1;
+            input *= -1;
         }
 
         if (squareInput)
         {
-            output *= output * Math.signum(output);
+            input *= input * Math.signum(input);
         }
 
-        output = applyDeadband(output, deadband);
-
-        return output;
+        return applyDeadband(input, deadband);
     }
 }
