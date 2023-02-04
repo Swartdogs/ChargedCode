@@ -79,6 +79,8 @@ public class Manipulator extends SubsystemBase
         _twistPID.setInputRange(Constants.Manipulator.TWIST_MIN_ROTATION, Constants.Manipulator.TWIST_MAX_ROTATION);
         _twistPID.setOutputRange(-1, 1);
         _twistPID.setSetpointDeadband(1);
+
+        RobotLog.getInstance().log("Created Manipulator Subsystem");
     }
 
     public void setWristAngle(double position)
