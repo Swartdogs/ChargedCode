@@ -9,10 +9,10 @@ public class ArmData
     
     public ArmData(double armAngle, double armExtension, double twistAngle, double wristAngle) 
     {
-        _armAngle = armAngle;
+        _armAngle     = armAngle;
         _armExtension = armExtension;
-        _twistAngle = twistAngle;
-        _wristAngle = wristAngle;
+        _twistAngle   = twistAngle;
+        _wristAngle   = wristAngle;
     }
 
     public double getArmAngle()
