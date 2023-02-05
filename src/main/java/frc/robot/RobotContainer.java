@@ -1,11 +1,16 @@
 package frc.robot;
 
+import PIDControl.PIDControl;
+import PIDControl.PIDControl.Coefficient;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.commands.CmdDriveWithJoystick;
+import frc.robot.commands.CmdArmReset;
+import frc.robot.commands.CmdArmSetExtensionPosition;
+import frc.robot.commands.CmdArmSetShoulderAngle;
 import frc.robot.commands.CmdAutoRotate;
 //import frc.robot.commands.CmdDriveBalance;
 import frc.robot.commands.CmdDriveResetEncoders;
@@ -21,6 +26,8 @@ public class RobotContainer
     private JoystickButton _driveJoyButton1;
     private JoystickButton _driveJoyButton2;
     private JoystickButton _driveJoyButton3;
+    private JoystickButton _driveJoyButton4;
+    private JoystickButton _driveJoyButton5;
     //private JoystickButton _driveJoyButton6;
     private JoystickButton _driveJoyButton11;
 
@@ -31,13 +38,21 @@ public class RobotContainer
         _driveJoyButton1 = new JoystickButton(_driveJoy, 1);
         _driveJoyButton2 = new JoystickButton(_driveJoy, 2);
         _driveJoyButton3 = new JoystickButton(_driveJoy, 3);
+        _driveJoyButton4 = new JoystickButton(_driveJoy, 4);
+        _driveJoyButton5 = new JoystickButton(_driveJoy, 5);
         //_driveJoyButton6 = new JoystickButton(_driveJoy, 6);
         _driveJoyButton11 = new JoystickButton(_driveJoy, 11);
         
-        Dashboard.getInstance();
+        // Dashboard.getInstance();
     
-        configureDefaultCommands();
-        configureBindings();
+        // configureDefaultCommands();
+        // configureBindings();
+
+        _driveJoyButton1.onTrue(new CmdArmSetShoulderAngle(-120));
+        _driveJoyButton2.onTrue(new CmdArmSetShoulderAngle(120));
+        _driveJoyButton3.onTrue(new CmdArmSetExtensionPosition(100));
+        _driveJoyButton4.onTrue(new CmdArmSetExtensionPosition(10));
+        _driveJoyButton5.onTrue(new CmdArmReset());
     }
 
     private void configureDefaultCommands()
@@ -102,5 +117,12 @@ public class RobotContainer
         }
 
         return applyDeadband(input, deadband);
+    }
+
+    public static void setSimulationCoefficients(PIDControl pidControl)
+    {
+        pidControl.setCoefficient(Coefficient.P, 0, 0.001, 0);
+        pidControl.setCoefficient(Coefficient.I, 0, 0, 0);
+        pidControl.setCoefficient(Coefficient.D, 0, 0, 0);
     }
 }
