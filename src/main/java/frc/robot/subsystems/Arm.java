@@ -80,7 +80,7 @@ public class Arm extends SubsystemBase
         _extensionPid.setCoefficient(Coefficient.P, 0, 0, 0);
         _extensionPid.setCoefficient(Coefficient.I, 0, 0, 0);
         _extensionPid.setCoefficient(Coefficient.D, 0, 0, 0);
-        _extensionPid.setInputRange(0, 240);
+        _extensionPid.setInputRange(0, 50);
         _extensionPid.setOutputRange(-1, 1);
         _extensionPid.setSetpointDeadband(1);
 

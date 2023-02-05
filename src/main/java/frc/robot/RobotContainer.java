@@ -43,14 +43,14 @@ public class RobotContainer
         //_driveJoyButton6 = new JoystickButton(_driveJoy, 6);
         _driveJoyButton11 = new JoystickButton(_driveJoy, 11);
         
-        // Dashboard.getInstance();
+        Dashboard.getInstance();
     
         // configureDefaultCommands();
         // configureBindings();
 
         _driveJoyButton1.onTrue(new CmdArmSetShoulderAngle(-120));
         _driveJoyButton2.onTrue(new CmdArmSetShoulderAngle(120));
-        _driveJoyButton3.onTrue(new CmdArmSetExtensionPosition(100));
+        _driveJoyButton3.onTrue(new CmdArmSetExtensionPosition(45));
         _driveJoyButton4.onTrue(new CmdArmSetExtensionPosition(10));
         _driveJoyButton5.onTrue(new CmdArmReset());
     }
