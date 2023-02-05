@@ -1,38 +1,17 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import java.util.function.Supplier;
 
-public class CmdArmFlipSides extends CommandBase 
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
+import frc.robot.groups.GrpSetArmPosition;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Arm.ArmSide;
+import frc.robot.subsystems.Manipulator.HandMode;
+
+public class CmdArmFlipSides extends ProxyCommand 
 {
-
-    
-
-    public CmdArmFlipSides() 
+    public CmdArmFlipSides(Supplier<ArmSide> sideFunc, Supplier<HandMode> handFunc) 
     {
-
-    }
-
-    @Override
-    public void initialize() 
-    {
-
-    }
-
-    @Override
-    public void execute() 
-    {
-
-    }
-
-    @Override
-    public void end(boolean interrupted) 
-    {
-
-    }
-
-    @Override
-    public boolean isFinished() 
-    {
-        return false;
+        super(()-> new GrpSetArmPosition(Arm.getInstance().getArmPosition(), sideFunc, handFunc));
     }
 }

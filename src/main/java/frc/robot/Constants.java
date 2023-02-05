@@ -1,5 +1,11 @@
 package frc.robot;
 
+import java.util.HashMap;
+
+import frc.robot.subsystems.Arm.ArmPosition;
+import frc.robot.subsystems.Arm.ArmSide;
+import frc.robot.subsystems.Manipulator.HandMode;
+
 public final class Constants 
 {
     public static final int    LOOPS_PER_SECOND            = 50;
@@ -57,5 +63,28 @@ public final class Constants
         public static final int     INTAKE_SENSOR_PORT      =   0;
         public static final double  EJECT_TIME              =   0;
         public static final double  INTAKE_SPEED            =   0;
+    }
+
+    public static class Lookups
+    {
+        private static final HashMap<ArmTuple, ArmData> _lookup = new HashMap<ArmTuple, ArmData>(){{
+            put(new ArmTuple(ArmPosition.Low,    ArmSide.Front, HandMode.Cone), new ArmData(0, 0, 0, 0));
+            put(new ArmTuple(ArmPosition.Low,    ArmSide.Front, HandMode.Cube), new ArmData(0, 0, 0, 0));
+            put(new ArmTuple(ArmPosition.Low,    ArmSide.Back,  HandMode.Cone), new ArmData(0, 0, 0, 0));
+            put(new ArmTuple(ArmPosition.Low,    ArmSide.Back,  HandMode.Cube), new ArmData(0, 0, 0, 0));
+            put(new ArmTuple(ArmPosition.Middle, ArmSide.Front, HandMode.Cone), new ArmData(0, 0, 0, 0));
+            put(new ArmTuple(ArmPosition.Middle, ArmSide.Front, HandMode.Cube), new ArmData(0, 0, 0, 0));
+            put(new ArmTuple(ArmPosition.Middle, ArmSide.Back,  HandMode.Cone), new ArmData(0, 0, 0, 0));
+            put(new ArmTuple(ArmPosition.Middle, ArmSide.Back,  HandMode.Cube), new ArmData(0, 0, 0, 0));
+            put(new ArmTuple(ArmPosition.High,   ArmSide.Front, HandMode.Cone), new ArmData(0, 0, 0, 0));
+            put(new ArmTuple(ArmPosition.High,   ArmSide.Front, HandMode.Cube), new ArmData(0, 0, 0, 0));
+            put(new ArmTuple(ArmPosition.High,   ArmSide.Back,  HandMode.Cone), new ArmData(0, 0, 0, 0));
+            put(new ArmTuple(ArmPosition.High,   ArmSide.Back,  HandMode.Cube), new ArmData(0, 0, 0, 0));
+        }};
+
+        public static ArmData lookUpArmData(ArmPosition armPosition, ArmSide armSide, HandMode handMode)
+        {
+            return _lookup.get(new ArmTuple(armPosition, armSide, handMode));
+        }
     }
 }
