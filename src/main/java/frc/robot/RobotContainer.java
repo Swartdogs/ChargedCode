@@ -31,17 +31,18 @@ public class RobotContainer
     {
         DriverStation.silenceJoystickConnectionWarning(true);
 
+
         Joystick driveJoy  = new Joystick(0);
         Joystick buttonBox = new Joystick(1);
 
-        CmdDriveWithJoystick driveCmd = new CmdDriveWithJoystick(() -> driveJoy.getX(), () -> -driveJoy.getY(), () -> driveJoy.getZ(), () -> driveJoy.getRawButton(1));
+        // CmdDriveWithJoystick driveCmd = new CmdDriveWithJoystick(() -> driveJoy.getX(), () -> -driveJoy.getY(), () -> driveJoy.getZ(), () -> driveJoy.getRawButton(1));
 
-        Drive.getInstance().setDefaultCommand(driveCmd);
+        // Drive.getInstance().setDefaultCommand(driveCmd);
 
-        new JoystickButton(driveJoy, 2).onTrue(new CmdDriveResetOdometer());
-        new JoystickButton(driveJoy, 11).onTrue(new CmdDriveResetEncoders());
+        // new JoystickButton(driveJoy, 2).onTrue(new CmdDriveResetOdometer());
+        // new JoystickButton(driveJoy, 11).onTrue(new CmdDriveResetEncoders());
 
-        new JoystickButton(driveJoy, 3).onTrue(new CmdDriveToPosition(new Vector(), 0));
+        // new JoystickButton(driveJoy, 3).onTrue(new CmdDriveToPosition(new Vector(), 0));
 
         _highButton     = new JoystickButton(buttonBox, 1);
         _middleButton   = new JoystickButton(buttonBox, 2);
@@ -58,12 +59,12 @@ public class RobotContainer
     {
         var flipSidesCommand = new CmdArmFlipSides(this::getArmSide, this::getHandMode);
 
-        _highButton.onTrue(new GrpSetArmPosition(ArmPosition.High, this::getArmSide, this::getHandMode)); 
-        _middleButton.onTrue(new GrpSetArmPosition(ArmPosition.Middle, this::getArmSide, this::getHandMode));
-        _lowButton.onTrue(new GrpSetArmPosition(ArmPosition.Low, this::getArmSide, this::getHandMode));
+        _highButton.onTrue(new GrpSetArmPosition(ArmPosition.High, ()->ArmSide.Front, this::getHandMode)); 
+        //_middleButton.onTrue(new GrpSetArmPosition(ArmPosition.Middle, this::getArmSide, this::getHandMode));
+        _lowButton.onTrue(new GrpSetArmPosition(ArmPosition.Low, ()->ArmSide.Back, this::getHandMode));
         
-        _armSideSwitch.onTrue(flipSidesCommand);
-        _armSideSwitch.onFalse(flipSidesCommand);
+        //_armSideSwitch.onTrue(flipSidesCommand);
+        //_armSideSwitch.onFalse(flipSidesCommand);
     }
 
     public Command getAutonomousCommand() 

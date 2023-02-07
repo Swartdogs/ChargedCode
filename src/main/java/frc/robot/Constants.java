@@ -68,18 +68,18 @@ public final class Constants
     public static class Lookups
     {
         private static final HashMap<ArmTuple, ArmData> _lookup = new HashMap<ArmTuple, ArmData>(){{
-            put(new ArmTuple(ArmPosition.Low,    ArmSide.Front, HandMode.Cone), new ArmData(0, 0, 0, 0));
-            put(new ArmTuple(ArmPosition.Low,    ArmSide.Front, HandMode.Cube), new ArmData(0, 0, 0, 0));
-            put(new ArmTuple(ArmPosition.Low,    ArmSide.Back,  HandMode.Cone), new ArmData(0, 0, 0, 0));
-            put(new ArmTuple(ArmPosition.Low,    ArmSide.Back,  HandMode.Cube), new ArmData(0, 0, 0, 0));
-            put(new ArmTuple(ArmPosition.Middle, ArmSide.Front, HandMode.Cone), new ArmData(0, 0, 0, 0));
-            put(new ArmTuple(ArmPosition.Middle, ArmSide.Front, HandMode.Cube), new ArmData(0, 0, 0, 0));
-            put(new ArmTuple(ArmPosition.Middle, ArmSide.Back,  HandMode.Cone), new ArmData(0, 0, 0, 0));
-            put(new ArmTuple(ArmPosition.Middle, ArmSide.Back,  HandMode.Cube), new ArmData(0, 0, 0, 0));
-            put(new ArmTuple(ArmPosition.High,   ArmSide.Front, HandMode.Cone), new ArmData(0, 0, 0, 0));
-            put(new ArmTuple(ArmPosition.High,   ArmSide.Front, HandMode.Cube), new ArmData(0, 0, 0, 0));
-            put(new ArmTuple(ArmPosition.High,   ArmSide.Back,  HandMode.Cone), new ArmData(0, 0, 0, 0));
-            put(new ArmTuple(ArmPosition.High,   ArmSide.Back,  HandMode.Cube), new ArmData(0, 0, 0, 0));
+            put(new ArmTuple(ArmPosition.Low,    ArmSide.Front, HandMode.Cone), new ArmData(110, 24, 0, 0));
+            put(new ArmTuple(ArmPosition.Low,    ArmSide.Front, HandMode.Cube), new ArmData(110, 24, 0, 0));
+            put(new ArmTuple(ArmPosition.Low,    ArmSide.Back,  HandMode.Cone), new ArmData(-110, 24, 0, 0));
+            put(new ArmTuple(ArmPosition.Low,    ArmSide.Back,  HandMode.Cube), new ArmData(-110, 24, 0, 0));
+            put(new ArmTuple(ArmPosition.Middle, ArmSide.Front, HandMode.Cone), new ArmData(90, 36, 0, 0));
+            put(new ArmTuple(ArmPosition.Middle, ArmSide.Front, HandMode.Cube), new ArmData(90, 36, 0, 0));
+            put(new ArmTuple(ArmPosition.Middle, ArmSide.Back,  HandMode.Cone), new ArmData(-90, 36, 0, 0));
+            put(new ArmTuple(ArmPosition.Middle, ArmSide.Back,  HandMode.Cube), new ArmData(-90, 36, 0, 0));
+            put(new ArmTuple(ArmPosition.High,   ArmSide.Front, HandMode.Cone), new ArmData(70, 48, 0, 0));
+            put(new ArmTuple(ArmPosition.High,   ArmSide.Front, HandMode.Cube), new ArmData(70, 48, 0, 0));
+            put(new ArmTuple(ArmPosition.High,   ArmSide.Back,  HandMode.Cone), new ArmData(-70, 48, 0, 0));
+            put(new ArmTuple(ArmPosition.High,   ArmSide.Back,  HandMode.Cube), new ArmData(-70, 48, 0, 0));
         }};
 
         public static ArmData lookUpArmData(ArmPosition armPosition, ArmSide armSide, HandMode handMode)
