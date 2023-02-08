@@ -1,12 +1,17 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import PIDControl.PIDControl;
 import PIDControl.PIDControl.Coefficient;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.simulation.DIOSim;
+import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -31,26 +36,31 @@ public class Manipulator extends SubsystemBase
     }
     
     //Wrist Controls
-    private CANSparkMax      _wristMotor;
-    private DutyCycleEncoder _wristEncoder;
-    private PIDControl       _wristPID;
+    private CANSparkMax         _wristMotor;
+    private DutyCycleEncoder    _wristEncoder;
+    private PIDControl          _wristPID;
 
     //Twist Motion Controls
-    private CANSparkMax      _twistMotor;
-    private DutyCycleEncoder _twistEncoder;
-    private PIDControl       _twistPID;
+    private CANSparkMax         _twistMotor;
+    private DutyCycleEncoder    _twistEncoder;
+    private PIDControl          _twistPID;
     
     //Intake Controls
-    private CANSparkMax      _intakeMotor;
-    private DigitalInput     _intakeSensor;
+    private CANSparkMax         _intakeMotor;
+    private DigitalInput        _intakeSensor;
 
     //Settings
-    private double           _wristMinAngle;
-    private double           _wristMaxAngle;
-    private double           _twistMinRotation;
-    private double           _twistMaxRotation;
-    private double           _ejectTime;
-    private double           _intakeSpeed;
+    private double              _wristMinAngle;
+    private double              _wristMaxAngle;
+    private double              _twistMinRotation;
+    private double              _twistMaxRotation;
+    private double              _ejectTime;
+    private double              _intakeSpeed;
+
+    //Simulation Variables
+    private DutyCycleEncoderSim _wristEncoderSim;
+    private DutyCycleEncoderSim _twistEncoderSim;
+    private DIOSim              _intakeSensorSim;
 
     private Manipulator()
     {
@@ -72,19 +82,30 @@ public class Manipulator extends SubsystemBase
         _ejectTime          = Constants.Manipulator.EJECT_TIME;
         _intakeSpeed        = Constants.Manipulator.INTAKE_SPEED;
 
-        _wristPID.setCoefficient(Coefficient.P, 0, 0, 0);
+        _wristPID.setCoefficient(Coefficient.P, 0, 0.001, 0);
         _wristPID.setCoefficient(Coefficient.I, 0, 0, 0);
         _wristPID.setCoefficient(Coefficient.D, 0, 0, 0);
         _wristPID.setInputRange(Constants.Manipulator.WRIST_MIN_ANGLE, Constants.Manipulator.WRIST_MAX_ANGLE);
         _wristPID.setOutputRange(-1, 1);
         _wristPID.setSetpointDeadband(1);
 
-        _twistPID.setCoefficient(Coefficient.P, 0, 0, 0);
+        _twistPID.setCoefficient(Coefficient.P, 0, 0.001, 0);
         _twistPID.setCoefficient(Coefficient.I, 0, 0, 0);
         _twistPID.setCoefficient(Coefficient.D, 0, 0, 0);
         _twistPID.setInputRange(Constants.Manipulator.TWIST_MIN_ROTATION, Constants.Manipulator.TWIST_MAX_ROTATION);
         _twistPID.setOutputRange(-1, 1);
         _twistPID.setSetpointDeadband(1);
+
+        if (RobotBase.isSimulation())
+        {
+            _wristEncoderSim = new DutyCycleEncoderSim(_wristEncoder);
+            _twistEncoderSim = new DutyCycleEncoderSim(_twistEncoder);
+            _intakeSensorSim = new DIOSim(_intakeSensor);
+
+            REVPhysicsSim.getInstance().addSparkMax(_wristMotor,  DCMotor.getNeo550(1));
+            REVPhysicsSim.getInstance().addSparkMax(_twistMotor,  DCMotor.getNeo550(1));
+            REVPhysicsSim.getInstance().addSparkMax(_intakeMotor, DCMotor.getNeo550(1));
+        }
 
         RobotLog.getInstance().log("Created Manipulator Subsystem");
     }
@@ -101,17 +122,17 @@ public class Manipulator extends SubsystemBase
 
     public void enableIntake()
     {
-        _intakeMotor.set(_intakeSpeed);
+        _intakeMotor.setVoltage(_intakeSpeed * Constants.MOTOR_VOLTAGE);
     }
 
     public void disableIntake()
     {
-        _intakeMotor.set(0);
+        _intakeMotor.setVoltage(0);
     }
 
     public void reverseIntake()
     {
-        _intakeMotor.set(-_intakeSpeed);
+        _intakeMotor.setVoltage(-_intakeSpeed * Constants.MOTOR_VOLTAGE);
     }
 
     public void setTwistAngle(double position)
@@ -169,10 +190,27 @@ public class Manipulator extends SubsystemBase
         _intakeSpeed = speed;
     }
 
+    public boolean wristAtAngle()
+    {
+        return _wristPID.atSetpoint();
+    }
+
+    public boolean twistAtAngle()
+    {
+        return _twistPID.atSetpoint();
+    }
+
     @Override
     public void periodic()
     {
-        _twistMotor.set(_twistPID.calculate(getTwistAngle()));
-        _wristMotor.set(_wristPID.calculate(getWristAngle()));
+        _twistMotor.setVoltage(_twistPID.calculate(getTwistAngle()) * Constants.MOTOR_VOLTAGE);
+        _wristMotor.setVoltage(_wristPID.calculate(getWristAngle()) * Constants.MOTOR_VOLTAGE);
+    }
+
+    @Override
+    public void simulationPeriodic()
+    {
+        _wristEncoderSim.set(_wristMotor.getEncoder().getPosition());
+        _twistEncoderSim.set(_twistMotor.getEncoder().getPosition());
     }
 }

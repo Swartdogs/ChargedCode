@@ -1,10 +1,10 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.RobotLog;
 
-public class CmdManipulatorSetWristAngle extends InstantCommand 
+public class CmdManipulatorSetWristAngle extends CommandBase 
 {
     private final Manipulator _manipulatorSubsystem;
     private final double      _wristAngle;
@@ -20,5 +20,11 @@ public class CmdManipulatorSetWristAngle extends InstantCommand
     {
         RobotLog.getInstance().log(String.format("Setting wrist angle to %6.2f", _wristAngle));
         _manipulatorSubsystem.setWristAngle(_wristAngle);
+    }
+
+    @Override
+    public boolean isFinished()
+    {
+        return _manipulatorSubsystem.wristAtAngle();
     }
 }

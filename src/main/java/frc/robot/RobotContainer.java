@@ -13,8 +13,10 @@ import frc.robot.commands.CmdArmFlipSides;
 import frc.robot.commands.CmdDriveResetEncoders;
 import frc.robot.commands.CmdDriveResetOdometer;
 import frc.robot.commands.CmdDriveToPosition;
+import frc.robot.subsystems.Dashboard;
 import frc.robot.subsystems.Arm.ArmPosition;
 import frc.robot.subsystems.Arm.ArmSide;
+import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Manipulator.HandMode;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.Vector;
@@ -31,6 +33,8 @@ public class RobotContainer
     {
         DriverStation.silenceJoystickConnectionWarning(true);
 
+        Manipulator.getInstance();
+        Dashboard.getInstance();
 
         Joystick driveJoy  = new Joystick(0);
         Joystick buttonBox = new Joystick(1);
@@ -44,11 +48,11 @@ public class RobotContainer
 
         // new JoystickButton(driveJoy, 3).onTrue(new CmdDriveToPosition(new Vector(), 0));
 
-        _highButton     = new JoystickButton(buttonBox, 1);
+        _highButton     = new JoystickButton(buttonBox, 4);
         _middleButton   = new JoystickButton(buttonBox, 2);
-        _lowButton      = new JoystickButton(buttonBox, 3);
-        _armSideSwitch  = new JoystickButton(buttonBox, 4);
-        _handModeSwitch = new JoystickButton(buttonBox, 5);
+        _lowButton      = new JoystickButton(buttonBox, 5);
+        _armSideSwitch  = new JoystickButton(buttonBox, 1);
+        _handModeSwitch = new JoystickButton(buttonBox, 3);
 
         //new JoystickButton(driveJoy, 6).onTrue(new CmdDriveBalance());
 

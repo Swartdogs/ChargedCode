@@ -11,3 +11,11 @@ public final class Main
         RobotBase.startRobot(Robot::new);
     }
 }
+/*
+ * Test Arm Flip
+ * Create Manual Hand Flip
+ * Eject Game Piece
+ * Intake Game Piece
+ * Manual Modification
+ * 1 piece auto (& balance)
+ */
