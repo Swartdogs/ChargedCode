@@ -19,7 +19,7 @@ public class CmdManipulatorPlaceGamePiece extends CommandBase
     public void initialize() 
     {
         RobotLog.getInstance().log("Placing Game Piece");
-        _manipulatorSubsystem.setIntakeSpeed(-Constants.Manipulator.INTAKE_SPEED);
+        _manipulatorSubsystem.reverseIntake();
         _ejectTimer = (int)(Constants.Manipulator.EJECT_TIME * Constants.LOOPS_PER_SECOND);
     }
 
@@ -33,7 +33,7 @@ public class CmdManipulatorPlaceGamePiece extends CommandBase
     public void end(boolean interrupted) 
     {
         RobotLog.getInstance().log("Placed Game Piece");
-        _manipulatorSubsystem.setIntakeSpeed(0);
+        _manipulatorSubsystem.disableIntake();
     }
 
     @Override
