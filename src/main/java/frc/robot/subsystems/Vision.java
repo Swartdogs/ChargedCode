@@ -33,7 +33,9 @@ public class Vision extends SubsystemBase
         _rearCam           = new PhotonCamera("camera2");
         _frontLatestResult = new PhotonPipelineResult(); 
         _rearLatestResult  = new PhotonPipelineResult();
-    }
+
+        RobotLog.getInstance().log("Created Vision Subsystem");
+    } 
 
     public PhotonPipelineResult getFrontResult()
     {

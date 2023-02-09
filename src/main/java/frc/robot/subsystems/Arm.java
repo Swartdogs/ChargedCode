@@ -37,6 +37,11 @@ public class Arm extends SubsystemBase
     private CANSparkMax      _pitchMotor;
     private PIDControl       _shoulderPid;
     
+    //Settings
+    private double           _minShoulderAngle;
+    private double           _maxShoulderAngle;
+    private double           _maxArmExtension;
+    
     @SuppressWarnings("resource")
     private Arm() 
     {
@@ -50,6 +55,10 @@ public class Arm extends SubsystemBase
         _extensionPid       = new PIDControl();
         _shoulderPid        = new PIDControl();
         _extensionEncoder   = _linearMotor.getEncoder();
+
+        _minShoulderAngle   = Constants.Arm.SHOULDER_MIN_ANGLE;
+        _maxShoulderAngle   = Constants.Arm.SHOULDER_MAX_ANGLE;
+        _maxArmExtension    = Constants.Arm.ARM_MAX_EXTENSION;
 
         _shoulderPid.setCoefficient(Coefficient.P, 0, 0, 0);
         _shoulderPid.setCoefficient(Coefficient.I, 0, 0, 0);
@@ -68,6 +77,8 @@ public class Arm extends SubsystemBase
         _extensionEncoder.setPositionConversionFactor(0);
 
         followerPitchMotor.follow(_pitchMotor, true);
+
+        RobotLog.getInstance().log("Created Arm Subsystem");
     }
 
     public boolean isLimitSwitchPressed()
@@ -105,6 +116,25 @@ public class Arm extends SubsystemBase
     public void setExtensionEncoderPosition(double positon)
     {
         _extensionEncoder.setPosition(positon);
+    }
+
+    //Settings Functions
+    public void setMinShoulderAngle(double angle)
+    {
+        _minShoulderAngle = angle;
+        _shoulderPid.setInputRange(_minShoulderAngle, _maxShoulderAngle);
+    }
+
+    public void setMaxShoulderAngle(double angle)
+    {
+        _maxShoulderAngle = angle;
+        _shoulderPid.setInputRange(_minShoulderAngle, _maxShoulderAngle);
+    }
+
+    public void setMaxArmExtension(double position)
+    {
+        _maxArmExtension = position;
+        _extensionPid.setInputRange(0, _maxArmExtension);
     }
 
     @Override 

@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
+import frc.robot.subsystems.RobotLog;
 
 public class Drive extends SubsystemBase
 {
@@ -55,10 +56,10 @@ public class Drive extends SubsystemBase
 
         _gyro   = new AHRS(SPI.Port.kMXP);
 
-        SwerveModule fl = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2,    0.0, -90.0, Constants.Drive.FL_DRIVE_CAN_ID, Constants.Drive.FL_ROTATE_CAN_ID, Constants.Drive.FL_ROTATE_SENSOR_PORT);
-        SwerveModule fr = new SwerveModule( Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2,    0.0,  90.0, Constants.Drive.FR_DRIVE_CAN_ID, Constants.Drive.FR_ROTATE_CAN_ID, Constants.Drive.FR_ROTATE_SENSOR_PORT);
-        SwerveModule bl = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2, -Constants.Drive.BASE_LENGTH / 2,    0.0, -90.0, Constants.Drive.BL_DRIVE_CAN_ID, Constants.Drive.BL_ROTATE_CAN_ID, Constants.Drive.BL_ROTATE_SENSOR_PORT);
-        SwerveModule br = new SwerveModule( Constants.Drive.BASE_WIDTH / 2, -Constants.Drive.BASE_LENGTH / 2,    0.0,  90.0, Constants.Drive.BR_DRIVE_CAN_ID, Constants.Drive.BR_ROTATE_CAN_ID, Constants.Drive.BR_ROTATE_SENSOR_PORT);
+        SwerveModule fl = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2, Constants.Drive.FL_OFFSET, -90.0, Constants.Drive.FL_DRIVE_CAN_ID, Constants.Drive.FL_ROTATE_CAN_ID, Constants.Drive.FL_ROTATE_SENSOR_PORT);
+        SwerveModule fr = new SwerveModule( Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2, Constants.Drive.FR_OFFSET,  90.0, Constants.Drive.FR_DRIVE_CAN_ID, Constants.Drive.FR_ROTATE_CAN_ID, Constants.Drive.FR_ROTATE_SENSOR_PORT);
+        SwerveModule bl = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2, -Constants.Drive.BASE_LENGTH / 2, Constants.Drive.BL_OFFSET, -90.0, Constants.Drive.BL_DRIVE_CAN_ID, Constants.Drive.BL_ROTATE_CAN_ID, Constants.Drive.BL_ROTATE_SENSOR_PORT);
+        SwerveModule br = new SwerveModule( Constants.Drive.BASE_WIDTH / 2, -Constants.Drive.BASE_LENGTH / 2, Constants.Drive.BR_OFFSET,  90.0, Constants.Drive.BR_DRIVE_CAN_ID, Constants.Drive.BR_ROTATE_CAN_ID, Constants.Drive.BR_ROTATE_SENSOR_PORT);
 
         _swerveModules = new SwerveModule[]
         { 
@@ -70,6 +71,8 @@ public class Drive extends SubsystemBase
 
         setOrigin(0, 0);    // rotate around the center of the robot, by default
         resetOdometer();    // initialize the odometer to 0, 0
+
+        RobotLog.getInstance().log("Created Drive Subsystem");
     }
 
     public void chassisDrive(double drive, double strafe, double rotate)
@@ -175,6 +178,11 @@ public class Drive extends SubsystemBase
     {
         _gyro.reset();
         _gyroOffset = heading;
+    }
+
+    public SwerveModule getSwerveModule(int index)
+    {
+        return _swerveModules[index];
     }
 
     @Override

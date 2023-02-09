@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.subsystems.RobotLog;
 import frc.robot.subsystems.drive.Drive;
 
 public class CmdDriveResetOdometer extends InstantCommand 
@@ -10,6 +11,8 @@ public class CmdDriveResetOdometer extends InstantCommand
     {
         Drive.getInstance().resetOdometer();
         Drive.getInstance().setGyro(0);
+
+        RobotLog.getInstance().log("Reset Odometer");
     }
 
     @Override

@@ -26,9 +26,17 @@ public class RobotContainer
 
         Joystick driveJoy = new Joystick(0);
 
-        CmdDriveWithJoystick driveCmd = new CmdDriveWithJoystick(() -> driveJoy.getX(), () -> -driveJoy.getY(), () -> driveJoy.getZ(), () -> driveJoy.getRawButton(1));
+        Drive.getInstance().setDefaultCommand
+        (
+            new CmdDriveWithJoystick
+            (
+                () -> getJoystickAxis(driveJoy.getX(), false, false, 0.05), 
+                () -> getJoystickAxis(driveJoy.getY(), true,  false, 0.05), 
+                () -> getJoystickAxis(driveJoy.getZ(), false, true,  0.10), 
+                () -> driveJoy.getRawButton(1)
+            )  
+        );
 
-        Drive.getInstance().setDefaultCommand(driveCmd);
         Vision.getInstance().setDefaultCommand(new CmdVisionDefault());
 
         new JoystickButton(driveJoy, 11).onTrue(new CmdDriveResetOdometer());
@@ -53,5 +61,32 @@ public class RobotContainer
     public Command getAutonomousCommand() 
     {
         return Commands.print("No autonomous command configured");
+    }
+
+    private double applyDeadband(double input, double deadband)
+    {
+        double output = 0;
+
+        if (Math.abs(input) > deadband)
+        {
+            output = (input - (deadband * Math.signum(input))) / (1.0 - deadband);
+        }
+
+        return output;
+    }
+
+    private double getJoystickAxis(double input, boolean inverted, boolean squareInput, double deadband)
+    {
+        if(inverted)
+        {
+            input *= -1;
+        }
+
+        if (squareInput)
+        {
+            input *= input * Math.signum(input);
+        }
+
+        return applyDeadband(input, deadband);
     }
 }
