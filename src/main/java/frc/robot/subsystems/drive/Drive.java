@@ -222,22 +222,53 @@ public class Drive extends SubsystemBase
 
     public void fusePosition(Vector inputPosition, double inputVariance)
     {
+        if (inputVariance > 0)// prevent NaN, null, and negative variances
+        {
+            double newX = _position.getX() * inputVariance + inputPosition.getX() * _positionVariance;
+            double newY = _position.getY() * inputVariance + inputPosition.getY() * _positionVariance;
 
+            newX /= (_positionVariance + inputVariance);
+            newY /= (_positionVariance + inputVariance);
+
+            _positionVariance = (_positionVariance * inputVariance) / (_positionVariance + inputVariance);
+            _position = new Vector(newX, newY);
+        }
     }
 
     public void fuseVelocity(Vector inputVelocity, double inputVariance)
     {
+        if (inputVariance > 0)// prevent NaN, null, and negative variances
+        {
+            double newX = _velocity.getX() * inputVariance + inputVelocity.getX() * _velocityVariance;
+            double newY = _velocity.getY() * inputVariance + inputVelocity.getY() * _velocityVariance;
 
+            newX /= (_velocityVariance + inputVariance);
+            newY /= (_velocityVariance + inputVariance);
+
+            _velocityVariance = (_velocityVariance * inputVariance) / (_velocityVariance + inputVariance);
+            _velocity = new Vector(newX, newY);
+        }
     }
 
     public void fuseHeading(double inputHeading, double inputVariance)
     {
-
+        if (inputVariance > 0)// prevent NaN, null, and negative variances
+        {
+            double diff = (inputHeading - getHeading());
+            diff = (diff * _rotationHeadingVariance) / (_rotationHeadingVariance + inputVariance);
+            
+            _rotationHeadingVariance = (_rotationHeadingVariance * inputVariance) / (_rotationHeadingVariance + inputVariance);
+            _gyroOffset += diff;
+        }
     }
 
     public void fuseRotationVelocity(double inputRotation, double inputVariance)
     {
-        
+        if (inputVariance > 0)// prevent NaN, null, and negative variances
+        {
+            _rotationVelocity = (inputRotation * _rotationVelocityVariance + _rotationVelocity * inputVariance) / (_rotationVelocityVariance + inputVariance);
+            _rotationVelocityVariance = (_rotationVelocityVariance * inputVariance) / (_rotationVelocityVariance + inputVariance);
+        }
     }
 
     public void updateOdometry()
@@ -247,16 +278,12 @@ public class Drive extends SubsystemBase
 
         processPosition.add(_velocity.divide(Constants.LOOPS_PER_SECOND));
 
-        //_positionVariance += 4 + (_velocityVariance / Constants.LOOPS_PER_SECOND);// process variance
-        //_velocityVariance += 4;// assume that velocity is constant (it isn't)
-
-        //_rotationVelocityVariance += 4;
-
         // read sensors
         // calculate angular velocity
         double newRotationHeading = getHeading();
 
         double sensorRotationVelocity = (newRotationHeading - _rotationHeading) * Constants.LOOPS_PER_SECOND;
+        double sensorRotationVariance = Math.abs(_rotationVelocity - sensorRotationVelocity) + 2;
 
         _rotationHeading = newRotationHeading;
 
@@ -274,32 +301,29 @@ public class Drive extends SubsystemBase
         change.divide(_swerveModules.length);// to average (same as dividing each component)
         squaredChange.divide(_swerveModules.length);
 
-        //double xVariance = squaredChange.getX() - change.getX() * change.getX();
-        //double yVariance = squaredChange.getY() - change.getY() * change.getY();
-
-        //double sensorTranslationVariance = Math.sqrt(xVariance * xVariance + yVariance * yVariance);
-
         change.translatePolarPosition(0.0, getHeading());// field centric change
+        
+        double sensorPositionVariance = squaredChange.subtract(new Vector(change.getX() * change.getX(), change.getY() * change.getY())).getMagnitude() + 2;
 
         Vector sensorPosition = _position.add(change);
         Vector sensorVelocity = change.multiply(Constants.LOOPS_PER_SECOND);
 
-        Vector velocityChange = sensorVelocity.subtract(_velocity);
+        double sensorVelocityVariance = sensorVelocity.subtract(_velocity).getMagnitude() + 2;// added a constant to assume some wheel slippage
 
-        double sensorVelocityVariance = velocityChange.getMagnitude();
+        // fuse process and sensor values
 
         // TODO: test variances for position input and for odometry calculation
         //System.out.println(String.format("Process: %s; Sensor: %s; Sensor Variance: %6.2f, Heading: %6.2f", processPosition, sensorPosition, sensorTranslationVariance, _rotationHeading));
 
-        // TODO: fuse process and sensor values
-        _position = sensorPosition;
-        _rotationVelocity = sensorRotationVelocity;
+        _positionVariance += 4 + (_velocityVariance / Constants.LOOPS_PER_SECOND);// process variance
+        _velocityVariance += 4;// we can play with the costant addition
 
-        _velocity = _velocity.multiply(sensorVelocityVariance).add(sensorVelocity.multiply(_velocityVariance));
-        _velocity = _velocity.divide(_velocityVariance + sensorVelocityVariance);
+        _rotationVelocityVariance += 4;
 
-        // fuse variances
-        _velocityVariance = (_velocityVariance * sensorVelocityVariance) / (_velocityVariance + sensorVelocityVariance);
-        //System.out.println(String.format("Velocity Variance: %6.2f, New Velocity Variance; %6.2f, velocity: %s", _velocityVariance, sensorVelocityVariance, _velocity));
+        _position = processPosition;
+
+        fusePosition(sensorPosition, sensorPositionVariance);
+        fuseVelocity(sensorVelocity, sensorVelocityVariance);
+        fuseRotationVelocity(sensorRotationVelocity, sensorRotationVariance);
     }
 }

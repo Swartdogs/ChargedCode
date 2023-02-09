@@ -8,11 +8,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.commands.CmdDriveWithJoystick;
+import frc.robot.commands.CmdVisionDefault;
 import frc.robot.commands.CmdDriveBalance;
 import frc.robot.commands.CmdDriveResetEncoders;
 import frc.robot.commands.CmdDriveResetOdometer;
 import frc.robot.commands.CmdDriveToPosition;
-
+import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.Vector;
 
@@ -28,6 +29,7 @@ public class RobotContainer
         CmdDriveWithJoystick driveCmd = new CmdDriveWithJoystick(() -> driveJoy.getX(), () -> -driveJoy.getY(), () -> driveJoy.getZ(), () -> driveJoy.getRawButton(1));
 
         Drive.getInstance().setDefaultCommand(driveCmd);
+        Vision.getInstance().setDefaultCommand(new CmdVisionDefault());
 
         new JoystickButton(driveJoy, 11).onTrue(new CmdDriveResetOdometer());
         new JoystickButton(driveJoy, 8).onTrue(new CmdDriveResetEncoders());
