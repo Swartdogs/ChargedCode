@@ -44,6 +44,7 @@ public class Manipulator extends SubsystemBase
     private double           _twistMinRotation;
     private double           _twistMaxRotation;
     private double           _ejectTime;
+    private double           _ejectSpeed;
     private double           _intakeSpeed;
 
     private Manipulator()
@@ -64,6 +65,7 @@ public class Manipulator extends SubsystemBase
         _twistMinRotation   = Constants.Manipulator.TWIST_MIN_ROTATION;
         _twistMaxRotation   = Constants.Manipulator.TWIST_MAX_ROTATION;
         _ejectTime          = Constants.Manipulator.EJECT_TIME;
+        _ejectSpeed         = Constants.Manipulator.EJECT_SPEED;
         _intakeSpeed        = Constants.Manipulator.INTAKE_SPEED;
 
         _wristPID.setCoefficient(Coefficient.P, 0, 0, 0);
@@ -95,7 +97,7 @@ public class Manipulator extends SubsystemBase
 
     public void enableIntake()
     {
-        _intakeMotor.set(_intakeSpeed);
+        _intakeMotor.set(-_intakeSpeed);
     }
 
     public void disableIntake()
@@ -105,7 +107,7 @@ public class Manipulator extends SubsystemBase
 
     public void reverseIntake()
     {
-        _intakeMotor.set(-_intakeSpeed);
+        _intakeMotor.set(_ejectSpeed);
     }
 
     public void setTwistAngle(double position)
