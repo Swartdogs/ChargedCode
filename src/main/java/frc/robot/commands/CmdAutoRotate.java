@@ -17,6 +17,8 @@ public class CmdAutoRotate extends DriveCommand
         _yInput            = yInput;
         _robotCentricInput = robotCentricInput;
 
+        _rotatePID.setInputRange(0.0, 180.0);
+
         addRequirements(_drive);
     }
 

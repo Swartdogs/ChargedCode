@@ -5,29 +5,28 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-
+import frc.robot.commands.CmdArmFlipSides;
+import frc.robot.commands.CmdAutoRotate;
 import frc.robot.commands.CmdDriveWithJoystick;
 import frc.robot.groups.GrpSetArmPosition;
-import frc.robot.commands.CmdArmFlipSides;
-//import frc.robot.commands.CmdDriveBalance;
-import frc.robot.commands.CmdDriveResetEncoders;
-import frc.robot.commands.CmdDriveResetOdometer;
-import frc.robot.commands.CmdDriveToPosition;
-import frc.robot.subsystems.Dashboard;
 import frc.robot.subsystems.Arm.ArmPosition;
 import frc.robot.subsystems.Arm.ArmSide;
+import frc.robot.subsystems.Dashboard;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Manipulator.HandMode;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.Vector;
 
 public class RobotContainer 
 {
+    private Joystick       _driveJoy;
+    
     private JoystickButton _highButton;
     private JoystickButton _lowButton;
     private JoystickButton _middleButton;
     private JoystickButton _armSideSwitch;
     private JoystickButton _handModeSwitch;
+
+    private JoystickButton _driveJoyButton7;
 
     public RobotContainer()
     {
@@ -36,7 +35,6 @@ public class RobotContainer
         Manipulator.getInstance();
         Dashboard.getInstance();
 
-        Joystick driveJoy  = new Joystick(0);
         Joystick buttonBox = new Joystick(1);
 
         // CmdDriveWithJoystick driveCmd = new CmdDriveWithJoystick(() -> driveJoy.getX(), () -> -driveJoy.getY(), () -> driveJoy.getZ(), () -> driveJoy.getRawButton(1));
@@ -48,15 +46,34 @@ public class RobotContainer
 
         // new JoystickButton(driveJoy, 3).onTrue(new CmdDriveToPosition(new Vector(), 0));
 
-        _highButton     = new JoystickButton(buttonBox, 4);
-        _middleButton   = new JoystickButton(buttonBox, 2);
-        _lowButton      = new JoystickButton(buttonBox, 5);
-        _armSideSwitch  = new JoystickButton(buttonBox, 1);
-        _handModeSwitch = new JoystickButton(buttonBox, 3);
+        _driveJoy        = new Joystick(0);
+
+        _highButton      = new JoystickButton(buttonBox, 4);
+        _middleButton    = new JoystickButton(buttonBox, 2);
+        _lowButton       = new JoystickButton(buttonBox, 5);
+        _armSideSwitch   = new JoystickButton(buttonBox, 1);
+        _handModeSwitch  = new JoystickButton(buttonBox, 3);
+
+        _driveJoyButton7 = new JoystickButton(_driveJoy, 7);
 
         //new JoystickButton(driveJoy, 6).onTrue(new CmdDriveBalance());
 
+        configureDefaultCommands();
         configureBindings();
+    }
+
+    private void configureDefaultCommands()
+    {
+        Drive.getInstance().setDefaultCommand
+        (
+            new CmdDriveWithJoystick
+            (
+                this::getDriveJoyX,
+                this::getDriveJoyY,
+                this::getDriveJoyZ,
+                this::driveIsRobotCentric
+            )  
+        );
     }
 
     private void configureBindings() 
@@ -66,6 +83,8 @@ public class RobotContainer
         _highButton.onTrue(new GrpSetArmPosition(ArmPosition.High, ()->ArmSide.Front, this::getHandMode)); 
         //_middleButton.onTrue(new GrpSetArmPosition(ArmPosition.Middle, this::getArmSide, this::getHandMode));
         _lowButton.onTrue(new GrpSetArmPosition(ArmPosition.Low, ()->ArmSide.Back, this::getHandMode));
+
+        _driveJoyButton7.onTrue(new CmdAutoRotate(90, this::getDriveJoyX, this::getDriveJoyY, this::driveIsRobotCentric));
         
         //_armSideSwitch.onTrue(flipSidesCommand);
         //_armSideSwitch.onFalse(flipSidesCommand);
@@ -84,5 +103,52 @@ public class RobotContainer
     public HandMode getHandMode()
     {
         return _handModeSwitch.getAsBoolean() ? HandMode.Cube : HandMode.Cone;
+    }
+
+    private double applyDeadband(double input, double deadband)
+    {
+        double output = 0;
+
+        if (Math.abs(input) > deadband)
+        {
+            output = (input - (deadband * Math.signum(input))) / (1.0 - deadband);
+        }
+
+        return output;
+    }
+
+    private double getJoystickAxis(double input, boolean inverted, boolean squareInput, double deadband)
+    {
+        if(inverted)
+        {
+            input *= -1;
+        }
+
+        if (squareInput)
+        {
+            input *= input * Math.signum(input);
+        }
+
+        return applyDeadband(input, deadband);
+    }
+
+    private double getDriveJoyX()
+    {
+        return getJoystickAxis(_driveJoy.getX(), false, false, 0.05);
+    }
+
+    private double getDriveJoyY()
+    {
+        return getJoystickAxis(_driveJoy.getY(), true, false, 0.05);
+    }
+
+    private double getDriveJoyZ()
+    {
+        return getJoystickAxis(_driveJoy.getZ(), false, true, 0.1);
+    }
+
+    private boolean driveIsRobotCentric()
+    {
+        return _driveJoy.getRawButton(1);
     }
 }
