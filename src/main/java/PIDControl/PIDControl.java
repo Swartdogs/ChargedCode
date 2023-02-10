@@ -290,6 +290,10 @@ public class PIDControl
     {
         _continuous = continuous;
     }
+    public double getSetpoint()
+    {
+        return _setpoint;
+    }
 
     private double getAppropriateCoefficient(double error, double threshold, double kAbove, double kBelow)
     {

@@ -15,7 +15,7 @@ public class Robot extends TimedRobot
     @Override
     public void robotInit() 
     {
-        _robotContainer = new RobotContainer();
+        _robotContainer = RobotContainer.getInstance();
     }
 
     @Override

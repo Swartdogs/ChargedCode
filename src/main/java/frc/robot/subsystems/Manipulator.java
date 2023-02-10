@@ -10,7 +10,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -60,7 +59,6 @@ public class Manipulator extends SubsystemBase
     //Simulation Variables
     private DutyCycleEncoderSim _wristEncoderSim;
     private DutyCycleEncoderSim _twistEncoderSim;
-    private DIOSim              _intakeSensorSim;
 
     private Manipulator()
     {
@@ -100,7 +98,6 @@ public class Manipulator extends SubsystemBase
         {
             _wristEncoderSim = new DutyCycleEncoderSim(_wristEncoder);
             _twistEncoderSim = new DutyCycleEncoderSim(_twistEncoder);
-            _intakeSensorSim = new DIOSim(_intakeSensor);
 
             REVPhysicsSim.getInstance().addSparkMax(_wristMotor,  DCMotor.getNeo550(1));
             REVPhysicsSim.getInstance().addSparkMax(_twistMotor,  DCMotor.getNeo550(1));
@@ -143,6 +140,11 @@ public class Manipulator extends SubsystemBase
     public double getTwistAngle()
     {
         return _twistEncoder.get();
+    }
+
+    public void flipHand()
+    {
+        _twistPID.setSetpoint(180-_twistPID.getSetpoint(), getTwistAngle());
     }
 
     public boolean isIntakeSensorActive()

@@ -1,21 +1,14 @@
 package frc.robot.commands;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
+import frc.robot.RobotContainer;
 
 public class CmdAutoRotate extends DriveCommand 
 {
     private double          _desiredAngle;
-    private DoubleSupplier  _xInput;
-    private DoubleSupplier  _yInput; 
-    private BooleanSupplier _robotCentricInput;
 
-    public CmdAutoRotate(double desiredAngle, DoubleSupplier xInput, DoubleSupplier yInput, BooleanSupplier robotCentricInput) 
+    public CmdAutoRotate(double desiredAngle) 
     {
         _desiredAngle      = desiredAngle;
-        _xInput            = xInput;
-        _yInput            = yInput;
-        _robotCentricInput = robotCentricInput;
 
         _rotatePID.setInputRange(0.0, 180.0);
 
@@ -32,10 +25,10 @@ public class CmdAutoRotate extends DriveCommand
     public void execute() 
     {
         double outputR = _rotatePID.calculate(_drive.getHeading());
-        double x       = _xInput.getAsDouble();
-        double y       = _yInput.getAsDouble();
+        double x       =  RobotContainer.getInstance().getDriveJoyX();
+        double y       =  RobotContainer.getInstance().getDriveJoyY();
 
-        boolean robotCentric = _robotCentricInput.getAsBoolean();
+        boolean robotCentric =  RobotContainer.getInstance().driveIsRobotCentric();
 
         if (robotCentric)
         {

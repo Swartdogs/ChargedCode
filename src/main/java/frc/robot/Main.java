@@ -12,10 +12,11 @@ public final class Main
     }
 }
 /*
- * Test Arm Flip
- * Create Manual Hand Flip
- * Eject Game Piece
- * Intake Game Piece
- * Manual Modification
- * 1 piece auto (& balance)
+ * Eject Game Piece             DONE
+ * Intake Game Piece            DONE
+ * Manual Modification          DONE
+ * Create Manual Hand Flip      DONE
+ * Make Hand Mode Switch Work   
+ * Test Arm Flip            
+ * 1 piece auto (& balance) 
  */
