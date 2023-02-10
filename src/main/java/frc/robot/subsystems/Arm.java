@@ -34,7 +34,10 @@ public class Arm extends SubsystemBase
     {
         High,
         Middle,
-        Low
+        Low,
+        Substation,
+        Ground,
+        Stow
     }
 
     public enum ArmSide
@@ -112,7 +115,7 @@ public class Arm extends SubsystemBase
             REVPhysicsSim.getInstance().addSparkMax(_linearMotor, DCMotor.getNEO(1));
             REVPhysicsSim.getInstance().addSparkMax(_pitchMotor, DCMotor.getNeo550(2));
         }
-        
+
         RobotLog.getInstance().log("Created Arm Subsystem");
     }
 
@@ -142,10 +145,20 @@ public class Arm extends SubsystemBase
        _extensionPidActive = true;
        _extensionPid.setSetpoint(position, getExtensionPosition());
     }
+  
+    public void modifyExtensionMotorPosition(double modification)
+    {
+        _extensionPid.setSetpoint(_extensionPid.getSetpoint()+modification, getExtensionPosition());
+    }
 
     public void setShoulderAngle(double angle)
     {
         _shoulderPid.setSetpoint(angle, getShoulderAngle());
+    }
+
+    public void modifyShoulderAngle(double modification)
+    {
+        _shoulderPid.setSetpoint(_shoulderPid.getSetpoint()+modification, getShoulderAngle());
     }
 
     public boolean shoulderAtAngle()
