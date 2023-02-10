@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.CmdAutoRotate;
 import frc.robot.commands.CmdDriveWithJoystick;
@@ -19,17 +20,19 @@ public class RobotContainer
     private JoystickButton _driveJoyButton2;
     private JoystickButton _driveJoyButton3;
     //private JoystickButton _driveJoyButton6;
+    private JoystickButton _driveJoyButton9;
     private JoystickButton _driveJoyButton11;
 
     private JoystickButton _driveJoyButton7;
 
     public RobotContainer()
     {
-        _driveJoy = new Joystick(0);
+        _driveJoy         = new Joystick(0);
 
-        _driveJoyButton2 = new JoystickButton(_driveJoy, 2);
-        _driveJoyButton3 = new JoystickButton(_driveJoy, 3);
+        _driveJoyButton2  = new JoystickButton(_driveJoy, 2);
+        _driveJoyButton3  = new JoystickButton(_driveJoy, 3);
         //_driveJoyButton6 = new JoystickButton(_driveJoy, 6);
+        _driveJoyButton9  = new JoystickButton(_driveJoy, 9);
         _driveJoyButton11 = new JoystickButton(_driveJoy, 11);
         
         Dashboard.getInstance();
@@ -54,12 +57,23 @@ public class RobotContainer
 
     private void configureBindings() 
     {
-        _driveJoyButton2.onTrue(new CmdDriveResetOdometer());
-        _driveJoyButton3.onTrue(new CmdDriveToPosition(new Vector(), 0));
-        //_driveJoyButton6.onTrue(new CmdDriveBalance());
-        _driveJoyButton7.onTrue(new CmdAutoRotate(90, this::getDriveJoyX, this::getDriveJoyY, this::driveIsRobotCentric));
-        _driveJoyButton11.onTrue(new CmdDriveResetEncoders());
+        CmdDriveToPosition driveToPosition   = new CmdDriveToPosition(new Vector(), 0);
+        CmdAutoRotate      driveAutoRotate90 = new CmdAutoRotate(90, this::getDriveJoyX, this::getDriveJoyY, this::driveIsRobotCentric);
+        //CmdDriveBalance    driveAutoBalance  = new CmdDriveBalance();
 
+        _driveJoyButton2.onTrue(new CmdDriveResetOdometer());
+        _driveJoyButton3.onTrue(driveToPosition);
+        //_driveJoyButton6.onTrue(new CmdDriveBalance());
+        _driveJoyButton7.onTrue(driveAutoRotate90);
+        _driveJoyButton9.onTrue
+        (
+            new InstantCommand(() -> 
+            {
+                driveToPosition.cancel();
+                driveAutoRotate90.cancel();
+            })
+        );
+        _driveJoyButton11.onTrue(new CmdDriveResetEncoders());
     }
 
     public Command getAutonomousCommand() 
