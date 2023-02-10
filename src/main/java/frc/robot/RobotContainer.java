@@ -11,6 +11,7 @@ import frc.robot.commands.CmdDriveWithJoystick;
 import frc.robot.commands.CmdDriveBalance;
 import frc.robot.commands.CmdDriveResetEncoders;
 import frc.robot.commands.CmdDriveResetOdometer;
+import frc.robot.commands.CmdDriveRevisedBalance;
 import frc.robot.commands.CmdDriveToPosition;
 
 import frc.robot.subsystems.drive.Drive;
@@ -34,11 +35,11 @@ public class RobotContainer
         new JoystickButton(driveJoy, 8).onTrue(new CmdDriveResetEncoders());
 
         CmdDriveToPosition driveTestCommand = new CmdDriveToPosition(new Vector(), 0);
-        CmdDriveBalance balanceCommand = new CmdDriveBalance();
+        CmdDriveRevisedBalance balanceCommand = new CmdDriveRevisedBalance();
 
         new JoystickButton(driveJoy, 5).onTrue(driveTestCommand);
 
-        new JoystickButton(driveJoy, 4).onTrue(balanceCommand);
+        new JoystickButton(driveJoy, 1).onTrue(balanceCommand);
 
         JoystickButton cancelButton = new JoystickButton(driveJoy, 2);
         cancelButton.onTrue(new InstantCommand(()->driveTestCommand.cancel()));

@@ -186,7 +186,12 @@ public class Drive extends SubsystemBase
     public void periodic()
     {
         updateOdometry();
-
+        System.out.println(String.format("FL: %6.2f, FR: %6.2f, BL: %6.2f, BR: %6.2f", 
+                                        _swerveModules[0].getDrivePosition(),
+                                        _swerveModules[1].getDrivePosition(),
+                                        _swerveModules[2].getDrivePosition(),
+                                        _swerveModules[3].getDrivePosition()));
+        
         //System.out.println(String.format("Yaw: %6.2f, Pitch: %6.2f, Roll: %6.2f; Velocity: %s", _gyro.getYaw(), _gyro.getPitch(), _gyro.getRoll(), getChassisVelocity()));
         //System.out.println(String.format("Gyro: %6.2f, Field Position: %s, Chassis Velocity: %s", getHeading(), getFieldPosition(), getChassisVelocity()));
     }

@@ -23,7 +23,9 @@ public final class Constants
 
     public static class Drive
     {
-        public static final double DRIVE_ENCODER_TO_DISTANCE = 123.0 /* inches */ / 161294.5 /* encoder ticks */;
+        public static final double DRIVE_GEAR_RATIO          = (14.0 / 36.0) * (15.0 / 45.0);
+        public static final double DRIVE_WHEEL_DIAMETER      = 4.0;
+        public static final double DRIVE_ENCODER_TO_DISTANCE = DRIVE_GEAR_RATIO * Math.PI * DRIVE_WHEEL_DIAMETER;
 
         public static final double BASE_WIDTH                = 20;
         public static final double BASE_LENGTH               = 28.75;

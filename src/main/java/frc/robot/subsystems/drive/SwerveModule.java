@@ -63,6 +63,9 @@ public class SwerveModule extends Vector
         _rotatePID.setOutputRange(-1, 1);
 
         _rotatePID.setSetpointDeadband(3.5);// 5 degree deadband recommended online by other teams
+
+        _driveMotor.getEncoder().setPosition(0);
+        _driveMotor.getEncoder().setPositionConversionFactor(Constants.Drive.DRIVE_ENCODER_TO_DISTANCE);
     }
 
     /**
@@ -136,7 +139,7 @@ public class SwerveModule extends Vector
      */
     public double getDrivePosition()
     {
-        return _driveMotor.getEncoder().getPosition() * Constants.Drive.DRIVE_ENCODER_TO_DISTANCE;
+        return _driveMotor.getEncoder().getPosition();
         //return _driveMotor.getSelectedSensorPosition() * Constants.Drive.DRIVE_ENCODER_TO_DISTANCE;
     }
 
