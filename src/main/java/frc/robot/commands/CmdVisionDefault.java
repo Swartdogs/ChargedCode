@@ -3,23 +3,15 @@ package frc.robot.commands;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
+import frc.robot.Constants.Vision.Camera;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.Vector;
 
 public class CmdVisionDefault extends CommandBase
 {
-    Vision _vision;
-    Drive _drive;
-
-    private class Camera
-    {
-        public Vector position;
-        public double yaw;
-        public double pitch;
-        public double height;
-    }
+    private Vision _vision;
+    private Drive _drive;
 
     public CmdVisionDefault()
     {
@@ -40,15 +32,12 @@ public class CmdVisionDefault extends CommandBase
     {
         PhotonTrackedTarget target = null;
 
-        Camera targetCamera = new Camera();
+        Camera targetCamera = null;
 
         if (_vision.getFrontResult().hasTargets())
         {
             target = _vision.getFrontResult().getBestTarget();
-            targetCamera.position = new Vector(Constants.Vision.FRONT_CAMERA_X, Constants.Vision.FRONT_CAMERA_Y);
-            targetCamera.yaw = Constants.Vision.FRONT_CAMERA_YAW;
-            targetCamera.pitch = Constants.Vision.FRONT_CAMERA_TILT;
-            targetCamera.height = Constants.Vision.FRONT_CAMERA_HEIGHT;
+            targetCamera = Camera.Front;
         }
 
         if (_vision.getRearResult().hasTargets())
@@ -58,10 +47,7 @@ public class CmdVisionDefault extends CommandBase
             if (target == null || rearTarget.getArea() > target.getArea())
             {
                 target = rearTarget;
-                targetCamera.position = new Vector(Constants.Vision.REAR_CAMERA_X, Constants.Vision.REAR_CAMERA_Y);
-                targetCamera.yaw = Constants.Vision.REAR_CAMERA_YAW;
-                targetCamera.pitch = Constants.Vision.REAR_CAMERA_TILT;
-                targetCamera.height = Constants.Vision.REAR_CAMERA_HEIGHT;
+                targetCamera = Camera.Rear;
             }
         }
 

@@ -1,5 +1,7 @@
 package frc.robot;
 
+import frc.robot.subsystems.drive.Vector;
+
 public final class Constants 
 {
     public static final int    LOOPS_PER_SECOND            = 50;
@@ -62,16 +64,34 @@ public final class Constants
     {
         public static final double FRONT_CAMERA_HEIGHT = 0.0;   // height from the floor
         public static final double FRONT_CAMERA_YAW = 0.0;      // heading
-        public static final double FRONT_CAMERA_TILT = 0.0;     // angle of elevation
+        public static final double FRONT_CAMERA_PITCH = 0.0;     // angle of elevation
         public static final double FRONT_CAMERA_X = 2.0;        // inches right on the robot frame
         public static final double FRONT_CAMERA_Y = 3.0;        // inches forward on the robot from
 
         public static final double REAR_CAMERA_HEIGHT = 0.0;   // height from the floor
         public static final double REAR_CAMERA_YAW = 0.0;      // heading
-        public static final double REAR_CAMERA_TILT = 0.0;     // angle of elevation
+        public static final double REAR_CAMERA_PITCH = 0.0;     // angle of elevation
         public static final double REAR_CAMERA_X = 2.0;        // inches right on the robot frame
         public static final double REAR_CAMERA_Y = 3.0;        // inches forward on the robot from
 
+        public enum Camera
+        {
+            Front(new Vector(Constants.Vision.FRONT_CAMERA_X, Constants.Vision.FRONT_CAMERA_Y), Constants.Vision.FRONT_CAMERA_YAW, Constants.Vision.FRONT_CAMERA_PITCH, Constants.Vision.FRONT_CAMERA_HEIGHT),
+            Rear( new Vector( Constants.Vision.REAR_CAMERA_X,  Constants.Vision.REAR_CAMERA_Y),  Constants.Vision.REAR_CAMERA_YAW,  Constants.Vision.REAR_CAMERA_PITCH,  Constants.Vision.REAR_CAMERA_HEIGHT);
+
+            public final Vector position;
+            public final double yaw;
+            public final double pitch;
+            public final double height;
+
+            private Camera(Vector position, double yaw, double pitch, double height)
+            {
+                this.position = position;
+                this.yaw = yaw;
+                this.pitch = pitch;
+                this.height = height;
+            }
+        }
 
         // field layout https://firstfrc.blob.core.windows.net/frc2023/FieldAssets/2023LayoutMarkingDiagram.pdf
         public static final double GRID_TAG_HEIGHT       = 18.22;

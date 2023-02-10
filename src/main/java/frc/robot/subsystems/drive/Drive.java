@@ -124,7 +124,7 @@ public class Drive extends SubsystemBase
     {
         for (int i = 0; i < _swerveModules.length; i++)
         {
-            _swerveModules[i].zeroEncoder();
+            _swerveModules[i].zeroRotation();
         }
     }
 
@@ -230,7 +230,7 @@ public class Drive extends SubsystemBase
 
     public void fusePosition(Vector inputPosition, double inputVariance)
     {
-        if (inputVariance > 0)// prevent NaN, null, and negative variances
+        if (inputVariance > 0)// prevent negative variances
         {
             double newX = _position.getX() * inputVariance + inputPosition.getX() * _positionVariance;
             double newY = _position.getY() * inputVariance + inputPosition.getY() * _positionVariance;
@@ -245,7 +245,7 @@ public class Drive extends SubsystemBase
 
     public void fuseVelocity(Vector inputVelocity, double inputVariance)
     {
-        if (inputVariance > 0)// prevent NaN, null, and negative variances
+        if (inputVariance > 0)// prevent negative variances
         {
             double newX = _velocity.getX() * inputVariance + inputVelocity.getX() * _velocityVariance;
             double newY = _velocity.getY() * inputVariance + inputVelocity.getY() * _velocityVariance;
@@ -260,7 +260,7 @@ public class Drive extends SubsystemBase
 
     public void fuseHeading(double inputHeading, double inputVariance)
     {
-        if (inputVariance > 0)// prevent NaN, null, and negative variances
+        if (inputVariance > 0)// prevent negative variances
         {
             double diff = (inputHeading - getHeading());
             diff = (diff * _rotationHeadingVariance) / (_rotationHeadingVariance + inputVariance);
@@ -272,7 +272,7 @@ public class Drive extends SubsystemBase
 
     public void fuseRotationVelocity(double inputRotation, double inputVariance)
     {
-        if (inputVariance > 0)// prevent NaN, null, and negative variances
+        if (inputVariance > 0)// prevent negative variances
         {
             _rotationVelocity = (inputRotation * _rotationVelocityVariance + _rotationVelocity * inputVariance) / (_rotationVelocityVariance + inputVariance);
             _rotationVelocityVariance = (_rotationVelocityVariance * inputVariance) / (_rotationVelocityVariance + inputVariance);
@@ -282,9 +282,7 @@ public class Drive extends SubsystemBase
     public void updateOdometry()
     {
         //generate the process values
-        Vector processPosition = _position;
-
-        processPosition.add(_velocity.divide(Constants.LOOPS_PER_SECOND));
+         Vector processPosition = _position.add(_velocity.divide(Constants.LOOPS_PER_SECOND));
 
         // read sensors
         // calculate angular velocity
@@ -303,11 +301,11 @@ public class Drive extends SubsystemBase
         {
             Vector moduleChange = _swerveModules[i].updateOdometry();
             change = change.add(moduleChange);
-            squaredChange.add(new Vector(moduleChange.getX() * moduleChange.getX(), moduleChange.getY() * moduleChange.getY()));
+            squaredChange = squaredChange.add(new Vector(moduleChange.getX() * moduleChange.getX(), moduleChange.getY() * moduleChange.getY()));
         }
 
-        change.divide(_swerveModules.length);// to average (same as dividing each component)
-        squaredChange.divide(_swerveModules.length);
+        change = change.divide(_swerveModules.length);// to average (same as dividing each component)
+        squaredChange = squaredChange.divide(_swerveModules.length);
 
         change.translatePolarPosition(0.0, getHeading());// field centric change
         

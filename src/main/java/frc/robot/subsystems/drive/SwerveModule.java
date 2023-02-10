@@ -50,6 +50,8 @@ public class SwerveModule extends Vector
         _driveMotor.restoreFactoryDefaults();
         _rotateMotor.restoreFactoryDefaults(); // doesn't matter how the sparkmax has been previously set up
 
+        _driveMotor.getEncoder().setPositionConversionFactor(Constants.Drive.DRIVE_ENCODER_TO_DISTANCE);
+
         _rotatePID = new PIDControl();
 
         _rotatePID.setCoefficient(Coefficient.P, 0.0, 0.01, 0.0);// 1% power for every degree of error
@@ -106,7 +108,7 @@ public class SwerveModule extends Vector
     /**
      * set the zero point so that the module is now facing the "reset offset" direction
      */
-    public void zeroEncoder()
+    public void zeroRotation()
     {
         _rotationZero = Math.IEEEremainder(-_rotateSensor.get() - _resetOffset, 360);
         System.out.println(String.format("%6.2f", _rotationZero));
@@ -116,7 +118,7 @@ public class SwerveModule extends Vector
      * Get the rotation encoder's zero offset 
      * @return the offset as previously set in degrees
      */
-    public double getRelativeZero()
+    public double getRotationZero()
     {
         return _rotationZero;
     }
@@ -136,8 +138,7 @@ public class SwerveModule extends Vector
      */
     public double getDrivePosition()
     {
-        return _driveMotor.getEncoder().getPosition() * Constants.Drive.DRIVE_ENCODER_TO_DISTANCE;
-        //return _driveMotor.getSelectedSensorPosition() * Constants.Drive.DRIVE_ENCODER_TO_DISTANCE;
+        return _driveMotor.getEncoder().getPosition();
     }
 
     /**
