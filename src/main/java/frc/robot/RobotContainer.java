@@ -16,7 +16,6 @@ import frc.robot.subsystems.drive.Vector;
 public class RobotContainer 
 {
     private Joystick       _driveJoy;
-    private JoystickButton _driveJoyButton1;
     private JoystickButton _driveJoyButton2;
     private JoystickButton _driveJoyButton3;
     //private JoystickButton _driveJoyButton6;
@@ -28,7 +27,6 @@ public class RobotContainer
     {
         _driveJoy = new Joystick(0);
 
-        _driveJoyButton1 = new JoystickButton(_driveJoy, 1);
         _driveJoyButton2 = new JoystickButton(_driveJoy, 2);
         _driveJoyButton3 = new JoystickButton(_driveJoy, 3);
         //_driveJoyButton6 = new JoystickButton(_driveJoy, 6);
@@ -59,9 +57,9 @@ public class RobotContainer
         _driveJoyButton2.onTrue(new CmdDriveResetOdometer());
         _driveJoyButton3.onTrue(new CmdDriveToPosition(new Vector(), 0));
         //_driveJoyButton6.onTrue(new CmdDriveBalance());
+        _driveJoyButton7.onTrue(new CmdAutoRotate(90, this::getDriveJoyX, this::getDriveJoyY, this::driveIsRobotCentric));
         _driveJoyButton11.onTrue(new CmdDriveResetEncoders());
 
-        _driveJoyButton7.onTrue(new CmdAutoRotate(90, this::getDriveJoyX, this::getDriveJoyY, this::driveIsRobotCentric));
     }
 
     public Command getAutonomousCommand() 
