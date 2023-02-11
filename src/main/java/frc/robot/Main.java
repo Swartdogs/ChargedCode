@@ -11,12 +11,3 @@ public final class Main
         RobotBase.startRobot(Robot::new);
     }
 }
-/*
- * Eject Game Piece             DONE
- * Intake Game Piece            DONE
- * Manual Modification          DONE
- * Create Manual Hand Flip      DONE
- * Make Hand Mode Switch Work   DONE
- * Test Arm Flip                DONE
- * 1 piece auto (& balance)     
- */

@@ -27,6 +27,10 @@ public class GrpSetArmPosition extends SequentialCommandGroup
             {
                 _armData = Constants.Lookups.lookUpArmData(position, RobotContainer.getInstance().getArmSide(), RobotContainer.getInstance().getHandMode());
                 Arm.getInstance().setArmPosition(position);
+                if(position == ArmPosition.Stow)
+                {
+                    Manipulator.getInstance().setIsFlipped(false);
+                }
             }),  
             new ParallelCommandGroup
             (

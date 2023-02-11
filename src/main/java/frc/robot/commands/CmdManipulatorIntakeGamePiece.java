@@ -30,6 +30,6 @@ public class CmdManipulatorIntakeGamePiece extends CommandBase
     @Override
     public boolean isFinished() 
     {
-        return _manipulatorSubsystem.isIntakeSensorActive();
+        return _manipulatorSubsystem.hasGamePiece();
     }
 }

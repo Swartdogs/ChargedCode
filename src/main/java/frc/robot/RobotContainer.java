@@ -11,8 +11,8 @@ import frc.robot.commands.CmdArmModifyExtensionPosition;
 import frc.robot.commands.CmdArmModifyShoulderAngle;
 import frc.robot.commands.CmdAutoRotate;
 import frc.robot.commands.CmdDriveWithJoystick;
-import frc.robot.commands.CmdManipulatorHandFlip;
 import frc.robot.commands.CmdManipulatorPlaceGamePiece;
+import frc.robot.groups.GrpManipulatorHandFlip;
 import frc.robot.groups.GrpIntakeGamePiece;
 import frc.robot.groups.GrpSetArmPosition;
 import frc.robot.subsystems.Arm.ArmPosition;
@@ -97,7 +97,7 @@ public class RobotContainer
 
     private void configureBindings() 
     {
-        _buttonBoxButton1.onTrue(new CmdManipulatorHandFlip());
+        _buttonBoxButton1.onTrue(new GrpManipulatorHandFlip());
         
         _buttonBoxButton2.onTrue(new GrpSetArmPosition(ArmPosition.Stow));
         _buttonBoxButton3.onTrue(new GrpSetArmPosition(ArmPosition.High)); 

@@ -55,6 +55,7 @@ public class Manipulator extends SubsystemBase
     private CANSparkMax         _intakeMotor;
     private DigitalInput        _intakeSensor;
     private IntakeState         _intakeState;
+    private boolean             _isFlipped;
 
     //Settings
     private double              _wristMinAngle;
@@ -81,6 +82,7 @@ public class Manipulator extends SubsystemBase
         _intakeMotor        = new CANSparkMax(Constants.Manipulator.INTAKE_MOTOR_CAN_ID, MotorType.kBrushless);
         _intakeSensor       = new DigitalInput(Constants.Manipulator.INTAKE_SENSOR_PORT);
         _intakeState        = IntakeState.Off;
+        _isFlipped          = false;
 
         _wristMinAngle      = Constants.Manipulator.WRIST_MAX_ANGLE;
         _wristMaxAngle      = Constants.Manipulator.WRIST_MIN_ANGLE;
@@ -146,18 +148,24 @@ public class Manipulator extends SubsystemBase
 
     public double getIntakeSpeed()
     {
-        if(_intakeState == IntakeState.On)
+        double speed = 0;
+
+        switch(_intakeState)
         {
-            return _intakeSpeed;
+            case On: 
+                speed = _intakeSpeed;
+                break;
+
+            case Off:
+                speed = 0;
+                break;
+
+            case Reverse:
+                speed = -_intakeSpeed;
+                break;
         }
-        else if(_intakeState == IntakeState.Off)
-        {
-            return 0;
-        }
-        else
-        {
-            return -_intakeSpeed;
-        }
+
+        return speed;
     }
 
     public void setTwistAngle(double position)
@@ -170,12 +178,22 @@ public class Manipulator extends SubsystemBase
         return _twistEncoder.get();
     }
 
-    public void flipHand()
+    public double getTwistTargetAngle()
     {
-        _twistPID.setSetpoint(180-_twistPID.getSetpoint(), getTwistAngle());
+        return _twistPID.getSetpoint();
     }
 
-    public boolean isIntakeSensorActive()
+    public void setIsFlipped(boolean isFlipped)
+    {
+        _isFlipped = isFlipped;
+    }
+
+    public boolean isFlipped()
+    {
+        return _isFlipped;
+    }
+
+    public boolean hasGamePiece()
     {
         return !_intakeSensor.get();    
     }

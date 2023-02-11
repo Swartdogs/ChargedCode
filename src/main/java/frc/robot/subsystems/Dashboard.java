@@ -188,6 +188,6 @@ public class Dashboard extends SubsystemBase
         _brAngle.setDouble(Double.parseDouble(String.format("%6.2f", Drive.getInstance().getSwerveModule(Constants.Drive.BR_INDEX).getHeading())));
         _blAngle.setDouble(Double.parseDouble(String.format("%6.2f", Drive.getInstance().getSwerveModule(Constants.Drive.BL_INDEX).getHeading())));*/
         
-        _hasGamePiece.setBoolean(Manipulator.getInstance().isIntakeSensorActive());
+        _hasGamePiece.setBoolean(Manipulator.getInstance().hasGamePiece());
     }
 }
