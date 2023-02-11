@@ -103,12 +103,15 @@ public class Arm extends SubsystemBase
         _extensionPid.setOutputRange(-1, 1);
         _extensionPid.setSetpointDeadband(1);
 
+        _linearMotor.setInverted(true);
+
         _extensionEncoder.setPositionConversionFactor(1);
 
         followerPitchMotor.follow(_pitchMotor, true);
 
         if (RobotBase.isSimulation())
         {
+            _linearMotor.setInverted(false);
             _limitSwitchSim = new DIOSim(_limitSwitch);
             _pitchEncoderSim = new DutyCycleEncoderSim(_pitchEncoder);
 

@@ -1,5 +1,6 @@
 package frc.robot.groups;
 
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
@@ -22,21 +23,17 @@ public class GrpSetArmPosition extends SequentialCommandGroup
     {
         addCommands
         (
-            new InstantCommand(()-> _armData = Constants.Lookups.lookUpArmData(position, RobotContainer.getInstance().getArmSide(), RobotContainer.getInstance().getHandMode())), 
-            new InstantCommand(()->Arm.getInstance().setArmPosition(position)), 
-            new CmdArmSetExtensionPosition(0), 
+            new InstantCommand(()-> 
+            {
+                _armData = Constants.Lookups.lookUpArmData(position, RobotContainer.getInstance().getArmSide(), RobotContainer.getInstance().getHandMode());
+                Arm.getInstance().setArmPosition(position);
+            }),  
             new ParallelCommandGroup
             (
-                new SequentialCommandGroup
-                (
-                    new ProxyCommand(()-> new CmdArmSetShoulderAngle(_armData.getArmAngle())), 
-                    new ProxyCommand(()-> new CmdArmSetExtensionPosition(_armData.getArmExtension()))
-                ),
-                new SequentialCommandGroup
-                (
-                    new ProxyCommand(()-> new CmdManipulatorSetTwistAngle(_armData.getTwistAngle())),
-                    new ProxyCommand(()-> new CmdManipulatorSetWristAngle(_armData.getWristAngle()))
-                )
+                new ProxyCommand(()-> new CmdArmSetShoulderAngle(_armData.getArmAngle())), 
+                new ProxyCommand(()-> new CmdArmSetExtensionPosition(_armData.getArmExtension())),
+                new ProxyCommand(()-> new CmdManipulatorSetTwistAngle(_armData.getTwistAngle())),
+                new ProxyCommand(()-> new CmdManipulatorSetWristAngle(_armData.getWristAngle())) 
             )
         );
     }

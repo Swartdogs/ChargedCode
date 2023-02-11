@@ -16,7 +16,7 @@ public final class Main
  * Intake Game Piece            DONE
  * Manual Modification          DONE
  * Create Manual Hand Flip      DONE
- * Make Hand Mode Switch Work   
- * Test Arm Flip            
- * 1 piece auto (& balance) 
+ * Make Hand Mode Switch Work   DONE
+ * Test Arm Flip                DONE
+ * 1 piece auto (& balance)     
  */
