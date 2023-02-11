@@ -1,6 +1,5 @@
 package frc.robot.groups;
 
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
@@ -14,6 +13,7 @@ import frc.robot.commands.CmdManipulatorSetTwistAngle;
 import frc.robot.commands.CmdManipulatorSetWristAngle;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmPosition;
+import frc.robot.subsystems.Manipulator;
 
 public class GrpSetArmPosition extends SequentialCommandGroup 
 {
@@ -27,6 +27,7 @@ public class GrpSetArmPosition extends SequentialCommandGroup
             {
                 _armData = Constants.Lookups.lookUpArmData(position, RobotContainer.getInstance().getArmSide(), RobotContainer.getInstance().getHandMode());
                 Arm.getInstance().setArmPosition(position);
+                Manipulator.getInstance().disableIntake();
             }),  
             new ParallelCommandGroup
             (
