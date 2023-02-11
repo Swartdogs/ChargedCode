@@ -33,6 +33,13 @@ public class Manipulator extends SubsystemBase
         Cube,
         Cone
     }
+
+    private enum IntakeState
+    {
+        On,
+        Off,
+        Reverse
+    }
     
     //Wrist Controls
     private CANSparkMax         _wristMotor;
@@ -47,6 +54,7 @@ public class Manipulator extends SubsystemBase
     //Intake Controls
     private CANSparkMax         _intakeMotor;
     private DigitalInput        _intakeSensor;
+    private IntakeState         _intakeState;
 
     //Settings
     private double              _wristMinAngle;
@@ -72,6 +80,7 @@ public class Manipulator extends SubsystemBase
 
         _intakeMotor        = new CANSparkMax(Constants.Manipulator.INTAKE_MOTOR_CAN_ID, MotorType.kBrushless);
         _intakeSensor       = new DigitalInput(Constants.Manipulator.INTAKE_SENSOR_PORT);
+        _intakeState        = IntakeState.Off;
 
         _wristMinAngle      = Constants.Manipulator.WRIST_MAX_ANGLE;
         _wristMaxAngle      = Constants.Manipulator.WRIST_MIN_ANGLE;
@@ -120,16 +129,35 @@ public class Manipulator extends SubsystemBase
     public void enableIntake()
     {
         _intakeMotor.setVoltage(_intakeSpeed * Constants.MOTOR_VOLTAGE);
+        _intakeState = IntakeState.On;
     }
 
     public void disableIntake()
     {
         _intakeMotor.setVoltage(0);
+        _intakeState = IntakeState.Off;
     }
 
     public void reverseIntake()
     {
         _intakeMotor.setVoltage(-_intakeSpeed * Constants.MOTOR_VOLTAGE);
+        _intakeState = IntakeState.Reverse;
+    }
+
+    public double getIntakeSpeed()
+    {
+        if(_intakeState == IntakeState.On)
+        {
+            return _intakeSpeed;
+        }
+        else if(_intakeState == IntakeState.Off)
+        {
+            return 0;
+        }
+        else
+        {
+            return -_intakeSpeed;
+        }
     }
 
     public void setTwistAngle(double position)

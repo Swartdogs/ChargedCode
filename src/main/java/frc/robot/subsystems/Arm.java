@@ -84,6 +84,7 @@ public class Arm extends SubsystemBase
         _extensionPid       = new PIDControl();
         _shoulderPid        = new PIDControl();
         _extensionEncoder   = _linearMotor.getEncoder();
+        _armPosition        = ArmPosition.Stow;
 
         _minShoulderAngle   = Constants.Arm.SHOULDER_MIN_ANGLE;
         _maxShoulderAngle   = Constants.Arm.SHOULDER_MAX_ANGLE;

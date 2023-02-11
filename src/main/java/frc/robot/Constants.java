@@ -66,7 +66,7 @@ public final class Constants
     {
         public static final int     WRIST_MOTOR_CAN_ID      =   9;
         public static final int     WRIST_ENCODER_PORT      =   5;
-        public static final double  WRIST_MIN_ANGLE         =  -90.0;
+        public static final double  WRIST_MIN_ANGLE         =   -90.0;
         public static final double  WRIST_MAX_ANGLE         =   90.0;
         public static final int     TWIST_MOTOR_CAN_ID      =   10;
         public static final int     TWIST_ENCODER_PORT      =   6;
@@ -74,8 +74,8 @@ public final class Constants
         public static final double  TWIST_MAX_ROTATION      =   180.0;
         public static final int     INTAKE_MOTOR_CAN_ID     =   12;
         public static final int     INTAKE_SENSOR_PORT      =   7;
-        public static final double  EJECT_TIME              =   0;
-        public static final double  INTAKE_SPEED            =   0;
+        public static final double  EJECT_TIME              =   1;
+        public static final double  INTAKE_SPEED            =   -0.75;
     }
 
     public static class Lookups

@@ -15,7 +15,6 @@ import frc.robot.commands.CmdManipulatorHandFlip;
 import frc.robot.commands.CmdManipulatorPlaceGamePiece;
 import frc.robot.groups.GrpIntakeGamePiece;
 import frc.robot.groups.GrpSetArmPosition;
-import frc.robot.groups.GrpStow;
 import frc.robot.subsystems.Arm.ArmPosition;
 import frc.robot.subsystems.Arm.ArmSide;
 import frc.robot.subsystems.Arm;
@@ -98,12 +97,9 @@ public class RobotContainer
 
     private void configureBindings() 
     {
-        var flipSidesCommand = new GrpSetArmPosition(ArmPosition.Stow);
-        var changeHandModeCommand = new ProxyCommand(()-> new GrpSetArmPosition(Arm.getInstance().getArmPosition()));
-
         _buttonBoxButton1.onTrue(new CmdManipulatorHandFlip());
         
-        _buttonBoxButton2.onTrue(new GrpStow());
+        _buttonBoxButton2.onTrue(new GrpSetArmPosition(ArmPosition.Stow));
         _buttonBoxButton3.onTrue(new GrpSetArmPosition(ArmPosition.High)); 
         _buttonBoxButton4.onTrue(new GrpSetArmPosition(ArmPosition.Middle));
         _buttonBoxButton5.onTrue(new GrpSetArmPosition(ArmPosition.Low));
@@ -119,11 +115,11 @@ public class RobotContainer
         //_driveJoyButton7.onTrue(new CmdAutoRotate(90));
         _buttonBoxButton8.onTrue(new CmdManipulatorPlaceGamePiece());
 
-        _buttonBoxArmSideSwitch.onTrue(flipSidesCommand);
-        _buttonBoxArmSideSwitch.onFalse(flipSidesCommand);
+        _buttonBoxArmSideSwitch.onTrue(new GrpSetArmPosition(ArmPosition.Stow));
+        _buttonBoxArmSideSwitch.onFalse(new GrpSetArmPosition(ArmPosition.Stow));
 
-        _buttonBoxHandmodeSwitch.onTrue(changeHandModeCommand);
-        _buttonBoxHandmodeSwitch.onFalse(changeHandModeCommand);
+        _buttonBoxHandmodeSwitch.onTrue(new ProxyCommand(()-> new GrpSetArmPosition(Arm.getInstance().getArmPosition())));
+        _buttonBoxHandmodeSwitch.onFalse(new ProxyCommand(()-> new GrpSetArmPosition(Arm.getInstance().getArmPosition())));
     }
 
     public Command getAutonomousCommand() 

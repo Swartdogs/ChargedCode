@@ -7,13 +7,13 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.ArmData;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.Manipulator;
 import frc.robot.commands.CmdArmSetExtensionPosition;
 import frc.robot.commands.CmdArmSetShoulderAngle;
 import frc.robot.commands.CmdManipulatorSetTwistAngle;
 import frc.robot.commands.CmdManipulatorSetWristAngle;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmPosition;
-import frc.robot.subsystems.Manipulator;
 
 public class GrpSetArmPosition extends SequentialCommandGroup 
 {
@@ -27,7 +27,6 @@ public class GrpSetArmPosition extends SequentialCommandGroup
             {
                 _armData = Constants.Lookups.lookUpArmData(position, RobotContainer.getInstance().getArmSide(), RobotContainer.getInstance().getHandMode());
                 Arm.getInstance().setArmPosition(position);
-                Manipulator.getInstance().disableIntake();
             }),  
             new ParallelCommandGroup
             (
@@ -37,5 +36,7 @@ public class GrpSetArmPosition extends SequentialCommandGroup
                 new ProxyCommand(()-> new CmdManipulatorSetWristAngle(_armData.getWristAngle())) 
             )
         );
+
+        addRequirements(Arm.getInstance(), Manipulator.getInstance());
     }
 }
