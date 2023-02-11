@@ -46,6 +46,11 @@ public class Dashboard extends SubsystemBase
     private GenericEntry _hasGamePiece;
     private GenericEntry _autonomousLog;
 
+    private SendableChooser<Integer> _delayChooser;
+    private SendableChooser<Integer> _startPositionChooser;
+    private SendableChooser<Integer> _gamePiecesChooser;
+    private SendableChooser<Boolean> _balanceChooser;
+
     private Dashboard() 
     {
         var tab                = Shuffleboard.getTab("Dashboard");
@@ -77,33 +82,33 @@ public class Dashboard extends SubsystemBase
         
         var autonomousOptions  = tab.getLayout("Autonomous", BuiltInLayouts.kGrid).withPosition(19, 0).withSize(9, 9).withProperties(Map.of("Number of columns", 1, "Number of rows", 4, "Label position", "LEFT"));
 
-        SendableChooser<Integer> delayChooser = new SendableChooser<Integer>();
-        delayChooser.addOption("0", 0);
-        delayChooser.addOption("1", 1);
-        delayChooser.addOption("2", 2);
-        delayChooser.addOption("3", 3);
-        delayChooser.addOption("4", 4);
-        delayChooser.addOption("5", 5);
-        var delay = autonomousOptions.add("Delay Options", delayChooser).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kSplitButtonChooser);
+        _delayChooser = new SendableChooser<Integer>();
+        _delayChooser.addOption("0", 0);
+        _delayChooser.addOption("1", 1);
+        _delayChooser.addOption("2", 2);
+        _delayChooser.addOption("3", 3);
+        _delayChooser.addOption("4", 4);
+        _delayChooser.addOption("5", 5);
+        autonomousOptions.add("Delay Options", _delayChooser).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kSplitButtonChooser);
 
-        SendableChooser<Integer> startPositionChooser = new SendableChooser<Integer>();
-        startPositionChooser.addOption("Position 1", 1);
-        startPositionChooser.addOption("Position 2", 2);
-        startPositionChooser.addOption("Position 3", 3);
-        var startPosition = autonomousOptions.add("Start Position", startPositionChooser).withPosition(0, 1).withSize(1, 1).withWidget(BuiltInWidgets.kComboBoxChooser);
+        _startPositionChooser = new SendableChooser<Integer>();
+        _startPositionChooser.addOption("Position 1", 1);
+        _startPositionChooser.addOption("Position 2", 2);
+        _startPositionChooser.addOption("Position 3", 3);
+        autonomousOptions.add("Start Position", _startPositionChooser).withPosition(0, 1).withSize(1, 1).withWidget(BuiltInWidgets.kComboBoxChooser);
         
-        SendableChooser<Integer> gamePiecesChooser = new SendableChooser<Integer>();
-        gamePiecesChooser.addOption("0", 0);
-        gamePiecesChooser.addOption("1", 1);
-        gamePiecesChooser.addOption("2", 2);
-        gamePiecesChooser.addOption("3", 3);
-        gamePiecesChooser.addOption("4", 4);
-        var gamePieces = autonomousOptions.add("Number Of Pieces", gamePiecesChooser).withPosition(0, 2).withSize(1, 1).withWidget(BuiltInWidgets.kSplitButtonChooser);
+        _gamePiecesChooser = new SendableChooser<Integer>();
+        _gamePiecesChooser.addOption("0", 0);
+        _gamePiecesChooser.addOption("1", 1);
+        _gamePiecesChooser.addOption("2", 2);
+        _gamePiecesChooser.addOption("3", 3);
+        _gamePiecesChooser.addOption("4", 4);
+        autonomousOptions.add("Number Of Pieces", _gamePiecesChooser).withPosition(0, 2).withSize(1, 1).withWidget(BuiltInWidgets.kSplitButtonChooser);
 
-        SendableChooser<Boolean> balanceChooser = new SendableChooser<Boolean>();
-        balanceChooser.addOption("true", true);
-        balanceChooser.addOption("false", false);
-        var balance = autonomousOptions.add("Balance Options", balanceChooser).withPosition(0, 3).withSize(1, 1).withWidget(BuiltInWidgets.kComboBoxChooser);
+        _balanceChooser = new SendableChooser<Boolean>();
+        _balanceChooser.addOption("true", true);
+        _balanceChooser.addOption("false", false);
+        autonomousOptions.add("Balance Options", _balanceChooser).withPosition(0, 3).withSize(1, 1).withWidget(BuiltInWidgets.kComboBoxChooser);
     
         _autonomousLog = autonomousOptions.add("Auto Log", "").withPosition(0, 4).withSize(1, 1).withWidget(BuiltInWidgets.kTextView).getEntry();
 
@@ -164,6 +169,26 @@ public class Dashboard extends SubsystemBase
         {
             callback.run();
         });
+    }
+
+    public int getAutoDelay()
+    {
+        return _delayChooser.getSelected();
+    }
+    
+    public int getAutoStartingPosition()
+    {
+        return _startPositionChooser.getSelected();
+    }
+
+    public int getAutoPieceNumber()
+    {
+        return _gamePiecesChooser.getSelected();
+    }
+
+    public boolean getAutoShouldBalance()
+    {
+        return _balanceChooser.getSelected();
     }
 
     @Override
