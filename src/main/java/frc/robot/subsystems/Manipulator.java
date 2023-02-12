@@ -4,17 +4,14 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import PIDControl.PIDControl;
-import PIDControl.PIDControl.Coefficient;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
+import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants;
 import frc.robot.groups.GrpSetArmPosition;
 import frc.robot.subsystems.Arm.ArmPosition;
@@ -32,12 +29,6 @@ public class Manipulator extends SubsystemBase
 
         return _instance;
     }
-   
-    public enum HandMode
-    {
-        Cube,
-        Cone
-    }
 
     private enum IntakeState
     {
@@ -45,87 +36,36 @@ public class Manipulator extends SubsystemBase
         Off,
         Reverse
     }
-    
-    //Wrist Controls
-    private CANSparkMax         _wristMotor;
-    private DutyCycleEncoder    _wristEncoder;
-    private PIDControl          _wristPID;
 
-    //Twist Motion Controls
-    private CANSparkMax         _twistMotor;
-    private DutyCycleEncoder    _twistEncoder;
-    private PIDControl          _twistPID;
-    
-    //Intake Controls
-    private CANSparkMax         _intakeMotor;
-    private DigitalInput        _intakeSensor;
-    private IntakeState         _intakeState;
-    private boolean             _isFlipped;
+    // Intake Controls
+    private CANSparkMax  _intakeMotor;
+    private DigitalInput _intakeSensor;
+    private IntakeState  _intakeState;
 
-    //Settings
-    private double              _wristMinAngle;
-    private double              _wristMaxAngle;
-    private double              _twistMinRotation;
-    private double              _twistMaxRotation;
-    private double              _ejectTime;
-    private double              _intakeSpeed;
+    // Settings
+    private double       _ejectTime;
+    private double       _intakeSpeed;
 
-    //Simulation Variables
-    private DutyCycleEncoderSim _wristEncoderSim;
-    private DutyCycleEncoderSim _twistEncoderSim;
+    // Simulation
+    private DIOSim       _intakeSensorSim;
 
     private Manipulator()
     {
-        _wristMotor         = new CANSparkMax(Constants.Manipulator.WRIST_MOTOR_CAN_ID, MotorType.kBrushless);
-        _wristEncoder       = new DutyCycleEncoder(Constants.Manipulator.WRIST_ENCODER_PORT);
-        _wristPID           = new PIDControl();
-
-        _twistMotor         = new CANSparkMax(Constants.Manipulator.TWIST_MOTOR_CAN_ID, MotorType.kBrushless);
-        _twistEncoder       = new DutyCycleEncoder(Constants.Manipulator.TWIST_ENCODER_PORT);
-        _twistPID           = new PIDControl();
-
         _intakeMotor        = new CANSparkMax(Constants.Manipulator.INTAKE_MOTOR_CAN_ID, MotorType.kBrushless);
         _intakeSensor       = new DigitalInput(Constants.Manipulator.INTAKE_SENSOR_PORT);
         _intakeState        = IntakeState.Off;
-        _isFlipped          = false;
 
-        _wristMinAngle      = Constants.Manipulator.WRIST_MAX_ANGLE;
-        _wristMaxAngle      = Constants.Manipulator.WRIST_MIN_ANGLE;
-        _twistMinRotation   = Constants.Manipulator.TWIST_MIN_ROTATION;
-        _twistMaxRotation   = Constants.Manipulator.TWIST_MAX_ROTATION;
         _ejectTime          = Constants.Manipulator.EJECT_TIME;
         _intakeSpeed        = Constants.Manipulator.INTAKE_SPEED;
 
-        _wristPID.setCoefficient(Coefficient.P, 0, 0.001, 0);
-        _wristPID.setCoefficient(Coefficient.I, 0, 0, 0);
-        _wristPID.setCoefficient(Coefficient.D, 0, 0, 0);
-        _wristPID.setInputRange(Constants.Manipulator.WRIST_MIN_ANGLE, Constants.Manipulator.WRIST_MAX_ANGLE);
-        _wristPID.setOutputRange(-1, 1);
-        _wristPID.setSetpointDeadband(1);
-
-        _twistPID.setCoefficient(Coefficient.P, 0, 0.001, 0);
-        _twistPID.setCoefficient(Coefficient.I, 0, 0, 0);
-        _twistPID.setCoefficient(Coefficient.D, 0, 0, 0);
-        _twistPID.setInputRange(Constants.Manipulator.TWIST_MIN_ROTATION, Constants.Manipulator.TWIST_MAX_ROTATION);
-        _twistPID.setOutputRange(-1, 1);
-        _twistPID.setSetpointDeadband(1);
-
         if (RobotBase.isSimulation())
         {
-            _wristEncoderSim = new DutyCycleEncoderSim(_wristEncoder);
-            _twistEncoderSim = new DutyCycleEncoderSim(_twistEncoder);
+            _intakeSensorSim = new DIOSim(_intakeSensor);
 
-            REVPhysicsSim.getInstance().addSparkMax(_wristMotor,  DCMotor.getNeo550(1));
-            REVPhysicsSim.getInstance().addSparkMax(_twistMotor,  DCMotor.getNeo550(1));
             REVPhysicsSim.getInstance().addSparkMax(_intakeMotor, DCMotor.getNeo550(1));
         }
 
         RobotLog.getInstance().log("Created Manipulator Subsystem");
-    }
-
-    public double getWristAngle()
-    {
-        return _wristEncoder.get();
     }
 
     public double getIntakeSpeed()
@@ -150,78 +90,20 @@ public class Manipulator extends SubsystemBase
         return speed;
     }
 
-    public double getTwistAngle()
-    {
-        return _twistEncoder.get();
-    }
-
     public boolean hasGamePiece()
     {
         return !_intakeSensor.get();    
     }
 
     //Settings Functions
-    public void setWristMinAngle(double angle)
-    {
-        _wristMinAngle = angle;
-        _wristPID.setInputRange(_wristMinAngle, _wristMaxAngle);
-    }
-
-    public void setWristMaxAngle(double angle)
-    {
-        _wristMaxAngle = angle;
-        _wristPID.setInputRange(_wristMinAngle, _wristMaxAngle);
-    }
-
-    public void setTwistMinRotation(double rotation)
-    {
-        _twistMinRotation = rotation;
-        _twistPID.setInputRange(_twistMinRotation, _twistMaxRotation);
-    }
-
-    public void setTwistMaxRotation(double rotation)
-    {
-        _twistMaxRotation = rotation;
-        _twistPID.setInputRange(_twistMinRotation, _twistMaxRotation);
-    }
-
     public void setEjectTime(double time)
     {
         _ejectTime = time;
     }
 
-    public double getEjectTime()
-    {
-        return _ejectTime;
-    }
-
     public void setIntakeSpeed(double speed)
     {
         _intakeSpeed = speed;
-    }
-
-    public boolean wristAtAngle()
-    {
-        return _wristPID.atSetpoint();
-    }
-
-    public boolean twistAtAngle()
-    {
-        return _twistPID.atSetpoint();
-    }
-
-    @Override
-    public void periodic()
-    {
-        _twistMotor.setVoltage(_twistPID.calculate(getTwistAngle()) * Constants.MOTOR_VOLTAGE);
-        _wristMotor.setVoltage(_wristPID.calculate(getWristAngle()) * Constants.MOTOR_VOLTAGE);
-    }
-
-    @Override
-    public void simulationPeriodic()
-    {
-        _wristEncoderSim.set(_wristMotor.getEncoder().getPosition());
-        _twistEncoderSim.set(_twistMotor.getEncoder().getPosition());
     }
 
     // Commands
@@ -232,10 +114,23 @@ public class Manipulator extends SubsystemBase
                 _intakeMotor.setVoltage(_intakeSpeed * Constants.MOTOR_VOLTAGE);
                 _intakeState = IntakeState.On;
             })
-            .until(this::hasGamePiece)
+            .andThen
+            (
+                Commands.either
+                (
+                    Commands.waitUntil(this::hasGamePiece),
+                    Commands.waitSeconds(_ejectTime),
+                    RobotBase::isReal
+                )
+            )
             .finallyDo(interrupted -> {
                 _intakeMotor.setVoltage(0);
-                _intakeState = IntakeState.Off;        
+                _intakeState = IntakeState.Off;
+
+                if (RobotBase.isSimulation() && !interrupted)
+                {
+                    _intakeSensorSim.setValue(false);
+                }
             });
     }
 
@@ -246,44 +141,27 @@ public class Manipulator extends SubsystemBase
                 _intakeMotor.setVoltage(-_intakeSpeed * Constants.MOTOR_VOLTAGE);
                 _intakeState = IntakeState.Reverse;        
             })
-            .withTimeout(_ejectTime)
+            .andThen(Commands.waitSeconds(_ejectTime))
             .finallyDo(interrupted -> {
                 _intakeMotor.setVoltage(0);
-                _intakeState = IntakeState.Off;        
+                _intakeState = IntakeState.Off;      
+                
+                if (RobotBase.isSimulation())
+                {
+                    _intakeSensorSim.setValue(true);
+                }
             });
-    }
-
-    public Command setTwistAngleCommand(double angle)
-    {
-        return Commands
-            .either
-            (
-                this.runOnce(() -> _twistPID.setSetpoint(180 - angle, getTwistAngle())),
-                this.runOnce(() -> _twistPID.setSetpoint(angle, getTwistAngle())),
-                () -> _isFlipped
-            )
-            .until(() -> _twistPID.atSetpoint());
-    }
-
-    public Command setWristAngleCommand(double angle)
-    {
-        return this
-            .runOnce(() -> _wristPID.setSetpoint(angle, getWristAngle()))
-            .until(() -> _wristPID.atSetpoint());
-    }
-
-    public Command handFlipCommand()
-    {
-        return
-            new ProxyCommand(() -> setTwistAngleCommand(_twistPID.getSetpoint()))
-            .beforeStarting(() -> _isFlipped = !_isFlipped);
     }
 
     public Command pickupCommand(ArmPosition position)
     {
         return
             new GrpSetArmPosition(position)
-            .andThen(intakeGamePieceCommand())
+            .andThen
+            (
+                intakeGamePieceCommand(),
+                Arm.getInstance().stowCommand()
+            )
             .unless(this::hasGamePiece);
     }
 }

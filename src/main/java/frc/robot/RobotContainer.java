@@ -10,10 +10,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.groups.GrpSetArmPosition;
 import frc.robot.subsystems.Arm.ArmPosition;
 import frc.robot.subsystems.Arm.ArmSide;
+import frc.robot.subsystems.Arm.HandMode;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Dashboard;
 import frc.robot.subsystems.Manipulator;
-import frc.robot.subsystems.Manipulator.HandMode;
 import frc.robot.subsystems.drive.Drive;
 
 public class RobotContainer 
@@ -90,9 +90,10 @@ public class RobotContainer
 
     private void configureBindings() 
     {
-        _buttonBoxButton1.onTrue(Manipulator.getInstance().handFlipCommand());
+        _buttonBoxButton1.onTrue(Arm.getInstance().handFlipCommand());
         
-        _buttonBoxButton2.onTrue(new GrpSetArmPosition(ArmPosition.Stow));
+        _buttonBoxButton2.onTrue(Arm.getInstance().stowCommand());
+
         _buttonBoxButton3.onTrue(new GrpSetArmPosition(ArmPosition.High)); 
         _buttonBoxButton4.onTrue(new GrpSetArmPosition(ArmPosition.Middle));
         _buttonBoxButton5.onTrue(new GrpSetArmPosition(ArmPosition.Low));

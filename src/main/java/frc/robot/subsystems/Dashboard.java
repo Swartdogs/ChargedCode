@@ -146,15 +146,15 @@ public class Dashboard extends SubsystemBase
         registerCallback(blOffset, () -> Drive.getInstance().getSwerveModule(Constants.Drive.BL_INDEX).setRotationZero(blOffset.getDouble(Constants.Drive.BL_OFFSET)));
         registerCallback(brOffset, () -> Drive.getInstance().getSwerveModule(Constants.Drive.BR_INDEX).setRotationZero(brOffset.getDouble(Constants.Drive.BR_OFFSET)));*/
 
-        registerCallback(armMaxExtension, () -> Arm.getInstance().setMaxArmExtension(armMaxExtension.getDouble(Constants.Arm.ARM_MAX_EXTENSION)));
-        registerCallback(armMinAngle, () -> Arm.getInstance().setMinShoulderAngle(armMinAngle.getDouble(Constants.Arm.SHOULDER_MIN_ANGLE)));
-        registerCallback(armMaxAngle, () -> Arm.getInstance().setMaxShoulderAngle(armMaxAngle.getDouble(Constants.Arm.SHOULDER_MAX_ANGLE)));
+        registerCallback(armMaxExtension,  () -> Arm.getInstance().setMaxArmExtension(armMaxExtension.getDouble(Constants.Arm.ARM_MAX_EXTENSION)));
+        registerCallback(armMinAngle,      () -> Arm.getInstance().setMinShoulderAngle(armMinAngle.getDouble(Constants.Arm.SHOULDER_MIN_ANGLE)));
+        registerCallback(armMaxAngle,      () -> Arm.getInstance().setMaxShoulderAngle(armMaxAngle.getDouble(Constants.Arm.SHOULDER_MAX_ANGLE)));
+        registerCallback(wristMinAngle,    () -> Arm.getInstance().setWristMinAngle(wristMinAngle.getDouble(Constants.Arm.WRIST_MIN_ANGLE)));
+        registerCallback(wristMaxAngle,    () -> Arm.getInstance().setWristMaxAngle(wristMaxAngle.getDouble(Constants.Arm.WRIST_MAX_ANGLE)));
+        registerCallback(twistMinRotation, () -> Arm.getInstance().setTwistMinRotation(twistMinRotation.getDouble(Constants.Arm.TWIST_MIN_ROTATION)));
+        registerCallback(twistMaxRotation, () -> Arm.getInstance().setTwistMaxRotation(twistMaxRotation.getDouble(Constants.Arm.TWIST_MAX_ROTATION)));
 
-        registerCallback(wristMinAngle, () -> Manipulator.getInstance().setWristMinAngle(wristMinAngle.getDouble(Constants.Manipulator.WRIST_MIN_ANGLE)));
-        registerCallback(wristMaxAngle, () -> Manipulator.getInstance().setWristMaxAngle(wristMaxAngle.getDouble(Constants.Manipulator.WRIST_MAX_ANGLE)));
-        registerCallback(twistMinRotation, () -> Manipulator.getInstance().setTwistMinRotation(twistMinRotation.getDouble(Constants.Manipulator.TWIST_MIN_ROTATION)));
-        registerCallback(twistMaxRotation, () -> Manipulator.getInstance().setTwistMaxRotation(twistMaxRotation.getDouble(Constants.Manipulator.TWIST_MAX_ROTATION)));
-        registerCallback(ejectTime, () -> Manipulator.getInstance().setEjectTime(ejectTime.getDouble(Constants.Manipulator.EJECT_TIME)));
+        registerCallback(ejectTime,   () -> Manipulator.getInstance().setEjectTime(ejectTime.getDouble(Constants.Manipulator.EJECT_TIME)));
         registerCallback(intakeSpeed, () -> Manipulator.getInstance().setIntakeSpeed(intakeSpeed.getDouble(Constants.Manipulator.INTAKE_SPEED)));
     }
 
@@ -173,9 +173,9 @@ public class Dashboard extends SubsystemBase
 
         _shoulderAngle.setDouble(Double.parseDouble(String.format("%6.2f", Arm.getInstance().getShoulderAngle())));
         _extensionDistance.setDouble(Double.parseDouble(String.format("%6.2f", Arm.getInstance().getExtensionPosition())));
+        _wristAngle.setDouble(Double.parseDouble(String.format("%6.2f", Arm.getInstance().getWristAngle())));
+        _twistAngle.setDouble(Double.parseDouble(String.format("%6.2f", Arm.getInstance().getTwistAngle())));
 
-        _wristAngle.setDouble(Double.parseDouble(String.format("%6.2f", Manipulator.getInstance().getWristAngle())));
-        _twistAngle.setDouble(Double.parseDouble(String.format("%6.2f", Manipulator.getInstance().getTwistAngle())));
         _pickupDisplaySpeed.setDouble(Double.parseDouble(String.format("%6.2f", Manipulator.getInstance().getIntakeSpeed())));
 
         /*_hasTargetBox.setBoolean(Vision.getInstance().frontCamHasTargets()|| Vision.getInstance().rearCamHasTargets());
