@@ -7,13 +7,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.CmdArmModifyExtensionPosition;
-import frc.robot.commands.CmdArmModifyShoulderAngle;
-import frc.robot.commands.CmdAutoRotate;
-import frc.robot.commands.CmdDriveWithJoystick;
-import frc.robot.commands.CmdManipulatorPlaceGamePiece;
-import frc.robot.groups.GrpManipulatorHandFlip;
-import frc.robot.groups.GrpIntakeGamePiece;
 import frc.robot.groups.GrpSetArmPosition;
 import frc.robot.subsystems.Arm.ArmPosition;
 import frc.robot.subsystems.Arm.ArmSide;
@@ -92,28 +85,28 @@ public class RobotContainer
 
     private void configureDefaultCommands()
     {
-        Drive.getInstance().setDefaultCommand(new CmdDriveWithJoystick());
+        Drive.getInstance().setDefaultCommand(Drive.getInstance().driveWithJoystickCommand());
     }
 
     private void configureBindings() 
     {
-        _buttonBoxButton1.onTrue(new GrpManipulatorHandFlip());
+        _buttonBoxButton1.onTrue(Manipulator.getInstance().handFlipCommand());
         
         _buttonBoxButton2.onTrue(new GrpSetArmPosition(ArmPosition.Stow));
         _buttonBoxButton3.onTrue(new GrpSetArmPosition(ArmPosition.High)); 
         _buttonBoxButton4.onTrue(new GrpSetArmPosition(ArmPosition.Middle));
         _buttonBoxButton5.onTrue(new GrpSetArmPosition(ArmPosition.Low));
 
-        _buttonBoxButton6.onTrue(new GrpIntakeGamePiece(ArmPosition.Substation));
-        _buttonBoxButton7.onTrue(new GrpIntakeGamePiece(ArmPosition.Ground));
+        _buttonBoxButton6.onTrue(Manipulator.getInstance().pickupCommand(ArmPosition.Substation));
+        _buttonBoxButton7.onTrue(Manipulator.getInstance().pickupCommand(ArmPosition.Ground));
     
-        _buttonBoxButton9.onTrue(new CmdArmModifyExtensionPosition(3));
-        _buttonBoxButton10.onTrue(new CmdArmModifyExtensionPosition(-3));
-        _buttonBoxButton11.onTrue(new CmdArmModifyShoulderAngle(3));
-        _buttonBoxButton12.onTrue(new CmdArmModifyShoulderAngle(-3));
+        _buttonBoxButton9.onTrue(Arm.getInstance().modifyExtensionPositionCommand(3));
+        _buttonBoxButton10.onTrue(Arm.getInstance().modifyExtensionPositionCommand(-3));
+        _buttonBoxButton11.onTrue(Arm.getInstance().modifyShoulderAngleCommand(3));
+        _buttonBoxButton12.onTrue(Arm.getInstance().modifyShoulderAngleCommand(-3));
 
-        //_driveJoyButton7.onTrue(new CmdAutoRotate(90));
-        _buttonBoxButton8.onTrue(new CmdManipulatorPlaceGamePiece());
+        //_driveJoyButton7.onTrue(Drive.getInstance().rotateCommand(90));
+        _buttonBoxButton8.onTrue(Manipulator.getInstance().placeGamePieceCommand());
 
         _buttonBoxArmSideSwitch.onTrue(new GrpSetArmPosition(ArmPosition.Stow));
         _buttonBoxArmSideSwitch.onFalse(new GrpSetArmPosition(ArmPosition.Stow));

@@ -11,8 +11,13 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.groups.GrpSetArmPosition;
+import frc.robot.subsystems.Arm.ArmPosition;
 
 public class Manipulator extends SubsystemBase 
 {
@@ -118,32 +123,9 @@ public class Manipulator extends SubsystemBase
         RobotLog.getInstance().log("Created Manipulator Subsystem");
     }
 
-    public void setWristAngle(double position)
-    {
-        _wristPID.setSetpoint(position, getWristAngle());
-    }
-
     public double getWristAngle()
     {
         return _wristEncoder.get();
-    }
-
-    public void enableIntake()
-    {
-        _intakeMotor.setVoltage(_intakeSpeed * Constants.MOTOR_VOLTAGE);
-        _intakeState = IntakeState.On;
-    }
-
-    public void disableIntake()
-    {
-        _intakeMotor.setVoltage(0);
-        _intakeState = IntakeState.Off;
-    }
-
-    public void reverseIntake()
-    {
-        _intakeMotor.setVoltage(-_intakeSpeed * Constants.MOTOR_VOLTAGE);
-        _intakeState = IntakeState.Reverse;
     }
 
     public double getIntakeSpeed()
@@ -168,29 +150,9 @@ public class Manipulator extends SubsystemBase
         return speed;
     }
 
-    public void setTwistAngle(double position)
-    {
-        _twistPID.setSetpoint(position, getTwistAngle());
-    }
-
     public double getTwistAngle()
     {
         return _twistEncoder.get();
-    }
-
-    public double getTwistTargetAngle()
-    {
-        return _twistPID.getSetpoint();
-    }
-
-    public void setIsFlipped(boolean isFlipped)
-    {
-        _isFlipped = isFlipped;
-    }
-
-    public boolean isFlipped()
-    {
-        return _isFlipped;
     }
 
     public boolean hasGamePiece()
@@ -260,5 +222,68 @@ public class Manipulator extends SubsystemBase
     {
         _wristEncoderSim.set(_wristMotor.getEncoder().getPosition());
         _twistEncoderSim.set(_twistMotor.getEncoder().getPosition());
+    }
+
+    // Commands
+    public Command intakeGamePieceCommand()
+    {
+        return this
+            .runOnce(() -> {
+                _intakeMotor.setVoltage(_intakeSpeed * Constants.MOTOR_VOLTAGE);
+                _intakeState = IntakeState.On;
+            })
+            .until(this::hasGamePiece)
+            .finallyDo(interrupted -> {
+                _intakeMotor.setVoltage(0);
+                _intakeState = IntakeState.Off;        
+            });
+    }
+
+    public Command placeGamePieceCommand()
+    {
+        return this
+            .runOnce(() -> {
+                _intakeMotor.setVoltage(-_intakeSpeed * Constants.MOTOR_VOLTAGE);
+                _intakeState = IntakeState.Reverse;        
+            })
+            .withTimeout(_ejectTime)
+            .finallyDo(interrupted -> {
+                _intakeMotor.setVoltage(0);
+                _intakeState = IntakeState.Off;        
+            });
+    }
+
+    public Command setTwistAngleCommand(double angle)
+    {
+        return Commands
+            .either
+            (
+                this.runOnce(() -> _twistPID.setSetpoint(180 - angle, getTwistAngle())),
+                this.runOnce(() -> _twistPID.setSetpoint(angle, getTwistAngle())),
+                () -> _isFlipped
+            )
+            .until(() -> _twistPID.atSetpoint());
+    }
+
+    public Command setWristAngleCommand(double angle)
+    {
+        return this
+            .runOnce(() -> _wristPID.setSetpoint(angle, getWristAngle()))
+            .until(() -> _wristPID.atSetpoint());
+    }
+
+    public Command handFlipCommand()
+    {
+        return
+            new ProxyCommand(() -> setTwistAngleCommand(_twistPID.getSetpoint()))
+            .beforeStarting(() -> _isFlipped = !_isFlipped);
+    }
+
+    public Command pickupCommand(ArmPosition position)
+    {
+        return
+            new GrpSetArmPosition(position)
+            .andThen(intakeGamePieceCommand())
+            .unless(this::hasGamePiece);
     }
 }

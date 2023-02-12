@@ -1,6 +1,6 @@
 package frc.robot.groups;
 
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -8,10 +8,6 @@ import frc.robot.ArmData;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Manipulator;
-import frc.robot.commands.CmdArmSetExtensionPosition;
-import frc.robot.commands.CmdArmSetShoulderAngle;
-import frc.robot.commands.CmdManipulatorSetTwistAngle;
-import frc.robot.commands.CmdManipulatorSetWristAngle;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmPosition;
 
@@ -23,7 +19,7 @@ public class GrpSetArmPosition extends SequentialCommandGroup
     {
         addCommands
         (
-            new InstantCommand(()-> 
+            Commands.run(()-> 
             {
                 _armData = Constants.Lookups.lookUpArmData(position, RobotContainer.getInstance().getArmSide(), RobotContainer.getInstance().getHandMode());
                 Arm.getInstance().setArmPosition(position);
@@ -34,10 +30,10 @@ public class GrpSetArmPosition extends SequentialCommandGroup
             }),  
             new ParallelCommandGroup
             (
-                new ProxyCommand(()-> new CmdArmSetShoulderAngle(_armData.getArmAngle())), 
-                new ProxyCommand(()-> new CmdArmSetExtensionPosition(_armData.getArmExtension())),
-                new ProxyCommand(()-> new CmdManipulatorSetTwistAngle(_armData.getTwistAngle())),
-                new ProxyCommand(()-> new CmdManipulatorSetWristAngle(_armData.getWristAngle())) 
+                new ProxyCommand(()-> Arm.getInstance().setShoulderAngleCommand(_armData.getArmAngle())), 
+                new ProxyCommand(()-> Arm.getInstance().setExtensionPositionCommand(_armData.getArmExtension())),
+                new ProxyCommand(()-> Manipulator.getInstance().setTwistAngleCommand(_armData.getTwistAngle())),
+                new ProxyCommand(()-> Manipulator.getInstance().setWristAngleCommand(_armData.getWristAngle())) 
             )
         );
 

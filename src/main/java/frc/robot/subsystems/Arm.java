@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -138,43 +139,6 @@ public class Arm extends SubsystemBase
         return _pitchEncoder.get();
     }
 
-    public void setExtensionMotorSpeed(double speed)
-    {
-        _linearMotor.setVoltage(speed * Constants.MOTOR_VOLTAGE);
-        _extensionPidActive = false;
-    }
-
-    public void setExtensionMotorPosition(double position)
-    {
-       _extensionPidActive = true;
-       _extensionPid.setSetpoint(position, getExtensionPosition());
-    }
-  
-    public void modifyExtensionMotorPosition(double modification)
-    {
-        _extensionPid.setSetpoint(_extensionPid.getSetpoint()+modification, getExtensionPosition());
-    }
-
-    public void setShoulderAngle(double angle)
-    {
-        _shoulderPid.setSetpoint(angle, getShoulderAngle());
-    }
-
-    public void modifyShoulderAngle(double modification)
-    {
-        _shoulderPid.setSetpoint(_shoulderPid.getSetpoint()+modification, getShoulderAngle());
-    }
-
-    public boolean shoulderAtAngle()
-    {
-        return _shoulderPid.atSetpoint();
-    }
-
-    public boolean extensionAtDistance()
-    {
-        return _extensionPid.atSetpoint();
-    }
-
     public void setArmPosition(ArmPosition position)
     {
         _armPosition = position;
@@ -183,11 +147,6 @@ public class Arm extends SubsystemBase
     public ArmPosition getArmPosition()
     {
         return _armPosition;
-    }
-
-    public void setExtensionEncoderPosition(double positon)
-    {
-        _extensionEncoder.setPosition(positon);
     }
 
     //Settings Functions
@@ -225,5 +184,45 @@ public class Arm extends SubsystemBase
     {
         _limitSwitchSim.setValue(_extensionEncoder.getPosition() <= 0);
         _pitchEncoderSim.set(_pitchMotor.getEncoder().getPosition());
+    }
+
+    // Commands
+    public Command modifyExtensionPositionCommand(double modification)
+    {
+        return this
+            .runOnce(() -> _extensionPid.setSetpoint(_extensionPid.getSetpoint() + modification, getExtensionPosition()))
+            .until(() -> _extensionPid.atSetpoint());
+    }
+
+    public Command modifyShoulderAngleCommand(double modification)
+    {
+        return this
+            .runOnce(() -> _shoulderPid.setSetpoint(_shoulderPid.getSetpoint() + modification, getShoulderAngle()))
+            .until(() -> _shoulderPid.atSetpoint());
+    }
+
+    public Command resetCommand()
+    {
+        return this
+            .run(() -> _linearMotor.setVoltage(-0.5 * Constants.MOTOR_VOLTAGE))
+            .until(() -> _limitSwitch.get())
+            .finallyDo(interrupted -> {
+                _linearMotor.setVoltage(0);
+                _extensionEncoder.setPosition(0); 
+           });
+    }
+
+    public Command setExtensionPositionCommand(double position)
+    {
+        return this
+            .runOnce(() -> _extensionPid.setSetpoint(position, getExtensionPosition()))
+            .until(() -> _extensionPid.atSetpoint());
+    }
+
+    public Command setShoulderAngleCommand(double angle)
+    {
+        return this
+            .runOnce(() -> _shoulderPid.setSetpoint(angle, getShoulderAngle()))
+            .until(() -> _shoulderPid.atSetpoint());
     }
 }

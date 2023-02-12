@@ -1,11 +1,16 @@
 package frc.robot.subsystems.drive;
 
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.SPI;
 
+import PIDControl.PIDControl;
+import PIDControl.PIDControl.Coefficient;
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.RobotLog;
 
 public class Drive extends SubsystemBase
@@ -36,6 +41,11 @@ public class Drive extends SubsystemBase
     private Vector         _position;        // current odometer reading
     private Vector         _velocity;        // change in odometer reading
 
+    // autonomous driving
+    private PIDControl     _xPID;
+    private PIDControl     _yPID;
+    private PIDControl     _rotatePID;
+
     // TODO: kalman filtering for odometry 
     /* Learn about Kalman filters here: (a long read)
     * https://www.alanzucconi.com/2022/07/24/kalman-filter-1/
@@ -55,6 +65,10 @@ public class Drive extends SubsystemBase
 
         _gyro               = new AHRS(SPI.Port.kMXP);
 
+        _xPID               = new PIDControl();
+        _yPID               = new PIDControl();
+        _rotatePID          = new PIDControl();
+
         // FIXME: update for the new robot base
         SwerveModule fl     = new SwerveModule(-Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2, Constants.Drive.FL_OFFSET, 0.0, 1, 2, 0);
         SwerveModule fr     = new SwerveModule( Constants.Drive.BASE_WIDTH / 2,  Constants.Drive.BASE_LENGTH / 2, Constants.Drive.FR_OFFSET, 0.0, 5, 6, 3);
@@ -68,6 +82,26 @@ public class Drive extends SubsystemBase
             bl,
             br 
         };
+
+        for (PIDControl pid : new PIDControl[] { _xPID, _yPID })
+        {
+            pid.setCoefficient(Coefficient.P, 0.0, 0.012, 0.0); // based on previous code
+            pid.setCoefficient(Coefficient.I, 5.0, 0.0, 0.001);
+            pid.setCoefficient(Coefficient.D, 0.0, 0.008, 0.0);
+            pid.setInputRange(-720.0, 720.0); // assumed unit of inches
+            pid.setOutputRange(-1.0, 1.0);
+            pid.setOutputRamp(0.1, 0.05);
+            pid.setSetpointDeadband(2.0);
+        }
+
+        _rotatePID.setCoefficient(Coefficient.P, 0.0, 0.008, 0.0);
+        _rotatePID.setCoefficient(Coefficient.I, 20.0, 0.0, 0.00027);
+        _rotatePID.setCoefficient(Coefficient.D, 0.0, 0.001, 0.0);
+        _rotatePID.setInputRange(-180.0, 180.0);
+        _rotatePID.setContinuous(true);
+        _rotatePID.setOutputRange(-1.0, 1.0);
+        _rotatePID.setOutputRamp(0.1, 0.05);
+        _rotatePID.setSetpointDeadband(2.0);
 
         setOrigin(0, 0);    // rotate around the center of the robot, by default
         resetOdometer();    // initialize the odometer to 0, 0
@@ -279,6 +313,80 @@ public class Drive extends SubsystemBase
         _position = sensorPosition;
         _rotationVelocity = sensorRotationVelocity;
         _velocity = sensorVelocity;
+    }
 
+    // Commands
+    public Command resetEncodersCommand()
+    {
+        return this
+            .runOnce(this::zeroModuleRotations)
+            .ignoringDisable(true);
+    }
+
+    public Command resetOdometerCommand()
+    {
+        return this
+            .runOnce(() -> {
+                resetOdometer();
+                setGyro(0);               
+            })
+            .ignoringDisable(true);
+    }
+
+    public Command driveWithJoystickCommand()
+    {
+        return Commands
+            .either
+            (
+                this.runOnce(() -> chassisDrive(RobotContainer.getInstance().getDriveJoyY(), RobotContainer.getInstance().getDriveJoyX(), RobotContainer.getInstance().getDriveJoyZ())),
+                this.runOnce(() ->   fieldDrive(RobotContainer.getInstance().getDriveJoyX(), RobotContainer.getInstance().getDriveJoyY(), RobotContainer.getInstance().getDriveJoyZ())),
+                RobotContainer.getInstance()::driveIsRobotCentric  
+            )
+            .repeatedly()
+            .finallyDo(interrupted -> chassisDrive(0, 0, 0));
+    }
+
+    public Command rotateCommand(double angle)
+    {
+        return Commands
+            .either
+            (
+                this.runOnce(() -> chassisDrive(RobotContainer.getInstance().getDriveJoyY(), RobotContainer.getInstance().getDriveJoyX(), _rotatePID.calculate(getHeading()))),
+                this.runOnce(() ->   fieldDrive(RobotContainer.getInstance().getDriveJoyX(), RobotContainer.getInstance().getDriveJoyY(), _rotatePID.calculate(getHeading()))),
+                RobotContainer.getInstance()::driveIsRobotCentric
+            )
+            .repeatedly()
+            .beforeStarting(() -> {
+                _rotatePID.setInputRange(0.0, 180.0);
+                _rotatePID.setSetpoint(angle, getHeading(), true);
+            })
+            .until(_rotatePID::atSetpoint)
+            .finallyDo(interrupted -> {
+                chassisDrive(0, 0, 0);
+                _rotatePID.setInputRange(0.0, 360.0);
+            });
+    }
+
+    public Command driveToPositionCommand(Vector position, double heading)
+    {
+        return this
+            .run(() -> {
+                Vector fieldPosition = getFieldPosition();
+
+                double outputX = _xPID.calculate(fieldPosition.getX());
+                double outputY = _yPID.calculate(fieldPosition.getY());
+                double outputR = _rotatePID.calculate(getHeading());
+                
+                fieldDrive(outputX, outputY, outputR);
+            })
+            .beforeStarting(() -> {
+                Vector fieldPosition = getFieldPosition();
+
+                _xPID.setSetpoint(position.getX(), fieldPosition.getX(), true);
+                _yPID.setSetpoint(position.getY(), fieldPosition.getY(), true);
+                _rotatePID.setSetpoint(heading,  getHeading(), true);
+            })
+            .until(() -> _xPID.atSetpoint() && _yPID.atSetpoint() && _rotatePID.atSetpoint())
+            .finallyDo(interrupted -> chassisDrive(0, 0, 0));
     }
 }
