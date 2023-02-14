@@ -1,8 +1,17 @@
 package frc.robot;
 
+import com.revrobotics.REVPhysicsSim;
+
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Dashboard;
+import frc.robot.subsystems.Manipulator;
+import frc.robot.subsystems.RobotLog;
+import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.drive.Drive;
 
 public class Robot extends TimedRobot 
 {
@@ -22,7 +31,7 @@ public class Robot extends TimedRobot
         CommandScheduler.getInstance().run();
     }
 
-  
+    
     @Override
     public void autonomousInit() 
     {
@@ -44,8 +53,30 @@ public class Robot extends TimedRobot
     }
 
     @Override
-    public void testInit() 
+    public void testPeriodic()
     {
-        CommandScheduler.getInstance().cancelAll();
+        // Tuning PID controllers requires the dashboard to run its periodic
+        Dashboard.getInstance().periodic();
+
+        // During simulation, the other subsystems need to run their simulation periodics
+        // to ensure sensor values are being updated correctly. Entering test mode disables
+        // the CommandScheduler, so we need to explicitly call the periodics
+        //
+        // We do NOT need to call the subsystem periodics because motor motion will be
+        // handled by the dashboard, not the parent subsystem of the motor
+        if (RobotBase.isSimulation())
+        {
+            Drive.getInstance().simulationPeriodic();
+            Arm.getInstance().simulationPeriodic();
+            Manipulator.getInstance().simulationPeriodic();
+            Vision.getInstance().simulationPeriodic();
+            RobotLog.getInstance().simulationPeriodic();
+        }
+    }
+
+    @Override
+    public void simulationPeriodic()
+    {
+        REVPhysicsSim.getInstance().run();
     }
 }

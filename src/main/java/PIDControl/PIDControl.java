@@ -9,7 +9,7 @@ public class PIDControl
         D
     }
 
-    private class CoefficientValues
+    public class CoefficientValues
     {
         public double threshold;
         public double kAbove;
@@ -226,10 +226,52 @@ public class PIDControl
         }
     }
 
+    public CoefficientValues getCoefficient(Coefficient kWhich)
+    {
+        CoefficientValues k = null;
+
+        switch (kWhich)
+        {
+            case P:
+                k = _kP;
+                break;
+
+            case I:
+                k = _kI;
+                break;
+
+            case D:
+                k = _kD;
+                break;
+        }
+
+        return k;
+    }
+
     public void setInputRange(double inputMinimum, double inputMaximum)
     {
         _inputMin = inputMinimum;
         _inputMax = inputMaximum;
+    }
+
+    public double  getInputMinimum()
+    {
+        return _inputMin;
+    }
+
+    public double  getInputMaximum()
+    {
+        return _inputMax;
+    }
+
+    public double  getOutputMinimum()
+    {
+        return _outputMin;
+    }
+
+    public double  getOutputMaximum()
+    {
+        return _outputMax;
     }
 
     public void setOutputRange(double outputMinimum, double outputMaximum)

@@ -1,13 +1,18 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import PIDControl.PIDControl;
 import PIDControl.PIDControl.Coefficient;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.simulation.DIOSim;
+import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -41,6 +46,10 @@ public class Arm extends SubsystemBase
     private double           _minShoulderAngle;
     private double           _maxShoulderAngle;
     private double           _maxArmExtension;
+
+    // Simulation
+    private DutyCycleEncoderSim _pitchEncoderSim;
+    private DIOSim              _limitSwitchSim;
     
     @SuppressWarnings("resource")
     private Arm() 
@@ -60,10 +69,10 @@ public class Arm extends SubsystemBase
         _maxShoulderAngle   = Constants.Arm.SHOULDER_MAX_ANGLE;
         _maxArmExtension    = Constants.Arm.ARM_MAX_EXTENSION;
 
-        _shoulderPid.setCoefficient(Coefficient.P, 0, 0, 0);
+        _shoulderPid.setCoefficient(Coefficient.P, 0, 0.001, 0);
         _shoulderPid.setCoefficient(Coefficient.I, 0, 0, 0);
         _shoulderPid.setCoefficient(Coefficient.D, 0, 0, 0);
-        _shoulderPid.setInputRange(0, 0);
+        _shoulderPid.setInputRange(-135, 135);
         _shoulderPid.setOutputRange(-1, 1);
         _shoulderPid.setSetpointDeadband(1);
 
@@ -74,9 +83,21 @@ public class Arm extends SubsystemBase
         _extensionPid.setOutputRange(-1, 1);
         _extensionPid.setSetpointDeadband(1);
 
-        _extensionEncoder.setPositionConversionFactor(0);
+        _extensionEncoder.setPositionConversionFactor(1);
 
         followerPitchMotor.follow(_pitchMotor, true);
+
+        if (RobotBase.isSimulation())
+        {
+            _pitchEncoderSim = new DutyCycleEncoderSim(_pitchEncoder);
+            _limitSwitchSim = new DIOSim(_limitSwitch);
+
+            REVPhysicsSim.getInstance().addSparkMax(_pitchMotor, DCMotor.getNeo550(2));
+            REVPhysicsSim.getInstance().addSparkMax(_linearMotor, DCMotor.getNEO(1));
+        }
+
+        Dashboard.getInstance().registerPIDController("Shoulder Angle", _shoulderPid, _pitchMotor, _pitchEncoder::get);
+        Dashboard.getInstance().registerPIDController("Arm Extension", _extensionPid, _linearMotor, _extensionEncoder::getPosition);
 
         RobotLog.getInstance().log("Created Arm Subsystem");
     }
@@ -98,7 +119,7 @@ public class Arm extends SubsystemBase
 
     public void setExtensionMotorSpeed(double speed)
     {
-        _linearMotor.set(speed);
+        _linearMotor.setVoltage(speed * Constants.MOTOR_VOLTAGE);
         _extensionPidActive = false;
     }
 
@@ -140,11 +161,18 @@ public class Arm extends SubsystemBase
     @Override 
     public void periodic()
     {
-        _pitchMotor.set(_shoulderPid.calculate(getShoulderAngle()));
+        _pitchMotor.setVoltage(_shoulderPid.calculate(getShoulderAngle()) * Constants.MOTOR_VOLTAGE);
 
         if (_extensionPidActive) 
         {
-            _linearMotor.set(_extensionPid.calculate(getExtensionPosition()));
+            _linearMotor.setVoltage(_extensionPid.calculate(getExtensionPosition()) * Constants.MOTOR_VOLTAGE);
         }
+    }
+
+    @Override
+    public void simulationPeriodic()
+    {
+        _limitSwitchSim.setValue(_extensionEncoder.getPosition() <= 0);
+        _pitchEncoderSim.set(_pitchMotor.getEncoder().getPosition());
     }
 }
