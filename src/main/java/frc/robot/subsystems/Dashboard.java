@@ -2,11 +2,13 @@ package frc.robot.subsystems;
 
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.function.DoubleConsumer;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -107,6 +109,23 @@ public class Dashboard extends SubsystemBase
     
         _autonomousLog = autonomousOptions.add("Auto Log", "").withPosition(0, 4).withSize(1, 1).withWidget(BuiltInWidgets.kTextView).getEntry();
 
+        //Preferences
+        Preferences.getDouble("FL", 90.0);
+        Preferences.getDouble("FR", 90.0);
+        Preferences.getDouble("BL", 90.0);
+        Preferences.getDouble("BR", 90.0);
+
+        Preferences.getDouble("Max Extend", 36.0);
+        Preferences.getDouble("Arm Min", -90.0);
+        Preferences.getDouble("Arm Max", 90.0);
+
+        Preferences.getDouble("Wrist Min", -90.0);
+        Preferences.getDouble("Wrist Max", 90.0);
+        Preferences.getDouble("Twist Min", -180.0);
+        Preferences.getDouble("Twist Max", 180.0);
+        Preferences.getDouble("Eject Time", 1.0);
+        Preferences.getDouble("Intake Speed", 0.75);
+
         var settingsTab                 = Shuffleboard.getTab("Settings");
 
         //Drive
@@ -141,29 +160,43 @@ public class Dashboard extends SubsystemBase
         var ejectTime                   = manipulatorSettingsLayout.add("Eject Time", 0.0).withPosition(2, 2).withSize(3, 2).withWidget(BuiltInWidgets.kTextView).getEntry();
         var intakeSpeed                 = manipulatorSettingsLayout.add("Intake Speed", 0.0).withPosition(2, 0).withSize(3, 2).withWidget(BuiltInWidgets.kTextView).getEntry();
 
-        registerCallback(flOffset, () -> Drive.getInstance().getSwerveModule(Constants.Drive.FL_INDEX).setRotationZero(flOffset.getDouble(Constants.Drive.FL_OFFSET)));
-        registerCallback(frOffset, () -> Drive.getInstance().getSwerveModule(Constants.Drive.FR_INDEX).setRotationZero(frOffset.getDouble(Constants.Drive.FR_OFFSET)));
-        registerCallback(blOffset, () -> Drive.getInstance().getSwerveModule(Constants.Drive.BL_INDEX).setRotationZero(blOffset.getDouble(Constants.Drive.BL_OFFSET)));
-        registerCallback(brOffset, () -> Drive.getInstance().getSwerveModule(Constants.Drive.BR_INDEX).setRotationZero(brOffset.getDouble(Constants.Drive.BR_OFFSET)));
+        initializeSetting("FL", Constants.Drive.FL_OFFSET, flOffset, Drive.getInstance().getSwerveModule(Constants.Drive.FL_INDEX)::setRotationZero);
+        initializeSetting("FR", Constants.Drive.FR_OFFSET, frOffset, Drive.getInstance().getSwerveModule(Constants.Drive.FR_INDEX)::setRotationZero);
+        initializeSetting("BL", Constants.Drive.BL_OFFSET, blOffset, Drive.getInstance().getSwerveModule(Constants.Drive.BL_INDEX)::setRotationZero);
+        initializeSetting("BR", Constants.Drive.BR_OFFSET, brOffset, Drive.getInstance().getSwerveModule(Constants.Drive.BR_INDEX)::setRotationZero);
 
-        registerCallback(armMaxExtension, () -> Arm.getInstance().setMaxArmExtension(armMaxExtension.getDouble(Constants.Arm.ARM_MAX_EXTENSION)));
-        registerCallback(armMinAngle, () -> Arm.getInstance().setMinShoulderAngle(armMinAngle.getDouble(Constants.Arm.SHOULDER_MIN_ANGLE)));
-        registerCallback(armMaxAngle, () -> Arm.getInstance().setMaxShoulderAngle(armMaxAngle.getDouble(Constants.Arm.SHOULDER_MAX_ANGLE)));
+        initializeSetting("Max Extend", Constants.Arm.ARM_MAX_EXTENSION, armMaxExtension, Arm.getInstance()::setMaxArmExtension);
+        initializeSetting("Arm Min", Constants.Arm.SHOULDER_MIN_ANGLE, armMinAngle, Arm.getInstance()::setMinShoulderAngle);
+        initializeSetting("Arm Max", Constants.Arm.SHOULDER_MAX_ANGLE, armMaxAngle, Arm.getInstance()::setMaxShoulderAngle);
 
-        registerCallback(wristMinAngle, () -> Manipulator.getInstance().setWristMinAngle(wristMinAngle.getDouble(Constants.Manipulator.WRIST_MIN_ANGLE)));
-        registerCallback(wristMaxAngle, () -> Manipulator.getInstance().setWristMaxAngle(wristMaxAngle.getDouble(Constants.Manipulator.WRIST_MAX_ANGLE)));
-        registerCallback(twistMinRotation, () -> Manipulator.getInstance().setTwistMinRotation(twistMinRotation.getDouble(Constants.Manipulator.TWIST_MIN_ROTATION)));
-        registerCallback(twistMaxRotation, () -> Manipulator.getInstance().setTwistMaxRotation(twistMaxRotation.getDouble(Constants.Manipulator.TWIST_MAX_ROTATION)));
-        registerCallback(ejectTime, () -> Manipulator.getInstance().setEjectTime(ejectTime.getDouble(Constants.Manipulator.EJECT_TIME)));
-        registerCallback(intakeSpeed, () -> Manipulator.getInstance().setIntakeSpeed(intakeSpeed.getDouble(Constants.Manipulator.INTAKE_SPEED)));
+        initializeSetting("Wrist Min", Constants.Manipulator.WRIST_MIN_ANGLE, wristMinAngle, Manipulator.getInstance()::setWristMinAngle);
+        initializeSetting("Wrist Max", Constants.Manipulator.WRIST_MAX_ANGLE, wristMaxAngle, Manipulator.getInstance()::setWristMaxAngle);
+        initializeSetting("Twist Min", Constants.Manipulator.TWIST_MIN_ROTATION, twistMinRotation, Manipulator.getInstance()::setTwistMinRotation);
+        initializeSetting("Twist Max", Constants.Manipulator.TWIST_MAX_ROTATION, twistMaxRotation, Manipulator.getInstance()::setTwistMaxRotation);
+        initializeSetting("Eject Time", Constants.Manipulator.EJECT_TIME, ejectTime, Manipulator.getInstance()::setEjectTime);
+        initializeSetting("Intake Speed", Constants.Manipulator.INTAKE_SPEED, intakeSpeed, Manipulator.getInstance()::setIntakeSpeed);
     }
 
-    public void registerCallback(GenericEntry entry, Runnable callback)
+    public void initializeSetting(String key, double defaultValue, GenericEntry entry, DoubleConsumer consumer)
     {
         NetworkTableInstance.getDefault().addListener(entry, EnumSet.of(NetworkTableEvent.Kind.kValueRemote), event->
         {
-            callback.run();
+            consumer.accept(entry.getDouble(defaultValue));
+            Preferences.setDouble(key, entry.getDouble(defaultValue));
         });
+
+        double value = defaultValue;
+
+        if (Preferences.containsKey(key))
+        {
+            value = Preferences.getDouble(key, defaultValue);
+        }
+        else
+        {
+            Preferences.initDouble(key, defaultValue);   
+        }
+
+        consumer.accept(value);
     }
 
     @Override
