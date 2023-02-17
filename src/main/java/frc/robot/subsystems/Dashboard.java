@@ -109,23 +109,6 @@ public class Dashboard extends SubsystemBase
     
         _autonomousLog = autonomousOptions.add("Auto Log", "").withPosition(0, 4).withSize(1, 1).withWidget(BuiltInWidgets.kTextView).getEntry();
 
-        //Preferences
-        Preferences.getDouble("FL", 90.0);
-        Preferences.getDouble("FR", 90.0);
-        Preferences.getDouble("BL", 90.0);
-        Preferences.getDouble("BR", 90.0);
-
-        Preferences.getDouble("Max Extend", 36.0);
-        Preferences.getDouble("Arm Min", -90.0);
-        Preferences.getDouble("Arm Max", 90.0);
-
-        Preferences.getDouble("Wrist Min", -90.0);
-        Preferences.getDouble("Wrist Max", 90.0);
-        Preferences.getDouble("Twist Min", -180.0);
-        Preferences.getDouble("Twist Max", 180.0);
-        Preferences.getDouble("Eject Time", 1.0);
-        Preferences.getDouble("Intake Speed", 0.75);
-
         var settingsTab                 = Shuffleboard.getTab("Settings");
 
         //Drive
@@ -143,6 +126,11 @@ public class Dashboard extends SubsystemBase
             frOffset.setDouble(Drive.getInstance().getSwerveModule(Constants.Drive.FR_INDEX).getRelativeZero());
             blOffset.setDouble(Drive.getInstance().getSwerveModule(Constants.Drive.BL_INDEX).getRelativeZero());
             brOffset.setDouble(Drive.getInstance().getSwerveModule(Constants.Drive.BR_INDEX).getRelativeZero());
+        
+            Preferences.setDouble("FL Offset", Drive.getInstance().getSwerveModule(Constants.Drive.FL_INDEX).getRelativeZero());
+            Preferences.setDouble("FR Offset", Drive.getInstance().getSwerveModule(Constants.Drive.FR_INDEX).getRelativeZero());
+            Preferences.setDouble("BL Offset", Drive.getInstance().getSwerveModule(Constants.Drive.BL_INDEX).getRelativeZero());
+            Preferences.setDouble("BR Offset", Drive.getInstance().getSwerveModule(Constants.Drive.BR_INDEX).getRelativeZero());
         });
 
         //Arm
@@ -160,10 +148,10 @@ public class Dashboard extends SubsystemBase
         var ejectTime                   = manipulatorSettingsLayout.add("Eject Time", 0.0).withPosition(2, 2).withSize(3, 2).withWidget(BuiltInWidgets.kTextView).getEntry();
         var intakeSpeed                 = manipulatorSettingsLayout.add("Intake Speed", 0.0).withPosition(2, 0).withSize(3, 2).withWidget(BuiltInWidgets.kTextView).getEntry();
 
-        initializeSetting("FL", Constants.Drive.FL_OFFSET, flOffset, Drive.getInstance().getSwerveModule(Constants.Drive.FL_INDEX)::setRotationZero);
-        initializeSetting("FR", Constants.Drive.FR_OFFSET, frOffset, Drive.getInstance().getSwerveModule(Constants.Drive.FR_INDEX)::setRotationZero);
-        initializeSetting("BL", Constants.Drive.BL_OFFSET, blOffset, Drive.getInstance().getSwerveModule(Constants.Drive.BL_INDEX)::setRotationZero);
-        initializeSetting("BR", Constants.Drive.BR_OFFSET, brOffset, Drive.getInstance().getSwerveModule(Constants.Drive.BR_INDEX)::setRotationZero);
+        initializeSetting("FL Offset", Constants.Drive.FL_OFFSET, flOffset, Drive.getInstance().getSwerveModule(Constants.Drive.FL_INDEX)::setRotationZero);
+        initializeSetting("FR Offset", Constants.Drive.FR_OFFSET, frOffset, Drive.getInstance().getSwerveModule(Constants.Drive.FR_INDEX)::setRotationZero);
+        initializeSetting("BL Offset", Constants.Drive.BL_OFFSET, blOffset, Drive.getInstance().getSwerveModule(Constants.Drive.BL_INDEX)::setRotationZero);
+        initializeSetting("BR Offset", Constants.Drive.BR_OFFSET, brOffset, Drive.getInstance().getSwerveModule(Constants.Drive.BR_INDEX)::setRotationZero);
 
         initializeSetting("Max Extend", Constants.Arm.ARM_MAX_EXTENSION, armMaxExtension, Arm.getInstance()::setMaxArmExtension);
         initializeSetting("Arm Min", Constants.Arm.SHOULDER_MIN_ANGLE, armMinAngle, Arm.getInstance()::setMinShoulderAngle);
