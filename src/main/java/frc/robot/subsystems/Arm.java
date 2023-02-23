@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import PIDControl.PIDControl;
@@ -48,14 +49,13 @@ public class Arm extends SubsystemBase
     
     // Extension Motor
     private DigitalInput        _limitSwitch;
-    private CANSparkMax         _linearMotor;
+    private CANSparkMax         _extensionMotor;
     private RelativeEncoder     _extensionEncoder;
     private PIDControl          _extensionPid;
-    private boolean             _extensionPidActive;
 
     // Shoulder Motor
-    private DutyCycleEncoder    _pitchEncoder;
-    private CANSparkMax         _pitchMotor;
+    private DutyCycleEncoder    _shoulderEncoder;
+    private CANSparkMax         _shoulderMotor;
     private PIDControl          _shoulderPid;
     
     // Settings
@@ -65,59 +65,80 @@ public class Arm extends SubsystemBase
 
     // Controls
     private ArmPosition         _armPosition;
+    private boolean             _reset;
 
     // Simulation
     private DIOSim              _limitSwitchSim;
     private DutyCycleEncoderSim _pitchEncoderSim;
-
     
     @SuppressWarnings("resource")
     private Arm() 
     {
-        CANSparkMax followerPitchMotor  = new CANSparkMax(Constants.Arm.FOLLOWER_PITCH_MOTOR_CAN_ID, MotorType.kBrushless);
+        CANSparkMax followerShoulderMotor;
+
+        /* Actuators */
+        _extensionMotor         = new CANSparkMax(Constants.CAN.EXTENSION_ID, MotorType.kBrushless);
+        _shoulderMotor          = new CANSparkMax(Constants.CAN.SHOULDER_ID, MotorType.kBrushless);
+        followerShoulderMotor   = new CANSparkMax(Constants.CAN.SHOULDER_FOLLOWER_ID, MotorType.kBrushless);
         
-        _limitSwitch        = new DigitalInput(Constants.Arm.LIMIT_SWITCH_CHANNEL);
-        _pitchEncoder       = new DutyCycleEncoder(Constants.Arm.PITCH_ENCODER_CHANNEL);
-        _linearMotor        = new CANSparkMax(Constants.Arm.LINEAR_MOTOR_CAN_ID, MotorType.kBrushless);
-        _pitchMotor         = new CANSparkMax(Constants.Arm.PITCH_MOTOR_CAN_ID, MotorType.kBrushless);
-        _extensionPidActive = false; 
-        _extensionPid       = new PIDControl();
-        _shoulderPid        = new PIDControl();
-        _extensionEncoder   = _linearMotor.getEncoder();
-        _armPosition        = ArmPosition.Stow;
+        /* Sensors */
+        _limitSwitch            = new DigitalInput(Constants.DIO.LIMIT_SWITCH_PORT);
+        _shoulderEncoder        = new DutyCycleEncoder(Constants.DIO.SHOULDER_PORT);
 
-        _minShoulderAngle   = Constants.Arm.SHOULDER_MIN_ANGLE;
-        _maxShoulderAngle   = Constants.Arm.SHOULDER_MAX_ANGLE;
-        _maxArmExtension    = Constants.Arm.ARM_MAX_EXTENSION;
+        /* Control variables */
+        _shoulderPid            = new PIDControl();
+        _extensionPid           = new PIDControl();
+        _armPosition            = ArmPosition.Stow;
+        _reset                  = false;
+        
+        /* Settings */
+        _minShoulderAngle       = Constants.Arm.SHOULDER_MIN_ANGLE;
+        _maxShoulderAngle       = Constants.Arm.SHOULDER_MAX_ANGLE;
+        _maxArmExtension        = Constants.Arm.ARM_MAX_EXTENSION;
+        
+        _extensionMotor.restoreFactoryDefaults();
+        _shoulderMotor.restoreFactoryDefaults();
+        followerShoulderMotor.restoreFactoryDefaults();
+        
+        _extensionEncoder = _extensionMotor.getEncoder();
+        
+        _shoulderMotor.setIdleMode(IdleMode.kBrake);
+        followerShoulderMotor.setIdleMode(IdleMode.kBrake);
 
-        _shoulderPid.setCoefficient(Coefficient.P, 0, 0.001, 0);
+        _extensionMotor.setInverted(true);
+        _shoulderMotor.setInverted(true);
+        followerShoulderMotor.setInverted(true);
+
+        followerShoulderMotor.follow(_shoulderMotor, true);
+
+        _shoulderPid.setCoefficient(Coefficient.P, 0, 0.0225, 0);
         _shoulderPid.setCoefficient(Coefficient.I, 0, 0, 0);
-        _shoulderPid.setCoefficient(Coefficient.D, 0, 0, 0);
-        _shoulderPid.setInputRange(-135, 135);
-        _shoulderPid.setOutputRange(-1, 1);
-        _shoulderPid.setSetpointDeadband(1);
+        _shoulderPid.setCoefficient(Coefficient.D, 0, 0.05, 0);
+        _shoulderPid.setInputRange(Constants.Arm.SHOULDER_MIN_ANGLE, Constants.Arm.SHOULDER_MAX_ANGLE);
+        _shoulderPid.setOutputRange(-0.7, 0.7);
+        _shoulderPid.setOutputRamp(0.05, 0.02);
+        _shoulderPid.setSetpointDeadband(2);
+        _shoulderPid.setFeedForward(setpoint -> -Constants.Arm.HORIZONTAL_STAYING_POWER * Math.sin(Math.toRadians(setpoint)));
+        _shoulderPid.setSetpoint(0, getShoulderAngle());
 
-        _extensionPid.setCoefficient(Coefficient.P, 0, 0.001, 0);
+        _extensionPid.setCoefficient(Coefficient.P, 0, 0.5, 0);
         _extensionPid.setCoefficient(Coefficient.I, 0, 0, 0);
         _extensionPid.setCoefficient(Coefficient.D, 0, 0, 0);
-        _extensionPid.setInputRange(0, 50);
-        _extensionPid.setOutputRange(-1, 1);
-        _extensionPid.setSetpointDeadband(1);
-
-        _linearMotor.setInverted(true);
-
-        _extensionEncoder.setPositionConversionFactor(1);
-
-        followerPitchMotor.follow(_pitchMotor, true);
+        _extensionPid.setInputRange(0, Constants.Arm.ARM_MAX_EXTENSION);
+        _extensionPid.setOutputRange(-0.25, 0.25);
+        _extensionPid.setSetpointDeadband(2);
+        _extensionPid.setSetpoint(0, getExtensionPosition());
+        _extensionEncoder.setPosition(Constants.Arm.ARM_MAX_EXTENSION / Constants.Arm.EXTENSION_CONVERSION_FACTOR);
 
         if (RobotBase.isSimulation())
         {
-            _linearMotor.setInverted(false);
+            _extensionMotor.setInverted(false);
             _limitSwitchSim = new DIOSim(_limitSwitch);
-            _pitchEncoderSim = new DutyCycleEncoderSim(_pitchEncoder);
+            _pitchEncoderSim = new DutyCycleEncoderSim(_shoulderEncoder);
 
-            REVPhysicsSim.getInstance().addSparkMax(_linearMotor, DCMotor.getNEO(1));
-            REVPhysicsSim.getInstance().addSparkMax(_pitchMotor, DCMotor.getNeo550(2));
+            REVPhysicsSim.getInstance().addSparkMax(_extensionMotor, DCMotor.getNEO(1));
+            REVPhysicsSim.getInstance().addSparkMax(_shoulderMotor, DCMotor.getNeo550(2));
+            
         }
 
         RobotLog.getInstance().log("Created Arm Subsystem");
@@ -125,28 +146,21 @@ public class Arm extends SubsystemBase
 
     public boolean isLimitSwitchPressed()
     {
-        return _limitSwitch.get();
+        return !_limitSwitch.get();
     }
 
     public double getExtensionPosition()
     {
-        return _extensionEncoder.getPosition();
+        return _extensionEncoder.getPosition() * Constants.Arm.EXTENSION_CONVERSION_FACTOR;
     }
 
     public double getShoulderAngle()
     {
-        return _pitchEncoder.get();
-    }
-
-    public void setExtensionMotorSpeed(double speed)
-    {
-        _linearMotor.setVoltage(speed * Constants.MOTOR_VOLTAGE);
-        _extensionPidActive = false;
+        return (_shoulderEncoder.getAbsolutePosition() - Constants.Arm.SHOULDER_SENSOR_MIN) * Constants.Arm.SHOULDER_SLOPE + Constants.Arm.SHOULDER_SCALED_MIN;
     }
 
     public void setExtensionMotorPosition(double position)
     {
-       _extensionPidActive = true;
        _extensionPid.setSetpoint(position, getExtensionPosition());
     }
   
@@ -157,7 +171,7 @@ public class Arm extends SubsystemBase
 
     public void setShoulderAngle(double angle)
     {
-        _shoulderPid.setSetpoint(angle, getShoulderAngle());
+        _shoulderPid.setSetpoint(angle, getShoulderAngle(), true);
     }
 
     public void modifyShoulderAngle(double modification)
@@ -209,21 +223,29 @@ public class Arm extends SubsystemBase
         _extensionPid.setInputRange(0, _maxArmExtension);
     }
 
+    private void resetExtension()
+    {
+        _extensionEncoder.setPosition(0);
+        _extensionPid.setOutputRange(-1.0, 1.0);
+    }
+
     @Override 
     public void periodic()
     {
-        _pitchMotor.setVoltage(_shoulderPid.calculate(getShoulderAngle()) * Constants.MOTOR_VOLTAGE);
-
-        if (_extensionPidActive) 
+        if (!_reset && isLimitSwitchPressed())
         {
-            _linearMotor.setVoltage(_extensionPid.calculate(getExtensionPosition()) * Constants.MOTOR_VOLTAGE);
+            _reset = true;
+            resetExtension();
         }
+
+        _shoulderMotor.setVoltage(_shoulderPid.calculate(getShoulderAngle()) * Constants.MOTOR_VOLTAGE);
+        _extensionMotor.setVoltage(_extensionPid.calculate(getExtensionPosition()) * Constants.MOTOR_VOLTAGE);
     }
 
     @Override
     public void simulationPeriodic()
     {
         _limitSwitchSim.setValue(_extensionEncoder.getPosition() <= 0);
-        _pitchEncoderSim.set(_pitchMotor.getEncoder().getPosition());
+        _pitchEncoderSim.set(_shoulderMotor.getEncoder().getPosition());
     }
 }

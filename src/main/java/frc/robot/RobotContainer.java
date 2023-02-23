@@ -9,9 +9,12 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.CmdArmModifyExtensionPosition;
 import frc.robot.commands.CmdArmModifyShoulderAngle;
+import frc.robot.commands.CmdArmSetExtensionPosition;
+import frc.robot.commands.CmdArmSetShoulderAngle;
 import frc.robot.commands.CmdAutoRotate;
 import frc.robot.commands.CmdDriveWithJoystick;
 import frc.robot.commands.CmdManipulatorPlaceGamePiece;
+import frc.robot.commands.CmdManipulatorSetTwistAngle;
 import frc.robot.groups.GrpManipulatorHandFlip;
 import frc.robot.groups.GrpIntakeGamePiece;
 import frc.robot.groups.GrpSetArmPosition;
@@ -56,21 +59,28 @@ public class RobotContainer
     private JoystickButton _buttonBoxButton11;
     private JoystickButton _buttonBoxButton12;
 
+    private JoystickButton _driveJoyButton2;
+    private JoystickButton _driveJoyButton3;
+    private JoystickButton _driveJoyButton4;
     private JoystickButton _driveJoyButton7;
 
     private RobotContainer()
     {
         DriverStation.silenceJoystickConnectionWarning(true);
 
+        //Dashboard.getInstance();
+        Arm.getInstance();
         Manipulator.getInstance();
-        Dashboard.getInstance();
 
         _driveJoy  = new Joystick(0);
         _buttonBox = new Joystick(1);
 
+        _driveJoyButton2   = new JoystickButton(_driveJoy, 2);
+        _driveJoyButton3   = new JoystickButton(_driveJoy, 3);
+        _driveJoyButton4   = new JoystickButton(_driveJoy, 4);
         _driveJoyButton7   = new JoystickButton(_driveJoy, 7);
 
-        _buttonBoxArmSideSwitch  = new Trigger(()-> _buttonBox.getRawAxis(0) > 0.5);
+        _buttonBoxArmSideSwitch  = new Trigger(()-> _buttonBox.getRawAxis(0) < -0.5);
         _buttonBoxHandmodeSwitch = new Trigger (()-> _buttonBox.getRawAxis(1) < -0.5);
 
         _buttonBoxButton1  = new JoystickButton(_buttonBox, 1);
@@ -85,9 +95,23 @@ public class RobotContainer
         _buttonBoxButton10 = new JoystickButton(_buttonBox, 10);
         _buttonBoxButton11 = new JoystickButton(_buttonBox, 11);
         _buttonBoxButton12 = new JoystickButton(_buttonBox, 12);
+
+        // Shoulder
+        _buttonBoxButton4.onTrue(new CmdArmSetShoulderAngle(90));
+        _buttonBoxButton8.onTrue(new CmdArmSetShoulderAngle(0));
+        _buttonBoxButton12.onTrue(new CmdArmSetShoulderAngle(-90));
         
-        //configureDefaultCommands();
-        configureBindings();
+        // Extension
+        _buttonBoxButton3.onTrue(new CmdArmSetExtensionPosition(15));
+        _buttonBoxButton7.onTrue(new CmdArmSetExtensionPosition(8));
+        _buttonBoxButton11.onTrue(new CmdArmSetExtensionPosition(0));
+
+        // Twist
+        _buttonBoxButton1.onTrue(new CmdManipulatorSetTwistAngle(-90));
+        _buttonBoxButton5.onTrue(new CmdManipulatorSetTwistAngle(0));
+        _buttonBoxButton9.onTrue(new CmdManipulatorSetTwistAngle(90));
+//        configureDefaultCommands();
+//        configureBindings();
     }
 
     private void configureDefaultCommands()
@@ -97,6 +121,8 @@ public class RobotContainer
 
     private void configureBindings() 
     {
+        _driveJoyButton7.onTrue(new CmdAutoRotate(90));
+
         _buttonBoxButton1.onTrue(new GrpManipulatorHandFlip());
         
         _buttonBoxButton2.onTrue(new GrpSetArmPosition(ArmPosition.Stow));
@@ -112,7 +138,6 @@ public class RobotContainer
         _buttonBoxButton11.onTrue(new CmdArmModifyShoulderAngle(3));
         _buttonBoxButton12.onTrue(new CmdArmModifyShoulderAngle(-3));
 
-        //_driveJoyButton7.onTrue(new CmdAutoRotate(90));
         _buttonBoxButton8.onTrue(new CmdManipulatorPlaceGamePiece());
 
         _buttonBoxArmSideSwitch.onTrue(new GrpSetArmPosition(ArmPosition.Stow));

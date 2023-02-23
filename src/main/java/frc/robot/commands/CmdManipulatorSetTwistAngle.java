@@ -21,7 +21,7 @@ public class CmdManipulatorSetTwistAngle extends CommandBase
         double angle = _twistAngle;
         if(_manipulatorSubsystem.isFlipped())
         {
-            angle = 180 - angle;
+            angle *= -1;
         }
         RobotLog.getInstance().log(String.format("Setting twist angle to %6.2f", angle));
         _manipulatorSubsystem.setTwistAngle(angle);
