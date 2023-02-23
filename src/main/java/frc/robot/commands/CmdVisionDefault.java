@@ -60,10 +60,15 @@ public class CmdVisionDefault extends CommandBase
             Vector cameraFieldPosition =  _vision.getCameraFieldPosition(target.getFiducialId(), targetCamera.pitch + target.getPitch(), target.getSkew(), targetCamera.height);
             Vector fieldPosition = cameraFieldPosition.subtract(targetCamera.position);
 
-            double fieldHeading = _vision.getCameraHeading(target.getFiducialId(), target.getYaw(), target.getSkew()) + targetCamera.yaw;
+            double skew = Math.toDegrees(Math.atan((target.getDetectedCorners().get(0).y - target.getDetectedCorners().get(3).y) / (target.getDetectedCorners().get(0).x - target.getDetectedCorners().get(3).x)));
 
-            _drive.fusePosition(fieldPosition, 12);
-            _drive.fuseHeading(fieldHeading, 12);
+            double fieldHeading = _vision.getCameraHeading(target.getFiducialId(), target.getYaw(), skew) + targetCamera.yaw;
+
+            double positionVariance = fieldPosition.subtract(_drive.getFieldPosition()).getMagnitude();
+            double headingVariance = Math.abs(fieldHeading - _drive.getHeading());
+
+            //_drive.fusePosition(fieldPosition, positionVariance);
+            //_drive.fuseHeading(fieldHeading, headingVariance);
         }
     }
 
@@ -71,5 +76,11 @@ public class CmdVisionDefault extends CommandBase
     public boolean isFinished()
     {
         return false;
+    }
+
+    @Override
+    public boolean runsWhenDisabled()
+    {
+        return true;
     }
 }

@@ -152,6 +152,6 @@ public class RobotLog extends SubsystemBase
 
     private String toSeconds(int counter)
     {
-        return String.format("%" + Constants.RobotLog.NUM_DIGITS_IN_TIME + "." + Constants.RobotLog.NUM_DECIMAL_PLACES_IN_TIME + "f", counter / Constants.LOOPS_PER_SECOND);
+        return String.format("%" + Constants.RobotLog.NUM_DIGITS_IN_TIME + "." + Constants.RobotLog.NUM_DECIMAL_PLACES_IN_TIME + "f", (double)counter / Constants.LOOPS_PER_SECOND);
     }
 }

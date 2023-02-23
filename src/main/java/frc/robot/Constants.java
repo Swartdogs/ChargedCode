@@ -25,7 +25,9 @@ public final class Constants
 
     public static class Drive
     {
-        public static final double DRIVE_ENCODER_TO_DISTANCE = 123.0 /* inches */ / 161294.5 /* encoder ticks */;
+        public static final double DRIVE_GEAR_RATIO          = (14.0 / 36.0) * (15.0 / 45.0);
+        public static final double DRIVE_WHEEL_DIAMETER      = 4.0;
+        public static final double DRIVE_ENCODER_TO_DISTANCE = DRIVE_GEAR_RATIO * Math.PI * DRIVE_WHEEL_DIAMETER;
 
         public static final double BASE_WIDTH                = 20;
         public static final double BASE_LENGTH               = 28.75;
@@ -54,15 +56,15 @@ public final class Constants
         public static final int BL_INDEX = 2;
         public static final int BR_INDEX = 3;
 
-        public static final double FL_OFFSET = 37.5;
-        public static final double FR_OFFSET = -150.2;
-        public static final double BL_OFFSET = -158.2;
-        public static final double BR_OFFSET = -53.3;
+        public static final double FL_OFFSET = -113.2;
+        public static final double FR_OFFSET = 26.0;
+        public static final double BL_OFFSET = -212.5;
+        public static final double BR_OFFSET = 146.2;
     }
 
     public static class Vision
     {
-        public static final double FRONT_CAMERA_HEIGHT = 0.0;   // height from the floor
+        public static final double FRONT_CAMERA_HEIGHT = 0.75;   // height from the floor
         public static final double FRONT_CAMERA_YAW = 0.0;      // heading
         public static final double FRONT_CAMERA_PITCH = 0.0;     // angle of elevation
         public static final double FRONT_CAMERA_X = 2.0;        // inches right on the robot frame

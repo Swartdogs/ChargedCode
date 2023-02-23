@@ -29,8 +29,8 @@ public class Vision extends SubsystemBase
     
     public Vision()
     {
-        _frontCam          = new PhotonCamera("camera1");
-        _rearCam           = new PhotonCamera("camera2");
+        _frontCam          = new PhotonCamera("lifecam");
+        _rearCam           = new PhotonCamera("lifecam");// FIXME: needs name of second camera
         _frontLatestResult = new PhotonPipelineResult(); 
         _rearLatestResult  = new PhotonPipelineResult();
 
@@ -79,14 +79,14 @@ public class Vision extends SubsystemBase
             case 2:
             case 3:
             case 4:
-                targetAngle = 180.0;
+                targetAngle = -90.0;
                 break;
             case 5:
             case 6:
             case 7:
             case 8:
             default:
-                targetAngle = 0.0;
+                targetAngle = 90.0;
         }
 
         return targetAngle;
@@ -171,7 +171,8 @@ public class Vision extends SubsystemBase
     {
         double targetAngle = getTargetAngle(id);
 
-        return skew + yaw + targetAngle;
+        System.out.println(String.format("%6.2f", skew));
+        return -skew + yaw - targetAngle;
     }
 
     @Override

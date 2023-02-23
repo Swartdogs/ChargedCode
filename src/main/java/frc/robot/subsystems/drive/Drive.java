@@ -230,7 +230,7 @@ public class Drive extends SubsystemBase
 
     public void fusePosition(Vector inputPosition, double inputVariance)
     {
-        if (inputVariance > 0)// prevent negative variances
+        if (inputVariance >= 0)// prevent negative variances
         {
             double newX = _position.getX() * inputVariance + inputPosition.getX() * _positionVariance;
             double newY = _position.getY() * inputVariance + inputPosition.getY() * _positionVariance;
@@ -245,7 +245,7 @@ public class Drive extends SubsystemBase
 
     public void fuseVelocity(Vector inputVelocity, double inputVariance)
     {
-        if (inputVariance > 0)// prevent negative variances
+        if (inputVariance >= 0)// prevent negative variances
         {
             double newX = _velocity.getX() * inputVariance + inputVelocity.getX() * _velocityVariance;
             double newY = _velocity.getY() * inputVariance + inputVelocity.getY() * _velocityVariance;
@@ -260,7 +260,7 @@ public class Drive extends SubsystemBase
 
     public void fuseHeading(double inputHeading, double inputVariance)
     {
-        if (inputVariance > 0)// prevent negative variances
+        if (inputVariance >= 0)// prevent negative variances
         {
             double diff = (inputHeading - getHeading());
             diff = (diff * _rotationHeadingVariance) / (_rotationHeadingVariance + inputVariance);
@@ -272,7 +272,7 @@ public class Drive extends SubsystemBase
 
     public void fuseRotationVelocity(double inputRotation, double inputVariance)
     {
-        if (inputVariance > 0)// prevent negative variances
+        if (inputVariance >= 0)// prevent negative variances
         {
             _rotationVelocity = (inputRotation * _rotationVelocityVariance + _rotationVelocity * inputVariance) / (_rotationVelocityVariance + inputVariance);
             _rotationVelocityVariance = (_rotationVelocityVariance * inputVariance) / (_rotationVelocityVariance + inputVariance);
@@ -289,7 +289,7 @@ public class Drive extends SubsystemBase
         double newRotationHeading = getHeading();
 
         double sensorRotationVelocity = (newRotationHeading - _rotationHeading) * Constants.LOOPS_PER_SECOND;
-        double sensorRotationVariance = Math.abs(_rotationVelocity - sensorRotationVelocity) + 2;
+        double sensorRotationVariance = Math.abs(sensorRotationVelocity - _rotationVelocity);
 
         _rotationHeading = newRotationHeading;
 
@@ -307,29 +307,33 @@ public class Drive extends SubsystemBase
         change = change.divide(_swerveModules.length);// to average (same as dividing each component)
         squaredChange = squaredChange.divide(_swerveModules.length);
 
-        change.translatePolarPosition(0.0, getHeading());// field centric change
+        change.translatePolarPosition(0.0, _rotationHeading);// field centric change
+        squaredChange.translatePolarPosition(0.0, _rotationHeading);
         
-        double sensorPositionVariance = squaredChange.subtract(new Vector(change.getX() * change.getX(), change.getY() * change.getY())).getMagnitude() + 2;
+        double sensorPositionVariance = squaredChange.subtract(new Vector(change.getX() * change.getX(), change.getY() * change.getY()).divide(_swerveModules.length)).getMagnitude();
 
         Vector sensorPosition = _position.add(change);
         Vector sensorVelocity = change.multiply(Constants.LOOPS_PER_SECOND);
 
-        double sensorVelocityVariance = sensorVelocity.subtract(_velocity).getMagnitude() + 2;// added a constant to assume some wheel slippage
+        double sensorVelocityVariance = sensorVelocity.subtract(_velocity).getMagnitude();
 
         // fuse process and sensor values
 
         // TODO: test variances for position input and for odometry calculation
-        //System.out.println(String.format("Process: %s; Sensor: %s; Sensor Variance: %6.2f, Heading: %6.2f", processPosition, sensorPosition, sensorTranslationVariance, _rotationHeading));
+        // System.out.println(String.format("Process: %s; Sensor: %s; Sensor Variance: %6.2f, Heading: %6.2f", _rotationVelocity, sensorRotationVelocity, sensorRotationVariance, _rotationHeading));
 
-        _positionVariance += 4 + (_velocityVariance / Constants.LOOPS_PER_SECOND);// process variance
-        _velocityVariance += 4;// we can play with the costant addition
+        _positionVariance += 1 + (_velocityVariance / Constants.LOOPS_PER_SECOND);// process variance
+        _velocityVariance += 1;// we can play with the costant addition
 
-        _rotationVelocityVariance += 4;
+        _rotationHeadingVariance += 0.001;
+        _rotationVelocityVariance += 1;
 
         _position = processPosition;
 
-        fusePosition(sensorPosition, sensorPositionVariance);
-        fuseVelocity(sensorVelocity, sensorVelocityVariance);
-        fuseRotationVelocity(sensorRotationVelocity, sensorRotationVariance);
+        fusePosition(sensorPosition, sensorPositionVariance + 1);
+        fuseVelocity(sensorVelocity, sensorVelocityVariance + 1);
+        fuseRotationVelocity(sensorRotationVelocity, sensorRotationVariance + 1);
+        // System.out.println(String.format("Odometer: %s; Position Variance: %6.2f; Heading: %6.2f; Heading Variance: %6.2f", _position, _positionVariance, _rotationHeading, _rotationHeadingVariance));
+
     }
 }
