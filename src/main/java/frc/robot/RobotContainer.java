@@ -1,6 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -10,53 +9,94 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.CmdDriveWithJoystick;
 import frc.robot.commands.CmdVisionDefault;
 import frc.robot.commands.CmdDriveBalance;
+import frc.robot.commands.CmdAutoRotate;
 import frc.robot.commands.CmdDriveResetEncoders;
 import frc.robot.commands.CmdDriveResetOdometer;
 import frc.robot.commands.CmdDriveToPosition;
+import frc.robot.subsystems.Dashboard;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.Vector;
 
 public class RobotContainer 
 {
+    private Joystick       _driveJoy;
+    private JoystickButton _driveJoyButton2;
+    private JoystickButton _driveJoyButton3;
+    private JoystickButton _driveJoyButton6;
+    private JoystickButton _driveJoyButton7;
+    private JoystickButton _driveJoyButton9;
+    private JoystickButton _driveJoyButton11;
+
     public RobotContainer()
     {
+        _driveJoy         = new Joystick(0);
 
-        DriverStation.silenceJoystickConnectionWarning(true);
+        _driveJoyButton2  = new JoystickButton(_driveJoy, 2);
+        _driveJoyButton3  = new JoystickButton(_driveJoy, 3);
+        _driveJoyButton6  = new JoystickButton(_driveJoy, 6);
+        _driveJoyButton7  = new JoystickButton(_driveJoy, 7);
+        _driveJoyButton9  = new JoystickButton(_driveJoy, 9);
+        _driveJoyButton11 = new JoystickButton(_driveJoy, 11);
+        
+        Dashboard.getInstance();
+    
+        configureDefaultCommands();
+        configureBindings();
+    }
 
-        Joystick driveJoy = new Joystick(0);
-
+    private void configureDefaultCommands()
+    {
         Drive.getInstance().setDefaultCommand
         (
             new CmdDriveWithJoystick
             (
-                () -> getJoystickAxis(driveJoy.getX(), false, false, 0.05), 
-                () -> getJoystickAxis(driveJoy.getY(), true,  false, 0.05), 
-                () -> getJoystickAxis(driveJoy.getZ(), false, true,  0.10), 
-                () -> driveJoy.getRawButton(1)
+                this::getDriveJoyX,
+                this::getDriveJoyY,
+                this::getDriveJoyZ,
+                this::driveIsRobotCentric
             )  
         );
 
         Vision.getInstance().setDefaultCommand(new CmdVisionDefault());
 
-        new JoystickButton(driveJoy, 11).onTrue(new CmdDriveResetOdometer());
-        new JoystickButton(driveJoy, 8).onTrue(new CmdDriveResetEncoders());
+        new JoystickButton(_driveJoy, 11).onTrue(new CmdDriveResetOdometer());
+        new JoystickButton(_driveJoy, 8).onTrue(new CmdDriveResetEncoders());
 
         CmdDriveToPosition driveTestCommand = new CmdDriveToPosition(new Vector(), 0);
         CmdDriveBalance balanceCommand = new CmdDriveBalance();
 
-        new JoystickButton(driveJoy, 5).onTrue(driveTestCommand);
+        new JoystickButton(_driveJoy, 5).onTrue(driveTestCommand);
 
-        new JoystickButton(driveJoy, 4).onTrue(balanceCommand);
+        new JoystickButton(_driveJoy, 4).onTrue(balanceCommand);
 
-        JoystickButton cancelButton = new JoystickButton(driveJoy, 2);
+        JoystickButton cancelButton = new JoystickButton(_driveJoy, 2);
         cancelButton.onTrue(new InstantCommand(()->driveTestCommand.cancel()));
         cancelButton.onTrue(new InstantCommand(()->balanceCommand.cancel()));
 
         configureBindings();
     }
 
-    private void configureBindings() {}
+    private void configureBindings() 
+    {
+        CmdDriveToPosition driveToPosition   = new CmdDriveToPosition(new Vector(), 0);
+        CmdAutoRotate      driveAutoRotate90 = new CmdAutoRotate(90, this::getDriveJoyX, this::getDriveJoyY, this::driveIsRobotCentric);
+        //CmdDriveBalance    driveAutoBalance  = new CmdDriveBalance();
+
+        _driveJoyButton2.onTrue(new CmdDriveResetOdometer());
+        _driveJoyButton3.onTrue(driveToPosition);
+        //_driveJoyButton6.onTrue(new CmdDriveBalance());
+        _driveJoyButton7.onTrue(driveAutoRotate90);
+        _driveJoyButton9.onTrue
+        (
+            new InstantCommand(() -> 
+            {
+                driveToPosition.cancel();
+                driveAutoRotate90.cancel();
+            })
+        );
+        _driveJoyButton11.onTrue(new CmdDriveResetEncoders());
+    }
 
     public Command getAutonomousCommand() 
     {
@@ -88,5 +128,25 @@ public class RobotContainer
         }
 
         return applyDeadband(input, deadband);
+    }
+
+    private double getDriveJoyX()
+    {
+        return getJoystickAxis(_driveJoy.getX(), false, false, 0.05);
+    }
+
+    private double getDriveJoyY()
+    {
+        return getJoystickAxis(_driveJoy.getY(), true, false, 0.05);
+    }
+
+    private double getDriveJoyZ()
+    {
+        return getJoystickAxis(_driveJoy.getZ(), false, true, 0.1);
+    }
+
+    private boolean driveIsRobotCentric()
+    {
+        return _driveJoy.getRawButton(1);
     }
 }

@@ -110,8 +110,8 @@ public final class Constants
     {
         public static final int LIMIT_SWITCH_CHANNEL        = 0;
         public static final int PITCH_ENCODER_CHANNEL       = 1;
-        public static final int LINEAR_MOTOR_CAN_ID         = 0;
-        public static final int PITCH_MOTOR_CAN_ID          = 1;  
+        public static final int LINEAR_MOTOR_CAN_ID         = 13;
+        public static final int PITCH_MOTOR_CAN_ID          = 14;  
         public static final int FOLLOWER_PITCH_MOTOR_CAN_ID = 20;
         public static final double ARM_MAX_EXTENSION        = 200.0;
         public static final double SHOULDER_MIN_ANGLE       = -180.0;
