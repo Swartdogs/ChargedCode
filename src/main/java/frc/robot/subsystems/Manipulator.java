@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVPhysicsSim;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import PIDControl.PIDControl;
@@ -65,6 +66,9 @@ public class Manipulator extends SubsystemBase
     private double              _twistMaxRotation;
     private double              _ejectTime;
     private double              _intakeSpeed;
+    private double              _placeSpeed;
+    private double              _intakeStopDelay;
+    private double              _intakeStowDelay;
 
     //Simulation Variables
     private DutyCycleEncoderSim _wristEncoderSim;
@@ -91,6 +95,9 @@ public class Manipulator extends SubsystemBase
         _twistMaxRotation   = Constants.Manipulator.TWIST_MAX_ROTATION;
         _ejectTime          = Constants.Manipulator.EJECT_TIME;
         _intakeSpeed        = Constants.Manipulator.INTAKE_SPEED;
+        _placeSpeed         = Constants.Manipulator.PLACE_SPEED;
+        _intakeStopDelay    = Constants.Manipulator.INTAKE_STOP_DELAY;
+        _intakeStowDelay    = Constants.Manipulator.INTAKE_STOW_DELAY;
 
         _wristMotor.restoreFactoryDefaults();
         _twistMotor.restoreFactoryDefaults();
@@ -100,12 +107,15 @@ public class Manipulator extends SubsystemBase
         _twistMotor.setInverted(true);
         _intakeMotor.setInverted(true);
 
-        _wristPID.setCoefficient(Coefficient.P, 0, 0.25, 0);
+        _twistMotor.setIdleMode(IdleMode.kBrake);
+        _intakeMotor.setIdleMode(IdleMode.kBrake);
+
+        _wristPID.setCoefficient(Coefficient.P, 0, 0.03, 0);
         _wristPID.setCoefficient(Coefficient.I, 0, 0,    0);
-        _wristPID.setCoefficient(Coefficient.D, 0, 0.15, 0);
+        _wristPID.setCoefficient(Coefficient.D, 0, 0.05, 0);
         _wristPID.setInputRange(Constants.Manipulator.WRIST_MIN_ANGLE, Constants.Manipulator.WRIST_MAX_ANGLE);
         _wristPID.setOutputRange(-1, 1);
-        _wristPID.setSetpointDeadband(2);
+        _wristPID.setSetpointDeadband(5);
         _wristPID.setSetpoint(0, getWristAngle());
 
         _twistPID.setCoefficient(Coefficient.P, 0, 0.015, 0);
@@ -113,8 +123,8 @@ public class Manipulator extends SubsystemBase
         _twistPID.setCoefficient(Coefficient.D, 0, 0.03,  0);
         _twistPID.setInputRange(Constants.Manipulator.TWIST_MIN_ROTATION, Constants.Manipulator.TWIST_MAX_ROTATION);
         _twistPID.setOutputRange(-0.25, 0.25);
-        _twistPID.setSetpointDeadband(2);
-        _twistPID.setSetpoint(0, getTwistAngle());
+        _twistPID.setSetpointDeadband(8);
+        _twistPID.setSetpoint(90, getTwistAngle());
 
         if (RobotBase.isSimulation())
         {
@@ -153,102 +163,62 @@ public class Manipulator extends SubsystemBase
 
     public void reverseIntake()
     {
-        _intakeMotor.setVoltage(-_intakeSpeed * Constants.MOTOR_VOLTAGE);
+        _intakeMotor.setVoltage(-_placeSpeed * Constants.MOTOR_VOLTAGE);
         _intakeState = IntakeState.Reverse;
     }
-
+    
     public double getIntakeSpeed()
     {
         double speed = 0;
-
+        
         switch(_intakeState)
         {
             case On: 
                 speed = _intakeSpeed;
                 break;
-
-            case Off:
+            
+            case Off:    
                 speed = 0;
                 break;
-
-            case Reverse:
-                speed = -_intakeSpeed;
+            
+            case Reverse:    
+                speed = -_placeSpeed;
                 break;
-        }
-
+        }        
+        
         return speed;
-    }
-
+    }    
+        
     public void setTwistAngle(double position)
     {
         _twistPID.setSetpoint(position, getTwistAngle());
-    }
-
+    }    
+    
     public double getTwistAngle()
     {
         return MathUtil.inputModulus((_twistEncoder.getAbsolutePosition() - Constants.Manipulator.TWIST_OFFSET) * Constants.DEGREES_PER_REVOLUTION, -Constants.DEGREES_PER_HALF_REVOLUTION, Constants.DEGREES_PER_HALF_REVOLUTION);
-    }
-
+    }    
+    
     public double getTwistTargetAngle()
     {
         return _twistPID.getSetpoint();
-    }
-
+    }    
+    
     public void setIsFlipped(boolean isFlipped)
     {
         _isFlipped = isFlipped;
-    }
-
+    }    
+    
     public boolean isFlipped()
     {
         return _isFlipped;
-    }
-
+    }    
+    
     public boolean hasGamePiece()
     {
-        return !_intakeSensor.get();    
+    return !_intakeSensor.get();    
     }
-
-    //Settings Functions
-    public void setWristMinAngle(double angle)
-    {
-        _wristMinAngle = angle;
-        _wristPID.setInputRange(_wristMinAngle, _wristMaxAngle);
-    }
-
-    public void setWristMaxAngle(double angle)
-    {
-        _wristMaxAngle = angle;
-        _wristPID.setInputRange(_wristMinAngle, _wristMaxAngle);
-    }
-
-    public void setTwistMinRotation(double rotation)
-    {
-        _twistMinRotation = rotation;
-        _twistPID.setInputRange(_twistMinRotation, _twistMaxRotation);
-    }
-
-    public void setTwistMaxRotation(double rotation)
-    {
-        _twistMaxRotation = rotation;
-        _twistPID.setInputRange(_twistMinRotation, _twistMaxRotation);
-    }
-
-    public void setEjectTime(double time)
-    {
-        _ejectTime = time;
-    }
-
-    public double getEjectTime()
-    {
-        return _ejectTime;
-    }
-
-    public void setIntakeSpeed(double speed)
-    {
-        _intakeSpeed = speed;
-    }
-
+    
     public boolean wristAtAngle()
     {
         return _wristPID.atSetpoint();
@@ -258,12 +228,77 @@ public class Manipulator extends SubsystemBase
     {
         return _twistPID.atSetpoint();
     }
+    
+    //Settings Functions
+    public void setWristMinAngle(double angle)
+    {
+        _wristMinAngle = angle;
+        _wristPID.setInputRange(_wristMinAngle, _wristMaxAngle);
+    }    
+    
+    public void setWristMaxAngle(double angle)
+    {
+        _wristMaxAngle = angle;
+        _wristPID.setInputRange(_wristMinAngle, _wristMaxAngle);
+    }    
+    
+    public void setTwistMinRotation(double rotation)
+    {
+        _twistMinRotation = rotation;
+        _twistPID.setInputRange(_twistMinRotation, _twistMaxRotation);
+    }    
+    
+    public void setTwistMaxRotation(double rotation)
+    {
+        _twistMaxRotation = rotation;
+        _twistPID.setInputRange(_twistMinRotation, _twistMaxRotation);
+    }    
+    
+    public void setEjectTime(double time)
+    {
+        _ejectTime = time;
+    }    
+    
+    public double getEjectTime()
+    {
+        return _ejectTime;
+    }    
+    
+    public void setIntakeSpeed(double speed)
+    {
+        _intakeSpeed = speed;
+    }    
+
+    public void setPlaceSpeed(double speed)
+    {
+        _placeSpeed = speed;
+    }
+
+    public void setIntakeStopDelay(double delay)
+    {
+        _intakeStopDelay = delay;
+    }
+
+    public double getIntakeStopDelay()
+    {
+        return _intakeStopDelay;
+    }
+
+    public void setIntakeStowDelay(double delay)
+    {
+        _intakeStowDelay = delay;
+    }
+
+    public double getIntakeStowDelay()
+    {
+        return _intakeStowDelay;
+    }
 
     @Override
     public void periodic()
     {
         _twistMotor.setVoltage(_twistPID.calculate(getTwistAngle()) * Constants.MOTOR_VOLTAGE);
-        // _wristMotor.setVoltage(_wristPID.calculate(getWristAngle()) * Constants.MOTOR_VOLTAGE);
+        _wristMotor.setVoltage(_wristPID.calculate(getWristAngle()) * Constants.MOTOR_VOLTAGE);
     }
 
     @Override

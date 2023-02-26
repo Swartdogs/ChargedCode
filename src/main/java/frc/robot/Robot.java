@@ -1,24 +1,26 @@
 package frc.robot;
 
-import java.util.jar.JarOutputStream;
+// import java.util.jar.JarOutputStream;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+// import com.revrobotics.CANSparkMax;
+// import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.REVPhysicsSim;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkMax.IdleMode;
+// import com.revrobotics.RelativeEncoder;
+// import com.revrobotics.CANSparkMax.IdleMode;
 
-import PIDControl.PIDControl;
-import PIDControl.PIDControl.Coefficient;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.Joystick;
+// import PIDControl.PIDControl;
+// import PIDControl.PIDControl.Coefficient;
+// import edu.wpi.first.math.MathUtil;
+// import edu.wpi.first.wpilibj.DigitalInput;
+// import edu.wpi.first.wpilibj.DutyCycleEncoder;
+// import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+// import edu.wpi.first.wpilibj2.command.Commands;
+// import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+// import frc.robot.subsystems.Manipulator;
+// import frc.robot.subsystems.Arm;
 
 public class Robot extends TimedRobot 
 {
@@ -26,28 +28,28 @@ public class Robot extends TimedRobot
 
     private RobotContainer _robotContainer;
 
-    private DutyCycleEncoder _shoulder;
-    private DutyCycleEncoder _wrist;
-    private DutyCycleEncoder _twist;
-    private DigitalInput     _limitSwitch;
-    private DigitalInput     _lightSensor;
+    // private DutyCycleEncoder _shoulder;
+    // private DutyCycleEncoder _wrist;
+    // private DutyCycleEncoder _twist;
+    // private DigitalInput     _limitSwitch;
+    // private DigitalInput     _lightSensor;
 
-    private CANSparkMax      _exMotor;
-    private CANSparkMax      _wristMotor;
-    private CANSparkMax      _twistMotor;
-    private CANSparkMax      _pitchMotor;
-    private CANSparkMax      _inMotor;
+    // private CANSparkMax      _exMotor;
+    // private CANSparkMax      _wristMotor;
+    // private CANSparkMax      _twistMotor;
+    // private CANSparkMax      _pitchMotor;
+    // private CANSparkMax      _inMotor;
 
-    private RelativeEncoder  _encoder;
+    // private RelativeEncoder  _encoder;
 
-    private PIDControl       _wristPid;
-    private PIDControl       _twistPid;
-    private PIDControl       _exPid;
-    private PIDControl       _shoulderPid;
+    // private PIDControl       _wristPid;
+    // private PIDControl       _twistPid;
+    // private PIDControl       _exPid;
+    // private PIDControl       _shoulderPid;
 
-    private boolean          _reset;
+    // private boolean          _reset;
 
-    private static final double EX_CONVERSION_FACTOR = (25+5/8)/125.0947;
+    // private static final double EX_CONVERSION_FACTOR = (25+5/8)/125.0947;
 
     @Override
     public void robotInit() 
@@ -129,7 +131,7 @@ public class Robot extends TimedRobot
         // _twistPid.setCoefficient(Coefficient.I, 0, 0, 0);
         // _twistPid.setCoefficient(Coefficient.D, 0, 0.03, 0); 
         // _twistPid.setInputRange(-160, 160);
-        // _twistPid.setOutputRange(-0.25, 0.25);
+        // _twistPid.setOutputRange(-0.1, 0.1);
         // _twistPid.setSetpointDeadband(2);
         // _twistPid.setSetpoint(-90, getTwistPosition());
 
@@ -174,13 +176,16 @@ public class Robot extends TimedRobot
         // (
         //     String.format
         //     (
-        //         "Shoulder: %7.2f, Wrist: %5.2f, Twist: %5.2f, Limit Switch: %b, Light Sensor: %b, Extension: %9.4f",
+        //         "Shoulder: %7.2f, Wrist: %5.2f, Twist: %5.2f, Extension: %9.4f",
         //         getShoulderPosition(),
         //         getWristPosition(),
         //         getTwistPosition(),
-        //         _limitSwitch.get(),
-        //         _lightSensor.get(),
-        //         getExtensionPosition()
+        //         0.0
+        //         // getExtensionPosition()
+        //         // Arm.getInstance().getShoulderAngle(),
+        //         // Manipulator.getInstance().getWristAngle(),
+        //         // Manipulator.getInstance().getTwistAngle(),
+        //         // Arm.getInstance().getExtensionPosition()
         //     )
         // );
     }

@@ -15,6 +15,7 @@ import frc.robot.commands.CmdArmSetShoulderAngle;
 import frc.robot.commands.CmdAutoRotate;
 import frc.robot.commands.CmdDriveResetEncoders;
 import frc.robot.commands.CmdDriveResetOdometer;
+import frc.robot.commands.CmdDriveRotateModules;
 import frc.robot.commands.CmdDriveWithJoystick;
 import frc.robot.commands.CmdManipulatorPlaceGamePiece;
 import frc.robot.commands.CmdManipulatorSetTwistAngle;
@@ -79,7 +80,7 @@ public class RobotContainer
         Drive.getInstance();
         Arm.getInstance();
         Manipulator.getInstance();
-        //Dashboard.getInstance();
+        Dashboard.getInstance();
 
         _driveJoy  = new Joystick(0);
         _buttonBox = new Joystick(1);
@@ -141,7 +142,9 @@ public class RobotContainer
 
     private void configureBindings() 
     {
-        CmdAutoRotate      driveAutoRotate90 = new CmdAutoRotate(90);
+        CmdAutoRotate           driveAutoRotate90 = new CmdAutoRotate(90);
+        CmdDriveRotateModules   driveRotateModules = new CmdDriveRotateModules(90);
+
         // CmdDriveBalance    driveAutoBalance  = new CmdDriveBalance();
 
         _driveJoyButton2.onTrue
@@ -152,9 +155,10 @@ public class RobotContainer
             })
         );
         //_driveJoyButton6.onTrue(new CmdDriveBalance());
-        //_driveJoyButton7.onTrue(driveAutoRotate90);
-        _driveJoyButton9.onTrue(new CmdDriveResetOdometer());
-        _driveJoyButton11.onTrue(new CmdDriveResetEncoders());
+        _driveJoyButton7.onTrue(driveRotateModules);
+        _driveJoyButton7.onFalse(Commands.runOnce(()-> driveRotateModules.cancel()));
+        _driveJoyButton11.onTrue(new CmdDriveResetOdometer());
+        //_driveJoyButton11.onTrue(new CmdDriveResetEncoders());
 
         
         _buttonBoxButton1.onTrue(new CmdArmModifyExtensionPosition(3));

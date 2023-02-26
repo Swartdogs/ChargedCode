@@ -147,6 +147,9 @@ public class Dashboard extends SubsystemBase
         var twistMaxRotation            = manipulatorSettingsLayout.add("Twist Max", 180.0).withPosition(1, 0).withSize(3, 2).withWidget(BuiltInWidgets.kTextView).getEntry();
         var ejectTime                   = manipulatorSettingsLayout.add("Eject Time", 0.0).withPosition(2, 2).withSize(3, 2).withWidget(BuiltInWidgets.kTextView).getEntry();
         var intakeSpeed                 = manipulatorSettingsLayout.add("Intake Speed", 0.0).withPosition(2, 0).withSize(3, 2).withWidget(BuiltInWidgets.kTextView).getEntry();
+        var placeSpeed                  = manipulatorSettingsLayout.add("Place Speed", 0.0).withWidget(BuiltInWidgets.kTextView).getEntry();
+        var intakeStopDelay             = manipulatorSettingsLayout.add("Intake Stop Delay", 0.0).withWidget(BuiltInWidgets.kTextView).getEntry();
+        var intakeStowDelay             = manipulatorSettingsLayout.add("Intake Stow Delay", 0.0).withWidget(BuiltInWidgets.kTextView).getEntry();
 
         initializeSetting("FL Offset", Constants.Drive.FL_OFFSET, flOffset, Drive.getInstance().getSwerveModule(Constants.Drive.FL_INDEX)::setRotationZero);
         initializeSetting("FR Offset", Constants.Drive.FR_OFFSET, frOffset, Drive.getInstance().getSwerveModule(Constants.Drive.FR_INDEX)::setRotationZero);
@@ -163,6 +166,9 @@ public class Dashboard extends SubsystemBase
         initializeSetting("Twist Max", Constants.Manipulator.TWIST_MAX_ROTATION, twistMaxRotation, Manipulator.getInstance()::setTwistMaxRotation);
         initializeSetting("Eject Time", Constants.Manipulator.EJECT_TIME, ejectTime, Manipulator.getInstance()::setEjectTime);
         initializeSetting("Intake Speed", Constants.Manipulator.INTAKE_SPEED, intakeSpeed, Manipulator.getInstance()::setIntakeSpeed);
+        initializeSetting("Place Speed", Constants.Manipulator.PLACE_SPEED, placeSpeed, Manipulator.getInstance()::setPlaceSpeed);
+        initializeSetting("Intake Stop Delay", Constants.Manipulator.INTAKE_STOP_DELAY, intakeStopDelay, Manipulator.getInstance()::setIntakeStopDelay);
+        initializeSetting("Intake Stow Delay", Constants.Manipulator.INTAKE_STOW_DELAY, intakeStowDelay, Manipulator.getInstance()::setIntakeStowDelay);
     }
 
     public void initializeSetting(String key, double defaultValue, GenericEntry entry, DoubleConsumer consumer)
@@ -185,6 +191,7 @@ public class Dashboard extends SubsystemBase
         }
 
         consumer.accept(value);
+        entry.setDouble(value);
     }
 
     @Override
@@ -199,7 +206,7 @@ public class Dashboard extends SubsystemBase
         _twistAngle.setDouble(Double.parseDouble(String.format("%6.2f", Manipulator.getInstance().getTwistAngle())));
         _pickupDisplaySpeed.setDouble(Double.parseDouble(String.format("%6.2f", Manipulator.getInstance().getIntakeSpeed())));
 
-        _hasTargetBox.setBoolean(Vision.getInstance().getFrontResult().hasTargets() || Vision.getInstance().getRearResult().hasTargets());
+        //_hasTargetBox.setBoolean(Vision.getInstance().getFrontResult().hasTargets() || Vision.getInstance().getRearResult().hasTargets());
 
         _heading.setDouble(Double.parseDouble(String.format("%6.2f", Drive.getInstance().getHeading())));
         _odometer.setString(String.format("%s", Drive.getInstance().getFieldPosition()));

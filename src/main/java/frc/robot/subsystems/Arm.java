@@ -46,6 +46,13 @@ public class Arm extends SubsystemBase
         Front,
         Back
     }
+
+    private enum ResetStatus
+    {
+        NotReset,
+        Resetting,
+        Reset
+    }
     
     // Extension Motor
     private DigitalInput        _limitSwitch;
@@ -65,7 +72,7 @@ public class Arm extends SubsystemBase
 
     // Controls
     private ArmPosition         _armPosition;
-    private boolean             _reset;
+    private ResetStatus         _reset;
 
     // Simulation
     private DIOSim              _limitSwitchSim;
@@ -89,7 +96,7 @@ public class Arm extends SubsystemBase
         _shoulderPid            = new PIDControl();
         _extensionPid           = new PIDControl();
         _armPosition            = ArmPosition.Stow;
-        _reset                  = false;
+        _reset                  = ResetStatus.NotReset;
         
         /* Settings */
         _minShoulderAngle       = Constants.Arm.SHOULDER_MIN_ANGLE;
@@ -102,6 +109,7 @@ public class Arm extends SubsystemBase
         
         _extensionEncoder = _extensionMotor.getEncoder();
         
+        _extensionMotor.setIdleMode(IdleMode.kBrake);
         _shoulderMotor.setIdleMode(IdleMode.kBrake);
         followerShoulderMotor.setIdleMode(IdleMode.kBrake);
 
@@ -111,20 +119,20 @@ public class Arm extends SubsystemBase
 
         followerShoulderMotor.follow(_shoulderMotor, true);
 
-        _shoulderPid.setCoefficient(Coefficient.P, 0, 0.0225, 0);
+        _shoulderPid.setCoefficient(Coefficient.P, 0, 0.0175, 0);
         _shoulderPid.setCoefficient(Coefficient.I, 0, 0, 0);
         _shoulderPid.setCoefficient(Coefficient.D, 0, 0.05, 0);
         _shoulderPid.setInputRange(Constants.Arm.SHOULDER_MIN_ANGLE, Constants.Arm.SHOULDER_MAX_ANGLE);
         _shoulderPid.setOutputRange(-0.7, 0.7);
         _shoulderPid.setOutputRamp(0.05, 0.02);
-        _shoulderPid.setSetpointDeadband(2);
+        _shoulderPid.setSetpointDeadband(5);
         _shoulderPid.setFeedForward(setpoint -> -Constants.Arm.HORIZONTAL_STAYING_POWER * Math.sin(Math.toRadians(setpoint)));
         _shoulderPid.setSetpoint(0, getShoulderAngle());
 
-        _extensionPid.setCoefficient(Coefficient.P, 0, 0.5, 0);
+        _extensionPid.setCoefficient(Coefficient.P, 0, 0.4, 0);
         _extensionPid.setCoefficient(Coefficient.I, 0, 0, 0);
         _extensionPid.setCoefficient(Coefficient.D, 0, 0, 0);
-        _extensionPid.setInputRange(0, Constants.Arm.ARM_MAX_EXTENSION);
+        _extensionPid.setInputRange(-1, Constants.Arm.ARM_MAX_EXTENSION);
         _extensionPid.setOutputRange(-0.25, 0.25);
         _extensionPid.setSetpointDeadband(2);
         _extensionPid.setSetpoint(0, getExtensionPosition());
@@ -223,19 +231,35 @@ public class Arm extends SubsystemBase
         _extensionPid.setInputRange(0, _maxArmExtension);
     }
 
-    private void resetExtension()
-    {
-        _extensionEncoder.setPosition(0);
-        _extensionPid.setOutputRange(-1.0, 1.0);
-    }
-
     @Override 
     public void periodic()
     {
-        if (!_reset && isLimitSwitchPressed())
+        switch (_reset)
         {
-            _reset = true;
-            resetExtension();
+            case NotReset:
+                if (isLimitSwitchPressed())
+                {
+                    _reset = ResetStatus.Resetting;
+                    _extensionPid.setOutputRange(-1.0, 1.0);
+                    _extensionEncoder.setPosition(-0.5);
+                    
+                }
+                break;
+
+            case Resetting:
+                if (isLimitSwitchPressed())
+                {
+                    _extensionEncoder.setPosition(-0.5);
+                }
+                else
+                {
+                    _reset = ResetStatus.Reset;
+                }
+                break;
+
+            case Reset:
+            default:
+                break;
         }
 
         _shoulderMotor.setVoltage(_shoulderPid.calculate(getShoulderAngle()) * Constants.MOTOR_VOLTAGE);

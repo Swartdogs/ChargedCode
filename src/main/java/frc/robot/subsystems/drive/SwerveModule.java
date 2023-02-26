@@ -1,6 +1,7 @@
 package frc.robot.subsystems.drive;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import PIDControl.PIDControl;
@@ -48,6 +49,9 @@ public class SwerveModule extends Vector
 
         _driveMotor.restoreFactoryDefaults();
         _rotateMotor.restoreFactoryDefaults(); // doesn't matter how the sparkmax has been previously set up
+
+        _driveMotor.setIdleMode(IdleMode.kCoast);
+        _rotateMotor.setIdleMode(IdleMode.kCoast);
 
         _driveMotor.getEncoder().setPositionConversionFactor(Constants.Drive.DRIVE_ENCODER_TO_DISTANCE);
 

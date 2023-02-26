@@ -135,9 +135,9 @@ public final class Constants
     public static class Arm
     {
         /* PID Limits */
-        public static final double  ARM_MAX_EXTENSION               =   24.000;
-        public static final double  SHOULDER_MIN_ANGLE              = -100.000;
-        public static final double  SHOULDER_MAX_ANGLE              =  100.000;  
+        public static final double  ARM_MAX_EXTENSION               =   26.500;
+        public static final double  SHOULDER_MIN_ANGLE              = -115.000;
+        public static final double  SHOULDER_MAX_ANGLE              =  115.000;  
         public static final double  HORIZONTAL_STAYING_POWER        =    0.036;
 
         /* Sensor Configuration */
@@ -152,8 +152,8 @@ public final class Constants
     public static class Manipulator
     {
         /* PID Limits */
-        public static final double  WRIST_MIN_ANGLE                 =  -40.00;
-        public static final double  WRIST_MAX_ANGLE                 =   40.00;
+        public static final double  WRIST_MIN_ANGLE                 =  -50.00;
+        public static final double  WRIST_MAX_ANGLE                 =   50.00;
         public static final double  TWIST_MIN_ROTATION              = -170.00;
         public static final double  TWIST_MAX_ROTATION              =  170.00;
 
@@ -162,39 +162,41 @@ public final class Constants
         public static final double  TWIST_OFFSET                    = 0.73;
 
         /* Settings */
-        public static final double  EJECT_TIME                      =  1.00;
-        public static final double  INTAKE_SPEED                    = -0.75;
-        public static final double  INTAKE_STOP_DELAY               =  0.2;
+        public static final double  EJECT_TIME                      = 0.50;
+        public static final double  INTAKE_SPEED                    = 0.75;
+        public static final double  PLACE_SPEED                     = 0.20;
+        public static final double  INTAKE_STOP_DELAY               = 0.30;
+        public static final double  INTAKE_STOW_DELAY               = 0.50;
     }
 
     public static class Lookups
     {
         private static final HashMap<ArmTuple, ArmData> _lookup = new HashMap<ArmTuple, ArmData>(){{
             /*               Position                Side           Hand Mode                   Shoulder    Extension   Twist   Wrist */
-            put(new ArmTuple(ArmPosition.Low,        ArmSide.Front, HandMode.Cone), new ArmData( 110,       24,           0,     30));
-            put(new ArmTuple(ArmPosition.Low,        ArmSide.Front, HandMode.Cube), new ArmData( 110,       24,          90,     30));
-            put(new ArmTuple(ArmPosition.Low,        ArmSide.Back,  HandMode.Cone), new ArmData(-110,       24,         180,    -30));
-            put(new ArmTuple(ArmPosition.Low,        ArmSide.Back,  HandMode.Cube), new ArmData(-110,       24,          90,    -30));
-            put(new ArmTuple(ArmPosition.Middle,     ArmSide.Front, HandMode.Cone), new ArmData(  90,       36,           0,      0));
-            put(new ArmTuple(ArmPosition.Middle,     ArmSide.Front, HandMode.Cube), new ArmData(  90,       36,          90,      0));
-            put(new ArmTuple(ArmPosition.Middle,     ArmSide.Back,  HandMode.Cone), new ArmData( -90,       36,         180,      0));
-            put(new ArmTuple(ArmPosition.Middle,     ArmSide.Back,  HandMode.Cube), new ArmData( -90,       36,          90,      0));
-            put(new ArmTuple(ArmPosition.High,       ArmSide.Front, HandMode.Cone), new ArmData(  70,       48,           0,    -30));
-            put(new ArmTuple(ArmPosition.High,       ArmSide.Front, HandMode.Cube), new ArmData(  70,       48,          90,    -30));
-            put(new ArmTuple(ArmPosition.High,       ArmSide.Back,  HandMode.Cone), new ArmData( -70,       48,         180,    -30));
-            put(new ArmTuple(ArmPosition.High,       ArmSide.Back,  HandMode.Cube), new ArmData( -70,       48,          90,    -30));
-            put(new ArmTuple(ArmPosition.Substation, ArmSide.Front, HandMode.Cone), new ArmData(  90,       36,           0,      0));
-            put(new ArmTuple(ArmPosition.Substation, ArmSide.Front, HandMode.Cube), new ArmData(  90,       36,          90,      0));
-            put(new ArmTuple(ArmPosition.Substation, ArmSide.Back,  HandMode.Cone), new ArmData( -90,       36,         180,      0));
-            put(new ArmTuple(ArmPosition.Substation, ArmSide.Back,  HandMode.Cube), new ArmData( -90,       36,          90,      0));
-            put(new ArmTuple(ArmPosition.Ground,     ArmSide.Front, HandMode.Cone), new ArmData( 110,       24,           0,     30));
-            put(new ArmTuple(ArmPosition.Ground,     ArmSide.Front, HandMode.Cube), new ArmData( 110,       24,          90,     30));
-            put(new ArmTuple(ArmPosition.Ground,     ArmSide.Back,  HandMode.Cone), new ArmData(-110,       24,         180,     30));
-            put(new ArmTuple(ArmPosition.Ground,     ArmSide.Back,  HandMode.Cube), new ArmData(-110,       24,          90,     30));
-            put(new ArmTuple(ArmPosition.Stow,       ArmSide.Front, HandMode.Cone), new ArmData(   0,        0,           0,    -90));
-            put(new ArmTuple(ArmPosition.Stow,       ArmSide.Front, HandMode.Cube), new ArmData(   0,        0,           0,    -90));
-            put(new ArmTuple(ArmPosition.Stow,       ArmSide.Back,  HandMode.Cone), new ArmData(   0,        0,         180,     90));
-            put(new ArmTuple(ArmPosition.Stow,       ArmSide.Back,  HandMode.Cube), new ArmData(   0,        0,         180,     90));
+            put(new ArmTuple(ArmPosition.Low,        ArmSide.Front, HandMode.Cone), new ArmData(-105,        0,          90,    -15));
+            put(new ArmTuple(ArmPosition.Low,        ArmSide.Front, HandMode.Cube), new ArmData(-105,        0,          90,    -15));
+            put(new ArmTuple(ArmPosition.Low,        ArmSide.Back,  HandMode.Cone), new ArmData( 105,        0,         -90,     15));
+            put(new ArmTuple(ArmPosition.Low,        ArmSide.Back,  HandMode.Cube), new ArmData( 105,        0,         -90,     15));
+            put(new ArmTuple(ArmPosition.Middle,     ArmSide.Front, HandMode.Cone), new ArmData( -60,        0,          90,     -0));
+            put(new ArmTuple(ArmPosition.Middle,     ArmSide.Front, HandMode.Cube), new ArmData( -60,        0,          90,     40));
+            put(new ArmTuple(ArmPosition.Middle,     ArmSide.Back,  HandMode.Cone), new ArmData(  60,        0,         -90,      0));
+            put(new ArmTuple(ArmPosition.Middle,     ArmSide.Back,  HandMode.Cube), new ArmData(  60,        0,         -90,    -40));
+            put(new ArmTuple(ArmPosition.High,       ArmSide.Front, HandMode.Cone), new ArmData( -52,       26,          90,      5));
+            put(new ArmTuple(ArmPosition.High,       ArmSide.Front, HandMode.Cube), new ArmData( -55,       18,          90,     35));
+            put(new ArmTuple(ArmPosition.High,       ArmSide.Back,  HandMode.Cone), new ArmData(  52,       26,         -90,     -5));
+            put(new ArmTuple(ArmPosition.High,       ArmSide.Back,  HandMode.Cube), new ArmData(  55,       18,         -90,    -35));
+            put(new ArmTuple(ArmPosition.Substation, ArmSide.Front, HandMode.Cone), new ArmData(  30,        0,         -90,    -45));
+            put(new ArmTuple(ArmPosition.Substation, ArmSide.Front, HandMode.Cube), new ArmData(  30,        0,         -90,    -45));
+            put(new ArmTuple(ArmPosition.Substation, ArmSide.Back,  HandMode.Cone), new ArmData( -30,        0,          90,     45));
+            put(new ArmTuple(ArmPosition.Substation, ArmSide.Back,  HandMode.Cube), new ArmData( -30,        0,          90,     45));
+            put(new ArmTuple(ArmPosition.Ground,     ArmSide.Front, HandMode.Cone), new ArmData( 110,        0,         -90,     15));
+            put(new ArmTuple(ArmPosition.Ground,     ArmSide.Front, HandMode.Cube), new ArmData(  90,        0,           0,    -45));
+            put(new ArmTuple(ArmPosition.Ground,     ArmSide.Back,  HandMode.Cone), new ArmData(-110,        0,          90,    -15));
+            put(new ArmTuple(ArmPosition.Ground,     ArmSide.Back,  HandMode.Cube), new ArmData( -90,        0,          -0,     45));
+            put(new ArmTuple(ArmPosition.Stow,       ArmSide.Front, HandMode.Cone), new ArmData(   0,        0,          90,      0));
+            put(new ArmTuple(ArmPosition.Stow,       ArmSide.Front, HandMode.Cube), new ArmData(   0,        0,          90,      0));
+            put(new ArmTuple(ArmPosition.Stow,       ArmSide.Back,  HandMode.Cone), new ArmData(  -0,        0,         -90,     -0));
+            put(new ArmTuple(ArmPosition.Stow,       ArmSide.Back,  HandMode.Cube), new ArmData(  -0,        0,         -90,     -0));
         }};
 
         public static ArmData lookUpArmData(ArmPosition armPosition, ArmSide armSide, HandMode handMode)
