@@ -30,7 +30,7 @@ public class CmdDriveWithJoystick extends CommandBase
         }
         else
         {
-            _drive.fieldDrive(x, y, r);
+            _drive.driverDrive(x, y, r);
         }
     }
 

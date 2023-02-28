@@ -139,6 +139,7 @@ public final class Constants
         public static final double  SHOULDER_MIN_ANGLE              = -115.000;
         public static final double  SHOULDER_MAX_ANGLE              =  115.000;  
         public static final double  HORIZONTAL_STAYING_POWER        =    0.036;
+        public static final double  EXTENSION_STAYING_POWER         =    0.040;
 
         /* Sensor Configuration */
         public static final double  SHOULDER_SENSOR_MIN             =    0.792;
@@ -147,13 +148,16 @@ public final class Constants
         public static final double  SHOULDER_SCALED_MAX             =  116.000;
         public static final double  SHOULDER_SLOPE                  = (SHOULDER_SCALED_MAX-SHOULDER_SCALED_MIN)/(SHOULDER_SENSOR_MAX-SHOULDER_SENSOR_MIN);
         public static final double  EXTENSION_CONVERSION_FACTOR     = 25.625 / 125.0947;
+
+        public static final double  EXTENSION_JOYSTICK_RATE         = 5.0 / Constants.LOOPS_PER_SECOND; // inches per second
+        public static final double  SHOULDER_JOYSTICK_RATE          = 5.0 / Constants.LOOPS_PER_SECOND; // degrees per second
     }
  
     public static class Manipulator
     {
         /* PID Limits */
-        public static final double  WRIST_MIN_ANGLE                 =  -50.00;
-        public static final double  WRIST_MAX_ANGLE                 =   50.00;
+        public static final double  WRIST_MIN_ANGLE                 =  -90.00;
+        public static final double  WRIST_MAX_ANGLE                 =   60.00;
         public static final double  TWIST_MIN_ROTATION              = -170.00;
         public static final double  TWIST_MAX_ROTATION              =  170.00;
 
@@ -167,6 +171,8 @@ public final class Constants
         public static final double  PLACE_SPEED                     = 0.20;
         public static final double  INTAKE_STOP_DELAY               = 0.30;
         public static final double  INTAKE_STOW_DELAY               = 0.50;
+
+        public static final double  WRIST_JOYSTICK_RATE             = 10.0 / Constants.LOOPS_PER_SECOND; // Degrees per second
     }
 
     public static class Lookups

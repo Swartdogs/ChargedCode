@@ -110,7 +110,7 @@ public class Manipulator extends SubsystemBase
         _twistMotor.setIdleMode(IdleMode.kBrake);
         _intakeMotor.setIdleMode(IdleMode.kBrake);
 
-        _wristPID.setCoefficient(Coefficient.P, 0, 0.03, 0);
+        _wristPID.setCoefficient(Coefficient.P, 0, 0.025, 0);
         _wristPID.setCoefficient(Coefficient.I, 0, 0,    0);
         _wristPID.setCoefficient(Coefficient.D, 0, 0.05, 0);
         _wristPID.setInputRange(Constants.Manipulator.WRIST_MIN_ANGLE, Constants.Manipulator.WRIST_MAX_ANGLE);
@@ -147,6 +147,11 @@ public class Manipulator extends SubsystemBase
     public double getWristAngle()
     {
         return (_wristEncoder.getAbsolutePosition() - Constants.Manipulator.WRIST_OFFSET) * Constants.DEGREES_PER_REVOLUTION;
+    }
+
+    public void modifyWristAngle(double modification)
+    {
+        _wristPID.setSetpoint(_wristPID.getSetpoint() + modification, getWristAngle());
     }
 
     public void enableIntake()
@@ -297,8 +302,13 @@ public class Manipulator extends SubsystemBase
     @Override
     public void periodic()
     {
+        var wristAngle = getWristAngle();
+        var wristSpeed = _wristPID.calculate(wristAngle);
+
+        System.out.println(String.format("Wrist Angle: %6.2f, Wrist Command: %5.2f", wristAngle, wristSpeed));
+
         _twistMotor.setVoltage(_twistPID.calculate(getTwistAngle()) * Constants.MOTOR_VOLTAGE);
-        _wristMotor.setVoltage(_wristPID.calculate(getWristAngle()) * Constants.MOTOR_VOLTAGE);
+        _wristMotor.setVoltage(wristSpeed * Constants.MOTOR_VOLTAGE);
     }
 
     @Override

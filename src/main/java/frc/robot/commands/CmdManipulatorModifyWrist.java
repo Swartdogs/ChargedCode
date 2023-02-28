@@ -7,28 +7,29 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Manipulator;
 
-public class CmdArmModifyExtensionPosition extends CommandBase 
+public class CmdManipulatorModifyWrist extends CommandBase 
 {
     private DoubleSupplier _modification;
     private boolean        _instant;
-    
-    public CmdArmModifyExtensionPosition(double modification)
+
+    public CmdManipulatorModifyWrist(double modification) 
     {
         _modification = () -> modification;
         _instant = true;
     }
 
-    public CmdArmModifyExtensionPosition()
+    public CmdManipulatorModifyWrist() 
     {
-        _modification = () -> RobotContainer.getInstance().getOperatorY() * Constants.Arm.EXTENSION_JOYSTICK_RATE;
+        _modification = () -> RobotContainer.getInstance().getOperatorY() * Constants.Manipulator.WRIST_JOYSTICK_RATE;
         _instant = false;
     }
 
     @Override
     public void execute() 
     {
-        Arm.getInstance().modifyExtensionMotorPosition(_modification.getAsDouble());
+        Manipulator.getInstance().modifyWristAngle(_modification.getAsDouble() * Math.signum(Arm.getInstance().getShoulderAngleSetpoint()));
     }
 
     @Override
@@ -36,4 +37,5 @@ public class CmdArmModifyExtensionPosition extends CommandBase
     {
         return _instant;
     }
+
 }

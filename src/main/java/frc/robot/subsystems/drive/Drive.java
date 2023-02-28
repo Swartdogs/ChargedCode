@@ -1,6 +1,8 @@
 package frc.robot.subsystems.drive;
 
 import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -72,6 +74,8 @@ public class Drive extends SubsystemBase
         setOrigin(0, 0);    // rotate around the center of the robot, by default
         resetOdometer();    // initialize the odometer to 0, 0
 
+        setGyro(getAllianceAngle());
+
         RobotLog.getInstance().log("Created Drive Subsystem");
     }
 
@@ -87,6 +91,15 @@ public class Drive extends SubsystemBase
         Vector translateVector = new Vector(x, y);
 
         translateVector.translatePolarPosition(0, -getHeading());
+        
+        drive(translateVector, rotate);
+    }
+
+    public void driverDrive(double x, double y, double rotate)
+    {
+        Vector translateVector = new Vector(x, y);
+
+        translateVector.translatePolarPosition(0, -getHeading() + getAllianceAngle());
         
         drive(translateVector, rotate);
     }
@@ -178,6 +191,24 @@ public class Drive extends SubsystemBase
     {
         _gyro.reset();
         _gyroOffset = heading;
+    }
+
+    public double getAllianceAngle()
+    {
+        double angle = 0.0;
+        switch (DriverStation.getAlliance())
+        {
+            case Red:
+                angle = -90.0;
+                break;
+            case Blue:
+                angle = 90.0;
+                break;
+            default:
+                break;
+        }
+
+        return angle;
     }
 
     public SwerveModule getSwerveModule(int index)

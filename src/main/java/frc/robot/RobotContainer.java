@@ -13,15 +13,18 @@ import frc.robot.commands.CmdArmModifyShoulderAngle;
 import frc.robot.commands.CmdArmSetExtensionPosition;
 import frc.robot.commands.CmdArmSetShoulderAngle;
 import frc.robot.commands.CmdAutoRotate;
+import frc.robot.commands.CmdDriveBalance;
 import frc.robot.commands.CmdDriveResetEncoders;
 import frc.robot.commands.CmdDriveResetOdometer;
 import frc.robot.commands.CmdDriveRotateModules;
 import frc.robot.commands.CmdDriveWithJoystick;
+import frc.robot.commands.CmdManipulatorModifyWrist;
 import frc.robot.commands.CmdManipulatorPlaceGamePiece;
 import frc.robot.commands.CmdManipulatorSetTwistAngle;
 import frc.robot.commands.CmdManipulatorSetWristAngle;
 import frc.robot.groups.GrpManipulatorHandFlip;
 import frc.robot.groups.GrpPlaceGamePiece;
+import frc.robot.groups.GrpAutonomous;
 import frc.robot.groups.GrpIntakeGamePiece;
 import frc.robot.groups.GrpSetArmPosition;
 import frc.robot.subsystems.Arm.ArmPosition;
@@ -48,10 +51,22 @@ public class RobotContainer
     }
 
     private Joystick       _driveJoy;
+    private Joystick       _operatorJoy;// operator is joyless :(
     private Joystick       _buttonBox;
 
     private Trigger _buttonBoxHandmodeSwitch;
     private Trigger _buttonBoxArmSideSwitch;
+
+    private JoystickButton _driveJoyButton1;
+    private JoystickButton _driveJoyButton2;
+    private JoystickButton _driveJoyButton7;
+    private JoystickButton _driveJoyButton8;
+    private JoystickButton _driveJoyButton9;
+    private JoystickButton _driveJoyButton11;
+
+    private JoystickButton _operatorJoyButton3;
+    private JoystickButton _operatorJoyButton4;
+    private JoystickButton _operatorJoyButton11;
 
     private JoystickButton _buttonBoxButton1;
     private JoystickButton _buttonBoxButton2;
@@ -66,12 +81,6 @@ public class RobotContainer
     private JoystickButton _buttonBoxButton11;
     private JoystickButton _buttonBoxButton12;
 
-    private JoystickButton _driveJoyButton1;
-    private JoystickButton _driveJoyButton2;
-    private JoystickButton _driveJoyButton7;
-    private JoystickButton _driveJoyButton9;
-    private JoystickButton _driveJoyButton11;
-
     private RobotContainer()
     {
         DriverStation.silenceJoystickConnectionWarning(true);
@@ -82,14 +91,20 @@ public class RobotContainer
         Manipulator.getInstance();
         Dashboard.getInstance();
 
-        _driveJoy  = new Joystick(0);
-        _buttonBox = new Joystick(1);
+        _driveJoy    = new Joystick(0);
+        _operatorJoy = new Joystick(1);
+        _buttonBox   = new Joystick(2);
 
         _driveJoyButton1   = new JoystickButton(_driveJoy, 1);
         _driveJoyButton2   = new JoystickButton(_driveJoy, 2);
         _driveJoyButton7   = new JoystickButton(_driveJoy, 7);
+        _driveJoyButton8   = new JoystickButton(_driveJoy, 8);
         _driveJoyButton9   = new JoystickButton(_driveJoy, 9);
         _driveJoyButton11  = new JoystickButton(_driveJoy, 11);
+
+        _operatorJoyButton3       = new JoystickButton(_operatorJoy, 3);
+        _operatorJoyButton4       = new JoystickButton(_operatorJoy, 4);
+        _operatorJoyButton11      = new JoystickButton(_operatorJoy, 11);
 
         _buttonBoxHandmodeSwitch = new Trigger (()-> _buttonBox.getRawAxis(0) < -0.5);
         _buttonBoxArmSideSwitch  = new Trigger(()-> _buttonBox.getRawAxis(1) < -0.5);
@@ -142,24 +157,36 @@ public class RobotContainer
 
     private void configureBindings() 
     {
-        CmdAutoRotate           driveAutoRotate90 = new CmdAutoRotate(90);
+        CmdAutoRotate           driveAutoRotate90  = new CmdAutoRotate(90);
         CmdDriveRotateModules   driveRotateModules = new CmdDriveRotateModules(90);
 
-        // CmdDriveBalance    driveAutoBalance  = new CmdDriveBalance();
+        CmdArmModifyShoulderAngle     operatorShoulderAdjustment   = new CmdArmModifyShoulderAngle();
+        CmdArmModifyExtensionPosition operatorExtenstionAdjustment = new CmdArmModifyExtensionPosition();
+        CmdManipulatorModifyWrist     operatorWristAdjustment      = new CmdManipulatorModifyWrist();
+
+        Command    driveAutoBalance  = new CmdDriveBalance().andThen(Commands.run(() -> Drive.getInstance().rotateModules(90)));
 
         _driveJoyButton2.onTrue
         (
-            new InstantCommand(() -> 
+            Commands.runOnce(() -> 
             {
                 driveAutoRotate90.cancel();
+                driveAutoBalance.cancel();
             })
         );
-        //_driveJoyButton6.onTrue(new CmdDriveBalance());
         _driveJoyButton7.onTrue(driveRotateModules);
         _driveJoyButton7.onFalse(Commands.runOnce(()-> driveRotateModules.cancel()));
+        _driveJoyButton8.onTrue(driveAutoBalance);
+        _driveJoyButton8.onFalse(Commands.runOnce(() -> driveAutoBalance.cancel()));
         _driveJoyButton11.onTrue(new CmdDriveResetOdometer());
         //_driveJoyButton11.onTrue(new CmdDriveResetEncoders());
 
+        _operatorJoyButton3.onTrue(operatorShoulderAdjustment);
+        _operatorJoyButton3.onFalse(Commands.runOnce(() -> operatorShoulderAdjustment.cancel()));
+        _operatorJoyButton4.onTrue(operatorExtenstionAdjustment);
+        _operatorJoyButton4.onFalse(Commands.runOnce(() -> operatorExtenstionAdjustment.cancel()));
+        _operatorJoyButton11.onTrue(operatorWristAdjustment);
+        _operatorJoyButton11.onFalse(Commands.runOnce(() -> operatorWristAdjustment.cancel()));
         
         _buttonBoxButton1.onTrue(new CmdArmModifyExtensionPosition(3));
         _buttonBoxButton2.onTrue(new CmdArmModifyExtensionPosition(-3));
@@ -183,7 +210,7 @@ public class RobotContainer
 
     public Command getAutonomousCommand() 
     {
-        return Commands.print("No autonomous command configured");
+        return new GrpAutonomous();
     }
 
     public ArmSide getArmSide()
@@ -241,5 +268,10 @@ public class RobotContainer
     public boolean driveIsRobotCentric()
     {
         return _driveJoy.getRawButton(1);
+    }
+
+    public double getOperatorY()
+    {
+        return getJoystickAxis(_operatorJoy.getY(), true, false, 0.05);
     }
 }

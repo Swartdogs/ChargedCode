@@ -1,5 +1,7 @@
 package frc.robot.groups;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
@@ -14,18 +16,28 @@ import frc.robot.commands.CmdManipulatorSetTwistAngle;
 import frc.robot.commands.CmdManipulatorSetWristAngle;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmPosition;
+import frc.robot.subsystems.Arm.ArmSide;
+import frc.robot.subsystems.Manipulator.HandMode;
 
 public class GrpSetArmPosition extends SequentialCommandGroup 
 {
     private ArmData _armData = new ArmData(0, 0, 0, 0);
 
-    public GrpSetArmPosition(ArmPosition position) 
+    public GrpSetArmPosition(ArmPosition position)
+    {
+        // Pure lambda notation must be used (() -> ...) instead of method reference (object::methodName)
+        // This class is usually constructed during code startup when RobotContainer is being built. Method reference
+        // notation will cause a stack overflow exception
+        this(position, () -> RobotContainer.getInstance().getArmSide(), () -> RobotContainer.getInstance().getHandMode());
+    }
+
+    public GrpSetArmPosition(ArmPosition position, Supplier<ArmSide> armSideSupplier, Supplier<HandMode> handModeSupplier) 
     {
         addCommands
         (
             new InstantCommand(()-> 
             {
-                _armData = Constants.Lookups.lookUpArmData(position, RobotContainer.getInstance().getArmSide(), RobotContainer.getInstance().getHandMode());
+                _armData = Constants.Lookups.lookUpArmData(position, armSideSupplier.get(), handModeSupplier.get());
                 Arm.getInstance().setArmPosition(position);
                 if(position == ArmPosition.Stow)
                 {

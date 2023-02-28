@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.groups.GrpAutonomous.DrivePosition;
 import frc.robot.subsystems.drive.Drive;
 
 public class Dashboard extends SubsystemBase 
@@ -48,6 +49,11 @@ public class Dashboard extends SubsystemBase
     private GenericEntry _hasGamePiece;
     private GenericEntry _autonomousLog;
 
+    private SendableChooser<Integer>       _autoDelayChooser;
+    private SendableChooser<Integer>       _autoGamePiecesChooser;
+    private SendableChooser<DrivePosition> _autoStartPositionChooser;
+    private SendableChooser<Boolean>       _autoBalanceChooser;
+
     private Dashboard() 
     {
         var tab                = Shuffleboard.getTab("Dashboard");
@@ -79,33 +85,30 @@ public class Dashboard extends SubsystemBase
         
         var autonomousOptions  = tab.getLayout("Autonomous", BuiltInLayouts.kGrid).withPosition(19, 0).withSize(9, 9).withProperties(Map.of("Number of columns", 1, "Number of rows", 4, "Label position", "LEFT"));
 
-        SendableChooser<Integer> delayChooser = new SendableChooser<Integer>();
-        delayChooser.addOption("0", 0);
-        delayChooser.addOption("1", 1);
-        delayChooser.addOption("2", 2);
-        delayChooser.addOption("3", 3);
-        delayChooser.addOption("4", 4);
-        delayChooser.addOption("5", 5);
-        var delay = autonomousOptions.add("Delay Options", delayChooser).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kSplitButtonChooser);
+        _autoDelayChooser = new SendableChooser<Integer>();
+        _autoDelayChooser.setDefaultOption("0", 0);
+        _autoDelayChooser.addOption("1", 1);
+        _autoDelayChooser.addOption("2", 2);
+        _autoDelayChooser.addOption("3", 3);
+        _autoDelayChooser.addOption("4", 4);
+        _autoDelayChooser.addOption("5", 5);
+        autonomousOptions.add("Delay Options", _autoDelayChooser).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kSplitButtonChooser);
 
-        SendableChooser<Integer> startPositionChooser = new SendableChooser<Integer>();
-        startPositionChooser.addOption("Position 1", 1);
-        startPositionChooser.addOption("Position 2", 2);
-        startPositionChooser.addOption("Position 3", 3);
-        var startPosition = autonomousOptions.add("Start Position", startPositionChooser).withPosition(0, 1).withSize(1, 1).withWidget(BuiltInWidgets.kComboBoxChooser);
+        _autoStartPositionChooser = new SendableChooser<DrivePosition>();
+        _autoStartPositionChooser.setDefaultOption("Middle",   DrivePosition.MiddleStart);
+        _autoStartPositionChooser.addOption("Substation Side", DrivePosition.SubstationStart);
+        _autoStartPositionChooser.addOption("Wall Side",       DrivePosition.WallStart);
+        autonomousOptions.add("Start Position", _autoStartPositionChooser).withPosition(0, 1).withSize(1, 1).withWidget(BuiltInWidgets.kComboBoxChooser);
         
-        SendableChooser<Integer> gamePiecesChooser = new SendableChooser<Integer>();
-        gamePiecesChooser.addOption("0", 0);
-        gamePiecesChooser.addOption("1", 1);
-        gamePiecesChooser.addOption("2", 2);
-        gamePiecesChooser.addOption("3", 3);
-        gamePiecesChooser.addOption("4", 4);
-        var gamePieces = autonomousOptions.add("Number Of Pieces", gamePiecesChooser).withPosition(0, 2).withSize(1, 1).withWidget(BuiltInWidgets.kSplitButtonChooser);
+        _autoGamePiecesChooser = new SendableChooser<Integer>();
+        _autoGamePiecesChooser.setDefaultOption("0", 0);
+        _autoGamePiecesChooser.addOption("1", 1);
+        autonomousOptions.add("Number Of Pieces", _autoGamePiecesChooser).withPosition(0, 2).withSize(1, 1).withWidget(BuiltInWidgets.kSplitButtonChooser);
 
-        SendableChooser<Boolean> balanceChooser = new SendableChooser<Boolean>();
-        balanceChooser.addOption("true", true);
-        balanceChooser.addOption("false", false);
-        var balance = autonomousOptions.add("Balance Options", balanceChooser).withPosition(0, 3).withSize(1, 1).withWidget(BuiltInWidgets.kComboBoxChooser);
+        _autoBalanceChooser = new SendableChooser<Boolean>();
+        _autoBalanceChooser.setDefaultOption("No", false);
+        _autoBalanceChooser.addOption("Yes", true);
+        autonomousOptions.add("Balance Options", _autoBalanceChooser).withPosition(0, 3).withSize(1, 1).withWidget(BuiltInWidgets.kComboBoxChooser);
     
         _autonomousLog = autonomousOptions.add("Auto Log", "").withPosition(0, 4).withSize(1, 1).withWidget(BuiltInWidgets.kTextView).getEntry();
 
@@ -192,6 +195,26 @@ public class Dashboard extends SubsystemBase
 
         consumer.accept(value);
         entry.setDouble(value);
+    }
+
+    public int getAutoDelay()
+    {
+        return _autoDelayChooser.getSelected();
+    }
+
+    public DrivePosition getAutoStartPosition()
+    {
+        return _autoStartPositionChooser.getSelected();
+    }
+
+    public int getAutoGamePieceCount()
+    {
+        return _autoGamePiecesChooser.getSelected();
+    }
+
+    public boolean getAutoBalance()
+    {
+        return _autoBalanceChooser.getSelected();
     }
 
     @Override

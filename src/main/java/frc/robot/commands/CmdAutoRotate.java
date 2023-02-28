@@ -36,7 +36,7 @@ public class CmdAutoRotate extends DriveCommand
         }
         else
         {
-            _drive.fieldDrive(x, y, outputR);
+            _drive.driverDrive(x, y, outputR);
         }
     }
 

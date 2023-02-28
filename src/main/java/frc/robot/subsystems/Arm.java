@@ -135,6 +135,7 @@ public class Arm extends SubsystemBase
         _extensionPid.setInputRange(-1, Constants.Arm.ARM_MAX_EXTENSION);
         _extensionPid.setOutputRange(-0.25, 0.25);
         _extensionPid.setSetpointDeadband(2);
+        _extensionPid.setFeedForward(setpoint -> Math.cos(Math.toRadians(getShoulderAngle())) * Constants.Arm.EXTENSION_STAYING_POWER);
         _extensionPid.setSetpoint(0, getExtensionPosition());
         _extensionEncoder.setPosition(Constants.Arm.ARM_MAX_EXTENSION / Constants.Arm.EXTENSION_CONVERSION_FACTOR);
 
@@ -184,7 +185,21 @@ public class Arm extends SubsystemBase
 
     public void modifyShoulderAngle(double modification)
     {
-        _shoulderPid.setSetpoint(_shoulderPid.getSetpoint()+modification, getShoulderAngle());
+        double current = _shoulderPid.getSetpoint();
+
+        if (Math.signum(current + modification) != Math.signum(current))
+        {
+            _shoulderPid.setSetpoint(0, getShoulderAngle());
+        }
+        else
+        {
+            _shoulderPid.setSetpoint(current + modification, getShoulderAngle());
+        }
+    }
+
+    public double getShoulderAngleSetpoint()
+    {
+        return _shoulderPid.getSetpoint();
     }
 
     public boolean shoulderAtAngle()
