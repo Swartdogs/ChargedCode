@@ -64,9 +64,12 @@ public class RobotContainer
     private JoystickButton _driveJoyButton9;
     private JoystickButton _driveJoyButton11;
 
+    private JoystickButton _operatorJoyButton1;
+    private JoystickButton _operatorJoyButton2;
     private JoystickButton _operatorJoyButton3;
     private JoystickButton _operatorJoyButton4;
     private JoystickButton _operatorJoyButton11;
+    private JoystickButton _operatorJoyButton12;
 
     private JoystickButton _buttonBoxButton1;
     private JoystickButton _buttonBoxButton2;
@@ -102,9 +105,12 @@ public class RobotContainer
         _driveJoyButton9   = new JoystickButton(_driveJoy, 9);
         _driveJoyButton11  = new JoystickButton(_driveJoy, 11);
 
+        _operatorJoyButton1       = new JoystickButton(_operatorJoy, 1);
+        _operatorJoyButton2       = new JoystickButton(_operatorJoy, 2);
         _operatorJoyButton3       = new JoystickButton(_operatorJoy, 3);
         _operatorJoyButton4       = new JoystickButton(_operatorJoy, 4);
         _operatorJoyButton11      = new JoystickButton(_operatorJoy, 11);
+        _operatorJoyButton12      = new JoystickButton(_operatorJoy, 12);
 
         _buttonBoxHandmodeSwitch = new Trigger (()-> _buttonBox.getRawAxis(0) < -0.5);
         _buttonBoxArmSideSwitch  = new Trigger(()-> _buttonBox.getRawAxis(1) < -0.5);
@@ -164,7 +170,8 @@ public class RobotContainer
         CmdArmModifyExtensionPosition operatorExtenstionAdjustment = new CmdArmModifyExtensionPosition();
         CmdManipulatorModifyWrist     operatorWristAdjustment      = new CmdManipulatorModifyWrist();
 
-        Command    driveAutoBalance  = new CmdDriveBalance().andThen(Commands.run(() -> Drive.getInstance().rotateModules(90)));
+        Command driveAutoBalance  = new CmdDriveBalance().andThen(Commands.run(() -> Drive.getInstance().rotateModules(90)));
+        Command intakeAdjustment  = Commands.startEnd(Manipulator.getInstance()::enableIntake, Manipulator.getInstance()::disableIntake);
 
         _driveJoyButton2.onTrue
         (
@@ -175,29 +182,33 @@ public class RobotContainer
             })
         );
         _driveJoyButton7.onTrue(driveRotateModules);
-        _driveJoyButton7.onFalse(Commands.runOnce(()-> driveRotateModules.cancel()));
+        _driveJoyButton7.onFalse(Commands.runOnce(driveRotateModules::cancel));
         _driveJoyButton8.onTrue(driveAutoBalance);
-        _driveJoyButton8.onFalse(Commands.runOnce(() -> driveAutoBalance.cancel()));
+        _driveJoyButton8.onFalse(Commands.runOnce(driveAutoBalance::cancel));
         _driveJoyButton11.onTrue(new CmdDriveResetOdometer());
         //_driveJoyButton11.onTrue(new CmdDriveResetEncoders());
 
-        _operatorJoyButton3.onTrue(operatorShoulderAdjustment);
-        _operatorJoyButton3.onFalse(Commands.runOnce(() -> operatorShoulderAdjustment.cancel()));
-        _operatorJoyButton4.onTrue(operatorExtenstionAdjustment);
-        _operatorJoyButton4.onFalse(Commands.runOnce(() -> operatorExtenstionAdjustment.cancel()));
-        _operatorJoyButton11.onTrue(operatorWristAdjustment);
-        _operatorJoyButton11.onFalse(Commands.runOnce(() -> operatorWristAdjustment.cancel()));
+        _operatorJoyButton1.onTrue(operatorShoulderAdjustment);
+        _operatorJoyButton1.onFalse(Commands.runOnce(operatorShoulderAdjustment::cancel));
+        _operatorJoyButton2.onTrue(new GrpManipulatorHandFlip());
+        _operatorJoyButton3.onTrue(operatorExtenstionAdjustment);
+        _operatorJoyButton3.onFalse(Commands.runOnce(operatorExtenstionAdjustment::cancel));
+        _operatorJoyButton4.onTrue(operatorWristAdjustment);
+        _operatorJoyButton4.onFalse(Commands.runOnce(operatorWristAdjustment::cancel));
+        _operatorJoyButton11.toggleOnTrue(Manipulator.getInstance().printWristHealthCommand());
+        _operatorJoyButton12.onTrue(Commands.runOnce(Manipulator.getInstance()::overrideWrist));
         
-        _buttonBoxButton1.onTrue(new CmdArmModifyExtensionPosition(3));
-        _buttonBoxButton2.onTrue(new CmdArmModifyExtensionPosition(-3));
+        _buttonBoxButton1.onTrue(new GrpPlaceGamePiece());
+        _buttonBoxButton2.onTrue(intakeAdjustment);
+        _buttonBoxButton2.onFalse(Commands.runOnce(intakeAdjustment::cancel));
         _buttonBoxButton3.onTrue(new GrpSetArmPosition(ArmPosition.High)); 
         _buttonBoxButton4.onTrue(new GrpSetArmPosition(ArmPosition.Stow));
-        _buttonBoxButton5.onTrue(new CmdArmModifyShoulderAngle(3));
+        _buttonBoxButton5.onTrue(new CmdArmModifyExtensionPosition(3));
         _buttonBoxButton6.onTrue(new CmdArmModifyShoulderAngle(-3));
         _buttonBoxButton7.onTrue(new GrpSetArmPosition(ArmPosition.Middle));
         _buttonBoxButton8.onTrue(new GrpIntakeGamePiece(ArmPosition.Substation));
-        _buttonBoxButton9.onTrue(new GrpPlaceGamePiece());
-        _buttonBoxButton10.onTrue(new GrpManipulatorHandFlip());
+        _buttonBoxButton9.onTrue(new CmdArmModifyExtensionPosition(-3));
+        _buttonBoxButton10.onTrue(new CmdArmModifyShoulderAngle(3));
         _buttonBoxButton11.onTrue(new GrpSetArmPosition(ArmPosition.Low));
         _buttonBoxButton12.onTrue(new GrpIntakeGamePiece(ArmPosition.Ground));
 
@@ -235,34 +246,31 @@ public class RobotContainer
         return output;
     }
 
-    private double getJoystickAxis(double input, boolean inverted, boolean squareInput, double deadband)
+    private double getJoystickAxis(double input, boolean inverted, int inputExponent, double deadband)
     {
         if(inverted)
         {
             input *= -1;
         }
 
-        if (squareInput)
-        {
-            input *= input * Math.signum(input);
-        }
+        input = Math.pow(Math.abs(input), inputExponent) * Math.signum(input);
 
         return applyDeadband(input, deadband);
     }
 
     public double getDriveJoyX()
     {
-        return getJoystickAxis(_driveJoy.getX(), false, false, 0.05);
+        return getJoystickAxis(_driveJoy.getX(), false, 1, 0.05);
     }
 
     public double getDriveJoyY()
     {
-        return getJoystickAxis(_driveJoy.getY(), true, false, 0.05);
+        return getJoystickAxis(_driveJoy.getY(), true, 1, 0.05);
     }
 
     public double getDriveJoyZ()
     {
-        return getJoystickAxis(_driveJoy.getZ(), false, true, 0.1);
+        return getJoystickAxis(_driveJoy.getZ(), false, 4, 0.1);
     }
 
     public boolean driveIsRobotCentric()
@@ -272,6 +280,6 @@ public class RobotContainer
 
     public double getOperatorY()
     {
-        return getJoystickAxis(_operatorJoy.getY(), true, false, 0.05);
+        return getJoystickAxis(_operatorJoy.getY(), true, 1, 0.05);
     }
 }

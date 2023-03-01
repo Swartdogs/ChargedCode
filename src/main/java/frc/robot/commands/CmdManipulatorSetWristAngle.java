@@ -25,6 +25,6 @@ public class CmdManipulatorSetWristAngle extends CommandBase
     @Override
     public boolean isFinished()
     {
-        return _manipulatorSubsystem.wristAtAngle();
+        return _manipulatorSubsystem.wristAtAngle() || _manipulatorSubsystem.isWristOverridden();
     }
 }

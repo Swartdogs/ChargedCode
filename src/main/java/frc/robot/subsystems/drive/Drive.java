@@ -162,6 +162,14 @@ public class Drive extends SubsystemBase
         }
     }
 
+    public void setBrakeMode(boolean isBrake)
+    {
+        for (int i = 0; i < _swerveModules.length; i++)
+        {
+            _swerveModules[i].setBrakeMode(isBrake);
+        }
+    }
+
     public Vector getOrigin()
     {
         return _origin;

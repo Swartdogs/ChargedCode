@@ -144,6 +144,11 @@ public class SwerveModule extends Vector
         return _driveMotor.getEncoder().getPosition();
     }
 
+    public void setBrakeMode(boolean isBrake)
+    {
+        _driveMotor.setIdleMode(isBrake ? IdleMode.kBrake : IdleMode.kCoast);
+    }
+
     /**
      * Get the change of position of the module 
      * @return Vector representing the distance and direction of the module's motion

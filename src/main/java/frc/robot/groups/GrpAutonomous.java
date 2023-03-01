@@ -131,7 +131,7 @@ public class GrpAutonomous extends SequentialCommandGroup
             // We haven't left the community yet, so we need to go around the charge station to get mobility before we balance
             new SequentialCommandGroup
             (
-                new CmdDriveToPosition(DrivePosition.SubstationOutsideCommunity.getPosition(),                    Drive.getInstance().getAllianceAngle(), 0.4),
+                new CmdDriveToPosition(DrivePosition.SubstationOutsideCommunity.getPosition(),                    Drive.getInstance().getAllianceAngle(), 0.6),
                 new CmdDriveToPosition(DrivePosition.SubstationOutsideCommunityChargeStationAlign.getPosition(),  Drive.getInstance().getAllianceAngle(), 0.2),
                 new CmdDriveToPosition(DrivePosition.SubstationOutsideCommunityChargeStationDocked.getPosition(), Drive.getInstance().getAllianceAngle(), 0.3)
             ),
@@ -152,7 +152,7 @@ public class GrpAutonomous extends SequentialCommandGroup
             // We haven't left the community yet, so we need to go around the charge station to get mobility before we balance
             new SequentialCommandGroup
             (
-                new CmdDriveToPosition(DrivePosition.WallOutsideCommunity.getPosition(),                    Drive.getInstance().getAllianceAngle(), 0.4),
+                new CmdDriveToPosition(DrivePosition.WallOutsideCommunity.getPosition(),                    Drive.getInstance().getAllianceAngle(), 0.6),
                 new CmdDriveToPosition(DrivePosition.WallOutsideCommunityChargeStationAlign.getPosition(),  Drive.getInstance().getAllianceAngle(), 0.2),
                 new CmdDriveToPosition(DrivePosition.WallOutsideCommunityChargeStationDocked.getPosition(), Drive.getInstance().getAllianceAngle(), 0.3)
             ),

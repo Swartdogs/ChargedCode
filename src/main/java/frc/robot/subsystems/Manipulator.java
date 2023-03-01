@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -47,6 +49,8 @@ public class Manipulator extends SubsystemBase
     private CANSparkMax         _wristMotor;
     private DutyCycleEncoder    _wristEncoder;
     private PIDControl          _wristPID;
+    private double              _wristSpeed;
+    private boolean             _wristOverride;
 
     //Twist Motion Controls
     private CANSparkMax         _twistMotor;
@@ -79,6 +83,8 @@ public class Manipulator extends SubsystemBase
         _wristMotor         = new CANSparkMax(Constants.CAN.WRIST_ID, MotorType.kBrushless);
         _wristEncoder       = new DutyCycleEncoder(Constants.DIO.WRIST_PORT);
         _wristPID           = new PIDControl();
+        _wristSpeed         = 0;
+        _wristOverride      = false;
 
         _twistMotor         = new CANSparkMax(Constants.CAN.TWIST_ID, MotorType.kBrushless);
         _twistEncoder       = new DutyCycleEncoder(Constants.DIO.TWIST_PORT);
@@ -107,6 +113,7 @@ public class Manipulator extends SubsystemBase
         _twistMotor.setInverted(true);
         _intakeMotor.setInverted(true);
 
+        _wristMotor.setIdleMode(IdleMode.kCoast);
         _twistMotor.setIdleMode(IdleMode.kBrake);
         _intakeMotor.setIdleMode(IdleMode.kBrake);
 
@@ -139,9 +146,28 @@ public class Manipulator extends SubsystemBase
         RobotLog.getInstance().log("Created Manipulator Subsystem");
     }
 
+    public void overrideWrist()
+    {
+        _wristOverride = true;
+        _wristMotor.setIdleMode(IdleMode.kBrake);
+    }
+
+    public boolean isWristOverridden()
+    {
+        return _wristOverride;
+    }
+
     public void setWristAngle(double position)
     {
         _wristPID.setSetpoint(position, getWristAngle());
+    }
+
+    public void setWristSpeed(double speed)
+    {
+        if (_wristOverride)
+        {
+            _wristMotor.setVoltage(speed * Constants.MOTOR_VOLTAGE);
+        }
     }
 
     public double getWristAngle()
@@ -302,13 +328,15 @@ public class Manipulator extends SubsystemBase
     @Override
     public void periodic()
     {
-        var wristAngle = getWristAngle();
-        var wristSpeed = _wristPID.calculate(wristAngle);
-
-        System.out.println(String.format("Wrist Angle: %6.2f, Wrist Command: %5.2f", wristAngle, wristSpeed));
+        _wristMotor.setInverted(true);
 
         _twistMotor.setVoltage(_twistPID.calculate(getTwistAngle()) * Constants.MOTOR_VOLTAGE);
-        _wristMotor.setVoltage(wristSpeed * Constants.MOTOR_VOLTAGE);
+        
+        if (!_wristOverride)
+        {
+            _wristSpeed = _wristPID.calculate(getWristAngle());
+            _wristMotor.setVoltage(_wristSpeed * Constants.MOTOR_VOLTAGE);
+        }
     }
 
     @Override
@@ -316,5 +344,15 @@ public class Manipulator extends SubsystemBase
     {
         _wristEncoderSim.set(_wristMotor.getEncoder().getPosition());
         _twistEncoderSim.set(_twistMotor.getEncoder().getPosition());
+    }
+
+    public Command printWristHealthCommand()
+    {
+        return Commands.either
+        (
+            Commands.print(String.format("Wrist Angle: %6.2f, Wrist Command: %5.2f, Wrist Setpoint: %6.2f", getWristAngle(), _wristSpeed, _wristPID.getSetpoint())),
+            Commands.print(String.format("Wrist overridden!")),
+            () -> !_wristOverride
+        ).repeatedly();
     }
 }

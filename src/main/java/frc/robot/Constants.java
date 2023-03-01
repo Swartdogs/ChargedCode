@@ -149,20 +149,20 @@ public final class Constants
         public static final double  SHOULDER_SLOPE                  = (SHOULDER_SCALED_MAX-SHOULDER_SCALED_MIN)/(SHOULDER_SENSOR_MAX-SHOULDER_SENSOR_MIN);
         public static final double  EXTENSION_CONVERSION_FACTOR     = 25.625 / 125.0947;
 
-        public static final double  EXTENSION_JOYSTICK_RATE         = 5.0 / Constants.LOOPS_PER_SECOND; // inches per second
-        public static final double  SHOULDER_JOYSTICK_RATE          = 5.0 / Constants.LOOPS_PER_SECOND; // degrees per second
+        public static final double  EXTENSION_JOYSTICK_RATE         = 10.0 / Constants.LOOPS_PER_SECOND; // inches per second
+        public static final double  SHOULDER_JOYSTICK_RATE          = 30.0 / Constants.LOOPS_PER_SECOND; // degrees per second
     }
  
     public static class Manipulator
     {
         /* PID Limits */
-        public static final double  WRIST_MIN_ANGLE                 =  -90.00;
-        public static final double  WRIST_MAX_ANGLE                 =   60.00;
-        public static final double  TWIST_MIN_ROTATION              = -170.00;
-        public static final double  TWIST_MAX_ROTATION              =  170.00;
+        public static final double  WRIST_MIN_ANGLE                 = -100.00;
+        public static final double  WRIST_MAX_ANGLE                 =  100.00;
+        public static final double  TWIST_MIN_ROTATION              = -116.00;
+        public static final double  TWIST_MAX_ROTATION              =  116.00;
 
         /* Sensor Configuration */
-        public static final double  WRIST_OFFSET                    = 0.53;
+        public static final double  WRIST_OFFSET                    = 0.69;
         public static final double  TWIST_OFFSET                    = 0.73;
 
         /* Settings */
@@ -172,7 +172,7 @@ public final class Constants
         public static final double  INTAKE_STOP_DELAY               = 0.30;
         public static final double  INTAKE_STOW_DELAY               = 0.50;
 
-        public static final double  WRIST_JOYSTICK_RATE             = 10.0 / Constants.LOOPS_PER_SECOND; // Degrees per second
+        public static final double  WRIST_JOYSTICK_RATE             = 60.0 / Constants.LOOPS_PER_SECOND; // Degrees per second
     }
 
     public static class Lookups
@@ -191,10 +191,10 @@ public final class Constants
             put(new ArmTuple(ArmPosition.High,       ArmSide.Front, HandMode.Cube), new ArmData( -55,       18,          90,     35));
             put(new ArmTuple(ArmPosition.High,       ArmSide.Back,  HandMode.Cone), new ArmData(  52,       26,         -90,     -5));
             put(new ArmTuple(ArmPosition.High,       ArmSide.Back,  HandMode.Cube), new ArmData(  55,       18,         -90,    -35));
-            put(new ArmTuple(ArmPosition.Substation, ArmSide.Front, HandMode.Cone), new ArmData(  30,        0,         -90,    -45));
-            put(new ArmTuple(ArmPosition.Substation, ArmSide.Front, HandMode.Cube), new ArmData(  30,        0,         -90,    -45));
-            put(new ArmTuple(ArmPosition.Substation, ArmSide.Back,  HandMode.Cone), new ArmData( -30,        0,          90,     45));
-            put(new ArmTuple(ArmPosition.Substation, ArmSide.Back,  HandMode.Cube), new ArmData( -30,        0,          90,     45));
+            put(new ArmTuple(ArmPosition.Substation, ArmSide.Front, HandMode.Cone), new ArmData(  35,        0,         -90,    -45));
+            put(new ArmTuple(ArmPosition.Substation, ArmSide.Front, HandMode.Cube), new ArmData(  35,        0,         -90,    -45));
+            put(new ArmTuple(ArmPosition.Substation, ArmSide.Back,  HandMode.Cone), new ArmData( -35,        0,          90,     45));
+            put(new ArmTuple(ArmPosition.Substation, ArmSide.Back,  HandMode.Cube), new ArmData( -35,        0,          90,     45));
             put(new ArmTuple(ArmPosition.Ground,     ArmSide.Front, HandMode.Cone), new ArmData( 110,        0,         -90,     15));
             put(new ArmTuple(ArmPosition.Ground,     ArmSide.Front, HandMode.Cube), new ArmData(  90,        0,           0,    -45));
             put(new ArmTuple(ArmPosition.Ground,     ArmSide.Back,  HandMode.Cone), new ArmData(-110,        0,          90,    -15));

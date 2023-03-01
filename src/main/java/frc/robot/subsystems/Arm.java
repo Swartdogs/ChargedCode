@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.drive.Drive;
 
 public class Arm extends SubsystemBase 
 {
@@ -277,7 +278,7 @@ public class Arm extends SubsystemBase
                 break;
         }
 
-        _shoulderMotor.setVoltage(_shoulderPid.calculate(getShoulderAngle()) * Constants.MOTOR_VOLTAGE);
+        _shoulderMotor.setVoltage(_shoulderPid.calculate(getShoulderAngle() + Drive.getInstance().getChassisPitch()) * Constants.MOTOR_VOLTAGE);
         _extensionMotor.setVoltage(_extensionPid.calculate(getExtensionPosition()) * Constants.MOTOR_VOLTAGE);
     }
 
