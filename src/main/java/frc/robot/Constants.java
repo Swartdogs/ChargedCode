@@ -177,32 +177,57 @@ public final class Constants
 
     public static class Lookups
     {
+        public static final ArmData LOW_FRONT_CONE        = new ArmData(-105,        0,          90,    -15);
+        public static final ArmData LOW_FRONT_CUBE        = new ArmData(-105,        0,          90,    -15);
+        public static final ArmData LOW_BACK_CONE         = new ArmData( 105,        0,         -90,     15);
+        public static final ArmData LOW_BACK_CUBE         = new ArmData( 105,        0,         -90,     15);
+        public static final ArmData MID_FRONT_CONE        = new ArmData( -60,        0,          90,     -0);
+        public static final ArmData MID_FRONT_CUBE        = new ArmData( -60,        0,          90,     40);
+        public static final ArmData MID_BACK_CONE         = new ArmData(  60,        0,         -90,      0);
+        public static final ArmData MID_BACK_CUBE         = new ArmData(  60,        0,         -90,    -40);
+        public static final ArmData HIGH_FRONT_CONE       = new ArmData( -52,       26,          90,      5);
+        public static final ArmData HIGH_FRONT_CUBE       = new ArmData( -55,       18,          90,     35);
+        public static final ArmData HIGH_BACK_CONE        = new ArmData(  52,       26,         -90,     -5);
+        public static final ArmData HIGH_BACK_CUBE        = new ArmData(  55,       18,         -90,    -35);
+        public static final ArmData SUBSTATION_FRONT_CONE = new ArmData(  35,        0,         -90,    -45);
+        public static final ArmData SUBSTATION_FRONT_CUBE = new ArmData(  35,        0,         -90,    -45);
+        public static final ArmData SUBSTATION_BACK_CONE  = new ArmData( -35,        0,          90,     45);
+        public static final ArmData SUBSTATION_BACK_CUBE  = new ArmData( -35,        0,          90,     45);
+        public static final ArmData GROUND_FRONT_CONE     = new ArmData( 110,        0,         -90,     15);
+        public static final ArmData GROUND_FRONT_CUBE     = new ArmData(  90,        0,           0,    -45);
+        public static final ArmData GROUND_BACK_CONE      = new ArmData(-110,        0,          90,    -15);
+        public static final ArmData GROUND_BACK_CUBE      = new ArmData( -90,        0,          -0,     45);
+        public static final ArmData STOW_FRONT_CONE       = new ArmData(   0,        0,          90,      0);
+        public static final ArmData STOW_FRONT_CUBE       = new ArmData(   0,        0,          90,      0);
+        public static final ArmData STOW_BACK_CONE        = new ArmData(  -0,        0,         -90,     -0);
+        public static final ArmData STOW_BACK_CUBE        = new ArmData(  -0,        0,         -90,     -0);
+
         private static final HashMap<ArmTuple, ArmData> _lookup = new HashMap<ArmTuple, ArmData>(){{
             /*               Position                Side           Hand Mode                   Shoulder    Extension   Twist   Wrist */
-            put(new ArmTuple(ArmPosition.Low,        ArmSide.Front, HandMode.Cone), new ArmData(-105,        0,          90,    -15));
-            put(new ArmTuple(ArmPosition.Low,        ArmSide.Front, HandMode.Cube), new ArmData(-105,        0,          90,    -15));
-            put(new ArmTuple(ArmPosition.Low,        ArmSide.Back,  HandMode.Cone), new ArmData( 105,        0,         -90,     15));
-            put(new ArmTuple(ArmPosition.Low,        ArmSide.Back,  HandMode.Cube), new ArmData( 105,        0,         -90,     15));
-            put(new ArmTuple(ArmPosition.Middle,     ArmSide.Front, HandMode.Cone), new ArmData( -60,        0,          90,     -0));
-            put(new ArmTuple(ArmPosition.Middle,     ArmSide.Front, HandMode.Cube), new ArmData( -60,        0,          90,     40));
-            put(new ArmTuple(ArmPosition.Middle,     ArmSide.Back,  HandMode.Cone), new ArmData(  60,        0,         -90,      0));
-            put(new ArmTuple(ArmPosition.Middle,     ArmSide.Back,  HandMode.Cube), new ArmData(  60,        0,         -90,    -40));
-            put(new ArmTuple(ArmPosition.High,       ArmSide.Front, HandMode.Cone), new ArmData( -52,       26,          90,      5));
-            put(new ArmTuple(ArmPosition.High,       ArmSide.Front, HandMode.Cube), new ArmData( -55,       18,          90,     35));
-            put(new ArmTuple(ArmPosition.High,       ArmSide.Back,  HandMode.Cone), new ArmData(  52,       26,         -90,     -5));
-            put(new ArmTuple(ArmPosition.High,       ArmSide.Back,  HandMode.Cube), new ArmData(  55,       18,         -90,    -35));
-            put(new ArmTuple(ArmPosition.Substation, ArmSide.Front, HandMode.Cone), new ArmData(  35,        0,         -90,    -45));
-            put(new ArmTuple(ArmPosition.Substation, ArmSide.Front, HandMode.Cube), new ArmData(  35,        0,         -90,    -45));
-            put(new ArmTuple(ArmPosition.Substation, ArmSide.Back,  HandMode.Cone), new ArmData( -35,        0,          90,     45));
-            put(new ArmTuple(ArmPosition.Substation, ArmSide.Back,  HandMode.Cube), new ArmData( -35,        0,          90,     45));
-            put(new ArmTuple(ArmPosition.Ground,     ArmSide.Front, HandMode.Cone), new ArmData( 110,        0,         -90,     15));
-            put(new ArmTuple(ArmPosition.Ground,     ArmSide.Front, HandMode.Cube), new ArmData(  90,        0,           0,    -45));
-            put(new ArmTuple(ArmPosition.Ground,     ArmSide.Back,  HandMode.Cone), new ArmData(-110,        0,          90,    -15));
-            put(new ArmTuple(ArmPosition.Ground,     ArmSide.Back,  HandMode.Cube), new ArmData( -90,        0,          -0,     45));
-            put(new ArmTuple(ArmPosition.Stow,       ArmSide.Front, HandMode.Cone), new ArmData(   0,        0,          90,      0));
-            put(new ArmTuple(ArmPosition.Stow,       ArmSide.Front, HandMode.Cube), new ArmData(   0,        0,          90,      0));
-            put(new ArmTuple(ArmPosition.Stow,       ArmSide.Back,  HandMode.Cone), new ArmData(  -0,        0,         -90,     -0));
-            put(new ArmTuple(ArmPosition.Stow,       ArmSide.Back,  HandMode.Cube), new ArmData(  -0,        0,         -90,     -0));
+            put(new ArmTuple(ArmPosition.Low,        ArmSide.Front, HandMode.Cone), LOW_FRONT_CONE       );
+            put(new ArmTuple(ArmPosition.Low,        ArmSide.Front, HandMode.Cube), LOW_FRONT_CUBE       );
+            put(new ArmTuple(ArmPosition.Low,        ArmSide.Back,  HandMode.Cone), LOW_BACK_CONE        );
+            put(new ArmTuple(ArmPosition.Low,        ArmSide.Back,  HandMode.Cube), LOW_BACK_CUBE        );
+            put(new ArmTuple(ArmPosition.Middle,     ArmSide.Front, HandMode.Cone), MID_FRONT_CONE       );
+            put(new ArmTuple(ArmPosition.Middle,     ArmSide.Front, HandMode.Cube), MID_FRONT_CUBE       );
+            put(new ArmTuple(ArmPosition.Middle,     ArmSide.Back,  HandMode.Cone), MID_BACK_CONE        );
+            put(new ArmTuple(ArmPosition.Middle,     ArmSide.Back,  HandMode.Cube), MID_BACK_CUBE        );
+            put(new ArmTuple(ArmPosition.High,       ArmSide.Front, HandMode.Cone), HIGH_FRONT_CONE      );
+            put(new ArmTuple(ArmPosition.High,       ArmSide.Front, HandMode.Cube), HIGH_FRONT_CUBE      );
+            put(new ArmTuple(ArmPosition.High,       ArmSide.Back,  HandMode.Cone), HIGH_BACK_CONE       );
+            put(new ArmTuple(ArmPosition.High,       ArmSide.Back,  HandMode.Cube), HIGH_BACK_CUBE       );
+            put(new ArmTuple(ArmPosition.Substation, ArmSide.Front, HandMode.Cone), SUBSTATION_FRONT_CONE);
+            put(new ArmTuple(ArmPosition.Substation, ArmSide.Front, HandMode.Cube), SUBSTATION_FRONT_CUBE);
+            put(new ArmTuple(ArmPosition.Substation, ArmSide.Back,  HandMode.Cone), SUBSTATION_BACK_CONE );
+            put(new ArmTuple(ArmPosition.Substation, ArmSide.Back,  HandMode.Cube), SUBSTATION_BACK_CUBE );
+            put(new ArmTuple(ArmPosition.Ground,     ArmSide.Front, HandMode.Cone), GROUND_FRONT_CONE    );
+            put(new ArmTuple(ArmPosition.Ground,     ArmSide.Front, HandMode.Cube), GROUND_FRONT_CUBE    );
+            put(new ArmTuple(ArmPosition.Ground,     ArmSide.Back,  HandMode.Cone), GROUND_BACK_CONE     );
+            put(new ArmTuple(ArmPosition.Ground,     ArmSide.Back,  HandMode.Cube), GROUND_BACK_CUBE     );
+            put(new ArmTuple(ArmPosition.Stow,       ArmSide.Front, HandMode.Cone), STOW_FRONT_CONE      );
+            put(new ArmTuple(ArmPosition.Stow,       ArmSide.Front, HandMode.Cube), STOW_FRONT_CUBE      );
+            put(new ArmTuple(ArmPosition.Stow,       ArmSide.Back,  HandMode.Cone), STOW_BACK_CONE       );
+            put(new ArmTuple(ArmPosition.Stow,       ArmSide.Back,  HandMode.Cube), STOW_BACK_CUBE       );
         }};
 
         public static ArmData lookUpArmData(ArmPosition armPosition, ArmSide armSide, HandMode handMode)

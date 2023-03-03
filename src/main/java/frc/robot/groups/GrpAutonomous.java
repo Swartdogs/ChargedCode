@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.CmdDriveBalance;
-import frc.robot.commands.CmdDriveRotateModules;
 import frc.robot.commands.CmdDriveToPosition;
 import frc.robot.subsystems.Dashboard;
 import frc.robot.subsystems.Arm.ArmPosition;
@@ -98,23 +97,37 @@ public class GrpAutonomous extends SequentialCommandGroup
                 new GrpPlaceGamePiece()
             ).unless(() -> _numGamePieces == 0),
 
-            // Align to the charge station
-            new SelectCommand
+            // Balance on the charge station OR get the mobility bonus
+            Commands.either
             (
-                Map.of
+                // 
+                new SelectCommand
                 (
-                    DrivePosition.SubstationStart, getSubstationStartChargeStationAlignCommand(),
-                    DrivePosition.WallStart,       getWallStartChargeStationAlignCommand(),
-                    DrivePosition.MiddleStart,     getMiddleStartChargeStationAlignCommand()
-                ), 
-                () -> _startPosition
+                    Map.of
+                    (
+                        DrivePosition.SubstationStart, getSubstationStartChargeStationAlignCommand(),
+                        DrivePosition.WallStart,       getWallStartChargeStationAlignCommand(),
+                        DrivePosition.MiddleStart,     getMiddleStartChargeStationAlignCommand()
+                    ), 
+                    () -> _startPosition
+                )
+                .andThen
+                (
+                    new CmdDriveBalance(),
+                    Commands.run(() -> Drive.getInstance().rotateModules(90))
+                ),
+                new SelectCommand
+                (
+                    Map.of
+                    (
+                        DrivePosition.SubstationStart, new CmdDriveToPosition(DrivePosition.SubstationOutsideCommunity.getPosition(), Drive.getInstance().getAllianceAngle(), 0.6),
+                        DrivePosition.WallStart,       new CmdDriveToPosition(DrivePosition.WallOutsideCommunity.getPosition(),       Drive.getInstance().getAllianceAngle(), 0.6),
+                        DrivePosition.MiddleStart,     Commands.none()
+                    ),
+                    () -> _startPosition
+                ),
+                () -> _balance
             )
-            .andThen
-            (
-                new CmdDriveBalance(),
-                Commands.run(() -> Drive.getInstance().rotateModules(90))
-            )
-            .unless(() -> !_balance)
         );
     }
 

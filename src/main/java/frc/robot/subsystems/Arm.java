@@ -124,7 +124,7 @@ public class Arm extends SubsystemBase
         _shoulderPid.setCoefficient(Coefficient.I, 0, 0, 0);
         _shoulderPid.setCoefficient(Coefficient.D, 0, 0.05, 0);
         _shoulderPid.setInputRange(Constants.Arm.SHOULDER_MIN_ANGLE, Constants.Arm.SHOULDER_MAX_ANGLE);
-        _shoulderPid.setOutputRange(-0.7, 0.7);
+        _shoulderPid.setOutputRange(-0.62, 0.62);
         _shoulderPid.setOutputRamp(0.05, 0.02);
         _shoulderPid.setSetpointDeadband(5);
         _shoulderPid.setFeedForward(setpoint -> -Constants.Arm.HORIZONTAL_STAYING_POWER * Math.sin(Math.toRadians(setpoint)));
@@ -278,7 +278,7 @@ public class Arm extends SubsystemBase
                 break;
         }
 
-        _shoulderMotor.setVoltage(_shoulderPid.calculate(getShoulderAngle() + Drive.getInstance().getChassisPitch()) * Constants.MOTOR_VOLTAGE);
+        _shoulderMotor.setVoltage(_shoulderPid.calculate(getShoulderAngle() + Math.min(Math.max(Drive.getInstance().getChassisPitch(), -15.0), 15.0)) * Constants.MOTOR_VOLTAGE);
         _extensionMotor.setVoltage(_extensionPid.calculate(getExtensionPosition()) * Constants.MOTOR_VOLTAGE);
     }
 

@@ -79,7 +79,7 @@ public class Dashboard extends SubsystemBase
 
         var intakeLayout       = tab.getLayout("Intake", BuiltInLayouts.kGrid).withPosition(13, 0).withSize(5, 9).withProperties(Map.of("Number of columns", 2, "Number of rows", 2, "Label position", "TOP"));
         _wristAngle            = intakeLayout.add("Wrist Angle", 0).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kDial).withProperties(Map.of("Min", -90, "Max", 90, "Show text", false)).getEntry();
-        _twistAngle            = intakeLayout.add("Twist Angle", 0).withPosition(1, 0).withSize(1, 1).withWidget(BuiltInWidgets.kDial).withProperties(Map.of("Min", 0, "Max", 180, "Show text", false)).getEntry();
+        _twistAngle            = intakeLayout.add("Twist Angle", 0).withPosition(1, 0).withSize(1, 1).withWidget(BuiltInWidgets.kDial).withProperties(Map.of("Min", -180, "Max", 180, "Show text", false)).getEntry();
         _pickupDisplaySpeed    = intakeLayout.add("Intake Speed", 0).withPosition(0, 1).withSize(1, 1).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("Min", -1, "Max", 1)).getEntry();
         _hasGamePiece          = intakeLayout.add("Has Game Piece", false).withPosition(1, 1).withSize(1, 1).withWidget(BuiltInWidgets.kBooleanBox).getEntry();
         

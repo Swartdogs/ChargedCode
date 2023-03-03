@@ -43,7 +43,21 @@ public class GrpSetArmPosition extends SequentialCommandGroup
                 {
                     Manipulator.getInstance().setIsFlipped(false);
                 }
-            }),  
+            }),
+
+            new ParallelCommandGroup
+            (
+                new ProxyCommand(()-> new CmdArmSetShoulderAngle(Constants.Lookups.STOW_FRONT_CUBE.getArmAngle())), 
+                new ProxyCommand(()-> new CmdArmSetExtensionPosition(Constants.Lookups.STOW_FRONT_CUBE.getArmExtension())),
+                new ProxyCommand(()-> new CmdManipulatorSetTwistAngle(Constants.Lookups.STOW_FRONT_CUBE.getTwistAngle())),
+                new ProxyCommand(()-> new CmdManipulatorSetWristAngle(Constants.Lookups.STOW_FRONT_CUBE.getWristAngle()))
+
+                // If the signs of where we are and where we need to go are different, we need to stow.
+                // If the product of the signs is -1, we're crossing sides
+                // If the product of the signs is  0, we're either stowing or are already stowed
+                // If the product of the signs is  1, the arm is NOT changing which side it's on  
+            ).unless(() -> Math.signum(_armData.getArmAngle()) * Math.signum(Arm.getInstance().getShoulderAngleSetpoint()) >= 0),
+
             new ParallelCommandGroup
             (
                 new ProxyCommand(()-> new CmdArmSetShoulderAngle(_armData.getArmAngle())), 
