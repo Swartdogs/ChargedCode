@@ -13,6 +13,7 @@ public class CmdManipulatorPlaceGamePiece extends CommandBase
     public CmdManipulatorPlaceGamePiece() 
     {
         _manipulatorSubsystem = Manipulator.getInstance();
+        addRequirements(_manipulatorSubsystem);
     }
 
     @Override

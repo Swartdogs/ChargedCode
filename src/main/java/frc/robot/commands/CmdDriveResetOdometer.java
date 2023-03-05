@@ -10,7 +10,7 @@ public class CmdDriveResetOdometer extends InstantCommand
     public void initialize()
     {
         Drive.getInstance().resetOdometer();
-        Drive.getInstance().setGyro(0);
+        Drive.getInstance().setGyro(Drive.getInstance().getAllianceAngle());
 
         RobotLog.getInstance().log("Reset Odometer");
     }

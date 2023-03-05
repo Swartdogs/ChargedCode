@@ -1,8 +1,7 @@
 package frc.robot.subsystems.drive;
 
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import PIDControl.PIDControl;
@@ -13,8 +12,7 @@ import frc.robot.Constants;
 
 public class SwerveModule extends Vector
 {
-    //private CANSparkMax          _driveMotor;
-    private TalonFX                _driveMotor;
+    private CANSparkMax          _driveMotor;
     private CANSparkMax          _rotateMotor;
     private AnalogPotentiometer  _rotateSensor;
     private PIDControl           _rotatePID;
@@ -37,21 +35,25 @@ public class SwerveModule extends Vector
     {
         super(x, y);
 
-        _rotateSetpoint       = 0;
-        _driveSpeedSetpoint   = 0;
+        _rotateSetpoint      = 0;
+        _driveSpeedSetpoint  = 0;
 
-        _rotationZero         = defaultRelativeZero;
-        _resetOffset          = resetOffset;
+        _rotationZero        = defaultRelativeZero;
+        _resetOffset         = resetOffset;
 
-        _drivePosition        = 0;
+        _drivePosition       = 0;
 
-        _driveMotor           = new TalonFX(driveMotorCanId);
-        _rotateMotor          = new CANSparkMax(rotateMotorCanId, MotorType.kBrushless);
-        _rotateSensor         = new AnalogPotentiometer(rotateSensorPort, 360 / 0.92, (360 - 360 / 0.92) / 2.0); // copied from 2021
+        _driveMotor          = new CANSparkMax(driveMotorCanId,  MotorType.kBrushless);
+        _rotateMotor         = new CANSparkMax(rotateMotorCanId, MotorType.kBrushless);
+        _rotateSensor        = new AnalogPotentiometer(rotateSensorPort, 360 / 0.92, (360 - 360 / 0.92) / 2.0); // copied from 2021
 
-        // TODO: Drive Motor for new robot
-        // _driveMotor.restoreFactoryDefaults();
+        _driveMotor.restoreFactoryDefaults();
         _rotateMotor.restoreFactoryDefaults(); // doesn't matter how the sparkmax has been previously set up
+
+        _driveMotor.setIdleMode(IdleMode.kCoast);
+        _rotateMotor.setIdleMode(IdleMode.kCoast);
+
+        _driveMotor.getEncoder().setPositionConversionFactor(Constants.Drive.DRIVE_ENCODER_TO_DISTANCE);
 
         _rotatePID = new PIDControl();
 
@@ -65,7 +67,7 @@ public class SwerveModule extends Vector
 
         _rotatePID.setOutputRange(-1, 1);
 
-        _rotatePID.setSetpointDeadband(2.5);// 5 degree deadband recommended online by other teams
+        _rotatePID.setSetpointDeadband(5);// 5 degree deadband recommended online by other teams
     }
 
     /**
@@ -98,7 +100,7 @@ public class SwerveModule extends Vector
             _rotateMotor.setVoltage(rotateSpeed * Constants.MOTOR_VOLTAGE);
         }
 
-        _driveMotor.set(TalonFXControlMode.PercentOutput, driveSpeed);
+        _driveMotor.setVoltage(driveSpeed * Constants.MOTOR_VOLTAGE);
     }
 
     public double getHeading()
@@ -109,16 +111,17 @@ public class SwerveModule extends Vector
     /**
      * set the zero point so that the module is now facing the "reset offset" direction
      */
-    public void zeroEncoder()
+    public void zeroRotation()
     {
-        _rotationZero = Math.IEEEremainder(-_rotateSensor.get() - _resetOffset, 360);
+        _rotationZero = Math.IEEEremainder(-_rotateSensor.get() - _resetOffset, Constants.DEGREES_PER_REVOLUTION);
+        System.out.println(String.format("%6.2f", _rotationZero));
     }
 
     /**
      * Get the rotation encoder's zero offset 
      * @return the offset as previously set in degrees
      */
-    public double getRelativeZero()
+    public double getRotationZero()
     {
         return _rotationZero;
     }
@@ -129,7 +132,7 @@ public class SwerveModule extends Vector
      */
     public void setRotationZero(double zero)
     {
-        _rotationZero = Math.IEEEremainder(zero, 360);
+        _rotationZero = Math.IEEEremainder(zero, Constants.DEGREES_PER_REVOLUTION);
     }
 
     /**
@@ -138,8 +141,12 @@ public class SwerveModule extends Vector
      */
     public double getDrivePosition()
     {
-        //return _driveMotor.getEncoder().getPosition();
-        return _driveMotor.getSelectedSensorPosition() * Constants.Drive.DRIVE_ENCODER_TO_DISTANCE;
+        return _driveMotor.getEncoder().getPosition();
+    }
+
+    public void setBrakeMode(boolean isBrake)
+    {
+        _driveMotor.setIdleMode(isBrake ? IdleMode.kBrake : IdleMode.kCoast);
     }
 
     /**

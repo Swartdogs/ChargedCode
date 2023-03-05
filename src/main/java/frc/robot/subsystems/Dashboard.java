@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.groups.GrpAutonomous.DrivePosition;
 import frc.robot.subsystems.drive.Drive;
 
 public class Dashboard extends SubsystemBase 
@@ -37,8 +38,8 @@ public class Dashboard extends SubsystemBase
     private GenericEntry _extensionDistance;
     private GenericEntry _wristAngle;
     private GenericEntry _twistAngle;
+    private GenericEntry _pickupDisplaySpeed;
     private GenericEntry _hasTargetBox;
-    private GenericEntry _targetID;
     private GenericEntry _heading;
     private GenericEntry _odometer;
     private GenericEntry _frAngle;
@@ -48,13 +49,17 @@ public class Dashboard extends SubsystemBase
     private GenericEntry _hasGamePiece;
     private GenericEntry _autonomousLog;
 
+    private SendableChooser<Integer>       _autoDelayChooser;
+    private SendableChooser<Integer>       _autoGamePiecesChooser;
+    private SendableChooser<DrivePosition> _autoStartPositionChooser;
+    private SendableChooser<Boolean>       _autoBalanceChooser;
+
     private Dashboard() 
     {
         var tab                = Shuffleboard.getTab("Dashboard");
         
-        var visionLayout       = tab.getLayout("Vision", BuiltInLayouts.kGrid).withPosition(0, 0).withSize(8, 4).withProperties(Map.of("Number of columns", 2, "Number of rows", 1, "Label position", "TOP")); 
+        var visionLayout       = tab.getLayout("Vision", BuiltInLayouts.kGrid).withPosition(0, 2).withSize(8, 2).withProperties(Map.of("Number of columns", 1, "Number of rows", 1, "Label position", "HIDDEN")); 
         _hasTargetBox          = visionLayout.add("Has Target", false).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kBooleanBox).getEntry();
-        _targetID              = visionLayout.add("Target ID", 0).withPosition(1, 0).withSize(1, 1).withWidget(BuiltInWidgets.kTextView).getEntry();
 
         var driveBaseLayout    = tab.getLayout("Drive Base", BuiltInLayouts.kGrid).withPosition(0, 4).withSize(4, 5).withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"));
         _heading               = driveBaseLayout.add("Heading", 0).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("Min", 0, "Max", 360, "Display value", false)).getEntry();
@@ -66,46 +71,44 @@ public class Dashboard extends SubsystemBase
         _brAngle               = swerveAnglesLayout.add("BR", 0).withPosition(1, 1).withSize(1, 1).withWidget(BuiltInWidgets.kTextView).getEntry();
         _blAngle               = swerveAnglesLayout.add("BL", 0).withPosition(0, 1).withSize(1, 1).withWidget(BuiltInWidgets.kTextView).getEntry();
         
-        var armLayout          = tab.getLayout("Arm", BuiltInLayouts.kGrid).withPosition(8, 0).withSize(7, 9).withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"));
+        var armLayout          = tab.getLayout("Arm", BuiltInLayouts.kGrid).withPosition(8, 0).withSize(5, 9).withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"));
         _shoulderAngle         = armLayout.add("Shoulder Angle", 0).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kDial).withProperties(Map.of("Min", -135, "Max", 135, "Show text", false)).getEntry();
         _extensionDistance     = armLayout.add("Extension Distance", 0).withPosition(0, 1).withSize(1, 1).withWidget(BuiltInWidgets.kNumberBar).withProperties(Map.of("Min", 0, "Max", 48, "Show text", false)).getEntry();
        
-        _allianceBox           = tab.add("Alliance Color", false).withPosition(15, 0).withSize(6, 1).withWidget(BuiltInWidgets.kBooleanBox).withProperties(Map.of("Color when true", "blue", "Color when false", "red")).getEntry();
+        _allianceBox           = tab.add("Alliance Color", false).withPosition(0, 0).withSize(8, 1).withWidget(BuiltInWidgets.kBooleanBox).withProperties(Map.of("Color when true", "blue", "Color when false", "red")).getEntry();
 
-        var intakeLayout       = tab.getLayout("Intake", BuiltInLayouts.kGrid).withPosition(15, 2).withSize(6, 7).withProperties(Map.of("Number of columns", 1, "Number of rows", 3, "Label position", "TOP"));
-        _wristAngle            = intakeLayout.add("Wrist Angle", 0).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kTextView).getEntry();
-        _twistAngle            = intakeLayout.add("Twist Angle", 0).withPosition(0, 1).withSize(1, 1).withWidget(BuiltInWidgets.kTextView).getEntry();
-        _hasGamePiece          = intakeLayout.add("Has Game Piece", false).withPosition(0, 2).withSize(1, 2).withWidget(BuiltInWidgets.kBooleanBox).getEntry();
+        var intakeLayout       = tab.getLayout("Intake", BuiltInLayouts.kGrid).withPosition(13, 0).withSize(5, 9).withProperties(Map.of("Number of columns", 2, "Number of rows", 2, "Label position", "TOP"));
+        _wristAngle            = intakeLayout.add("Wrist Angle", 0).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kDial).withProperties(Map.of("Min", -90, "Max", 90, "Show text", false)).getEntry();
+        _twistAngle            = intakeLayout.add("Twist Angle", 0).withPosition(1, 0).withSize(1, 1).withWidget(BuiltInWidgets.kDial).withProperties(Map.of("Min", -180, "Max", 180, "Show text", false)).getEntry();
+        _pickupDisplaySpeed    = intakeLayout.add("Intake Speed", 0).withPosition(0, 1).withSize(1, 1).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("Min", -1, "Max", 1)).getEntry();
+        _hasGamePiece          = intakeLayout.add("Has Game Piece", false).withPosition(1, 1).withSize(1, 1).withWidget(BuiltInWidgets.kBooleanBox).getEntry();
         
-        var autonomousOptions  = tab.getLayout("Autonomous", BuiltInLayouts.kGrid).withPosition(21, 0).withSize(7, 9).withProperties(Map.of("Number of columns", 1, "Number of rows", 4, "Label position", "LEFT"));
+        var autonomousOptions  = tab.getLayout("Autonomous", BuiltInLayouts.kGrid).withPosition(19, 0).withSize(9, 9).withProperties(Map.of("Number of columns", 1, "Number of rows", 4, "Label position", "LEFT"));
 
-        SendableChooser<Integer> delayChooser = new SendableChooser<Integer>();
-        delayChooser.addOption("0", 0);
-        delayChooser.addOption("1", 1);
-        delayChooser.addOption("2", 2);
-        delayChooser.addOption("3", 3);
-        delayChooser.addOption("4", 4);
-        delayChooser.addOption("5", 5);
-        var delay = autonomousOptions.add("Delay Options", delayChooser).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kSplitButtonChooser);
+        _autoDelayChooser = new SendableChooser<Integer>();
+        _autoDelayChooser.setDefaultOption("0", 0);
+        _autoDelayChooser.addOption("1", 1);
+        _autoDelayChooser.addOption("2", 2);
+        _autoDelayChooser.addOption("3", 3);
+        _autoDelayChooser.addOption("4", 4);
+        _autoDelayChooser.addOption("5", 5);
+        autonomousOptions.add("Delay Options", _autoDelayChooser).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kSplitButtonChooser);
 
-        SendableChooser<Integer> startPositionChooser = new SendableChooser<Integer>();
-        startPositionChooser.addOption("Position 1", 1);
-        startPositionChooser.addOption("Position 2", 2);
-        startPositionChooser.addOption("Position 3", 3);
-        var startPosition = autonomousOptions.add("Start Position", startPositionChooser).withPosition(0, 1).withSize(1, 1).withWidget(BuiltInWidgets.kComboBoxChooser);
+        _autoStartPositionChooser = new SendableChooser<DrivePosition>();
+        _autoStartPositionChooser.setDefaultOption("Middle",   DrivePosition.MiddleStart);
+        _autoStartPositionChooser.addOption("Substation Side", DrivePosition.SubstationStart);
+        _autoStartPositionChooser.addOption("Wall Side",       DrivePosition.WallStart);
+        autonomousOptions.add("Start Position", _autoStartPositionChooser).withPosition(0, 1).withSize(1, 1).withWidget(BuiltInWidgets.kComboBoxChooser);
         
-        SendableChooser<Integer> gamePiecesChooser = new SendableChooser<Integer>();
-        gamePiecesChooser.addOption("0", 0);
-        gamePiecesChooser.addOption("1", 1);
-        gamePiecesChooser.addOption("2", 2);
-        gamePiecesChooser.addOption("3", 3);
-        gamePiecesChooser.addOption("4", 4);
-        var gamePieces = autonomousOptions.add("Number Of Pieces", gamePiecesChooser).withPosition(0, 2).withSize(1, 1).withWidget(BuiltInWidgets.kSplitButtonChooser);
+        _autoGamePiecesChooser = new SendableChooser<Integer>();
+        _autoGamePiecesChooser.setDefaultOption("0", 0);
+        _autoGamePiecesChooser.addOption("1", 1);
+        autonomousOptions.add("Number Of Pieces", _autoGamePiecesChooser).withPosition(0, 2).withSize(1, 1).withWidget(BuiltInWidgets.kSplitButtonChooser);
 
-        SendableChooser<Boolean> balanceChooser = new SendableChooser<Boolean>();
-        balanceChooser.addOption("true", true);
-        balanceChooser.addOption("false", false);
-        var balance = autonomousOptions.add("Balance Options", balanceChooser).withPosition(0, 3).withSize(1, 1).withWidget(BuiltInWidgets.kComboBoxChooser);
+        _autoBalanceChooser = new SendableChooser<Boolean>();
+        _autoBalanceChooser.setDefaultOption("No", false);
+        _autoBalanceChooser.addOption("Yes", true);
+        autonomousOptions.add("Balance Options", _autoBalanceChooser).withPosition(0, 3).withSize(1, 1).withWidget(BuiltInWidgets.kComboBoxChooser);
     
         _autonomousLog = autonomousOptions.add("Auto Log", "").withPosition(0, 4).withSize(1, 1).withWidget(BuiltInWidgets.kTextView).getEntry();
 
@@ -122,15 +125,15 @@ public class Dashboard extends SubsystemBase
         var resetSwerveOffsetButton     = new DashboardButton(resetSwerveOffsetEntry);
         resetSwerveOffsetButton.whenPressed(() -> {
             Drive.getInstance().zeroModuleRotations();
-            flOffset.setDouble(Drive.getInstance().getSwerveModule(Constants.Drive.FL_INDEX).getRelativeZero());
-            frOffset.setDouble(Drive.getInstance().getSwerveModule(Constants.Drive.FR_INDEX).getRelativeZero());
-            blOffset.setDouble(Drive.getInstance().getSwerveModule(Constants.Drive.BL_INDEX).getRelativeZero());
-            brOffset.setDouble(Drive.getInstance().getSwerveModule(Constants.Drive.BR_INDEX).getRelativeZero());
+            flOffset.setDouble(Drive.getInstance().getSwerveModule(Constants.Drive.FL_INDEX).getRotationZero());
+            frOffset.setDouble(Drive.getInstance().getSwerveModule(Constants.Drive.FR_INDEX).getRotationZero());
+            blOffset.setDouble(Drive.getInstance().getSwerveModule(Constants.Drive.BL_INDEX).getRotationZero());
+            brOffset.setDouble(Drive.getInstance().getSwerveModule(Constants.Drive.BR_INDEX).getRotationZero());
         
-            Preferences.setDouble("FL Offset", Drive.getInstance().getSwerveModule(Constants.Drive.FL_INDEX).getRelativeZero());
-            Preferences.setDouble("FR Offset", Drive.getInstance().getSwerveModule(Constants.Drive.FR_INDEX).getRelativeZero());
-            Preferences.setDouble("BL Offset", Drive.getInstance().getSwerveModule(Constants.Drive.BL_INDEX).getRelativeZero());
-            Preferences.setDouble("BR Offset", Drive.getInstance().getSwerveModule(Constants.Drive.BR_INDEX).getRelativeZero());
+            Preferences.setDouble("FL Offset", Drive.getInstance().getSwerveModule(Constants.Drive.FL_INDEX).getRotationZero());
+            Preferences.setDouble("FR Offset", Drive.getInstance().getSwerveModule(Constants.Drive.FR_INDEX).getRotationZero());
+            Preferences.setDouble("BL Offset", Drive.getInstance().getSwerveModule(Constants.Drive.BL_INDEX).getRotationZero());
+            Preferences.setDouble("BR Offset", Drive.getInstance().getSwerveModule(Constants.Drive.BR_INDEX).getRotationZero());
         });
 
         //Arm
@@ -147,6 +150,9 @@ public class Dashboard extends SubsystemBase
         var twistMaxRotation            = manipulatorSettingsLayout.add("Twist Max", 180.0).withPosition(1, 0).withSize(3, 2).withWidget(BuiltInWidgets.kTextView).getEntry();
         var ejectTime                   = manipulatorSettingsLayout.add("Eject Time", 0.0).withPosition(2, 2).withSize(3, 2).withWidget(BuiltInWidgets.kTextView).getEntry();
         var intakeSpeed                 = manipulatorSettingsLayout.add("Intake Speed", 0.0).withPosition(2, 0).withSize(3, 2).withWidget(BuiltInWidgets.kTextView).getEntry();
+        var placeSpeed                  = manipulatorSettingsLayout.add("Place Speed", 0.0).withWidget(BuiltInWidgets.kTextView).getEntry();
+        var intakeStopDelay             = manipulatorSettingsLayout.add("Intake Stop Delay", 0.0).withWidget(BuiltInWidgets.kTextView).getEntry();
+        var intakeStowDelay             = manipulatorSettingsLayout.add("Intake Stow Delay", 0.0).withWidget(BuiltInWidgets.kTextView).getEntry();
 
         initializeSetting("FL Offset", Constants.Drive.FL_OFFSET, flOffset, Drive.getInstance().getSwerveModule(Constants.Drive.FL_INDEX)::setRotationZero);
         initializeSetting("FR Offset", Constants.Drive.FR_OFFSET, frOffset, Drive.getInstance().getSwerveModule(Constants.Drive.FR_INDEX)::setRotationZero);
@@ -163,6 +169,9 @@ public class Dashboard extends SubsystemBase
         initializeSetting("Twist Max", Constants.Manipulator.TWIST_MAX_ROTATION, twistMaxRotation, Manipulator.getInstance()::setTwistMaxRotation);
         initializeSetting("Eject Time", Constants.Manipulator.EJECT_TIME, ejectTime, Manipulator.getInstance()::setEjectTime);
         initializeSetting("Intake Speed", Constants.Manipulator.INTAKE_SPEED, intakeSpeed, Manipulator.getInstance()::setIntakeSpeed);
+        initializeSetting("Place Speed", Constants.Manipulator.PLACE_SPEED, placeSpeed, Manipulator.getInstance()::setPlaceSpeed);
+        initializeSetting("Intake Stop Delay", Constants.Manipulator.INTAKE_STOP_DELAY, intakeStopDelay, Manipulator.getInstance()::setIntakeStopDelay);
+        initializeSetting("Intake Stow Delay", Constants.Manipulator.INTAKE_STOW_DELAY, intakeStowDelay, Manipulator.getInstance()::setIntakeStowDelay);
     }
 
     public void initializeSetting(String key, double defaultValue, GenericEntry entry, DoubleConsumer consumer)
@@ -185,6 +194,27 @@ public class Dashboard extends SubsystemBase
         }
 
         consumer.accept(value);
+        entry.setDouble(value);
+    }
+
+    public int getAutoDelay()
+    {
+        return _autoDelayChooser.getSelected();
+    }
+
+    public DrivePosition getAutoStartPosition()
+    {
+        return _autoStartPositionChooser.getSelected();
+    }
+
+    public int getAutoGamePieceCount()
+    {
+        return _autoGamePiecesChooser.getSelected();
+    }
+
+    public boolean getAutoBalance()
+    {
+        return _autoBalanceChooser.getSelected();
     }
 
     @Override
@@ -197,8 +227,9 @@ public class Dashboard extends SubsystemBase
 
         _wristAngle.setDouble(Double.parseDouble(String.format("%6.2f", Manipulator.getInstance().getWristAngle())));
         _twistAngle.setDouble(Double.parseDouble(String.format("%6.2f", Manipulator.getInstance().getTwistAngle())));
+        _pickupDisplaySpeed.setDouble(Double.parseDouble(String.format("%6.2f", Manipulator.getInstance().getIntakeSpeed())));
 
-        _hasTargetBox.setBoolean(Vision.getInstance().frontCamHasTargets()|| Vision.getInstance().rearCamHasTargets());
+        //_hasTargetBox.setBoolean(Vision.getInstance().getFrontResult().hasTargets() || Vision.getInstance().getRearResult().hasTargets());
 
         _heading.setDouble(Double.parseDouble(String.format("%6.2f", Drive.getInstance().getHeading())));
         _odometer.setString(String.format("%s", Drive.getInstance().getFieldPosition()));
@@ -208,6 +239,6 @@ public class Dashboard extends SubsystemBase
         _brAngle.setDouble(Double.parseDouble(String.format("%6.2f", Drive.getInstance().getSwerveModule(Constants.Drive.BR_INDEX).getHeading())));
         _blAngle.setDouble(Double.parseDouble(String.format("%6.2f", Drive.getInstance().getSwerveModule(Constants.Drive.BL_INDEX).getHeading())));
         
-        _hasGamePiece.setBoolean(Manipulator.getInstance().isIntakeSensorActive());
+        _hasGamePiece.setBoolean(Manipulator.getInstance().hasGamePiece());
     }
 }

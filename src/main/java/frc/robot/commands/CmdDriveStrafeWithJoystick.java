@@ -1,16 +1,23 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.Drive;
 
-public class CmdDriveWithJoystick extends CommandBase
+public class CmdDriveStrafeWithJoystick extends DriveCommand
 {
     private Drive _drive = Drive.getInstance(); 
 
-    public CmdDriveWithJoystick()
+    public CmdDriveStrafeWithJoystick()
     {
+        _rotatePID.setInputRange(0.0, 180.0);
+
         addRequirements(_drive);
+    }
+
+    @Override
+    public void initialize() 
+    {
+        _rotatePID.setSetpoint(_drive.getAllianceAngle(), _drive.getHeading(), true);
     }
 
     @Override
@@ -18,20 +25,13 @@ public class CmdDriveWithJoystick extends CommandBase
     {
         // get our inputs from the joystick
         double x = RobotContainer.getInstance().getDriveJoyX();
-        double y = RobotContainer.getInstance().getDriveJoyY();
-        double r = RobotContainer.getInstance().getDriveJoyZ();
+        double y = 0.0;
+        double r = _rotatePID.calculate(_drive.getHeading());
 
-        boolean robotCentric =  RobotContainer.getInstance().driveIsRobotCentric();
         
         // actually drive the robot
-        if (robotCentric)
-        {
-            _drive.chassisDrive(y, x, r);
-        }
-        else
-        {
-            _drive.driverDrive(x, y, r);
-        }
+        
+        _drive.driverDrive(x, y, r);
     }
 
     @Override

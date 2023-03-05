@@ -7,11 +7,13 @@ public class CmdDriveToPosition extends DriveCommand
 {
     private Vector _targetPosition;
     private double _targetHeading;
+    private double _maxSpeed;
 
-    public CmdDriveToPosition(Vector targetPosition, double targetHeading) 
+    public CmdDriveToPosition(Vector targetPosition, double targetHeading, double maxSpeed) 
     {
         _targetPosition = targetPosition;
         _targetHeading = targetHeading;
+        _maxSpeed = maxSpeed;
 
         addRequirements(_drive);
     }
@@ -24,6 +26,9 @@ public class CmdDriveToPosition extends DriveCommand
         _xPID.setSetpoint(_targetPosition.getX(), fieldPosition.getX(), true);
         _yPID.setSetpoint(_targetPosition.getY(), fieldPosition.getY(), true);
         _rotatePID.setSetpoint(   _targetHeading,  _drive.getHeading(), true);
+
+        _xPID.setOutputRange(-_maxSpeed, _maxSpeed);
+        _yPID.setOutputRange(-_maxSpeed, _maxSpeed);
 
         RobotLog.getInstance().log(String.format("Drive to position: Current position and heading: %s, %6.2f ; Target position and heading: %s, %6.2f", _drive.getFieldPosition().toString(), _drive.getHeading(), _targetPosition.toString(), _targetHeading));
     }

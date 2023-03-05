@@ -153,7 +153,7 @@ public class PIDControl
         if (_useRamp)
         {
             _rampNow = Math.min(_rampNow + _rampStep, 1.0);
-            _useRamp = (_rampNow < output) && (_rampNow < 1.0);
+            _useRamp = (_rampNow < Math.abs(output)) && (_rampNow < 1.0);
 
             output = limit(output, -_rampNow, _rampNow);
         }
@@ -289,6 +289,10 @@ public class PIDControl
     public void setContinuous(boolean continuous)
     {
         _continuous = continuous;
+    }
+    public double getSetpoint()
+    {
+        return _setpoint;
     }
 
     private double getAppropriateCoefficient(double error, double threshold, double kAbove, double kBelow)
