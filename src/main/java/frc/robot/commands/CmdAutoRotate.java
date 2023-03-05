@@ -4,11 +4,18 @@ import frc.robot.RobotContainer;
 
 public class CmdAutoRotate extends DriveCommand 
 {
-    private double          _desiredAngle;
+    private double  _desiredAngle;
+    private boolean _finishOnAlign;
 
-    public CmdAutoRotate(double desiredAngle) 
+    public CmdAutoRotate(double desiredAngle)
     {
-        _desiredAngle      = desiredAngle;
+        this(desiredAngle, true);
+    }
+
+    public CmdAutoRotate(double desiredAngle, boolean finishOnAlign) 
+    {
+        _desiredAngle  = desiredAngle;
+        _finishOnAlign = finishOnAlign;
 
         _rotatePID.setInputRange(0.0, 180.0);
 
@@ -49,6 +56,6 @@ public class CmdAutoRotate extends DriveCommand
     @Override
     public boolean isFinished() 
     {
-        return _rotatePID.atSetpoint();
+        return _rotatePID.atSetpoint() && _finishOnAlign;
     }
 }

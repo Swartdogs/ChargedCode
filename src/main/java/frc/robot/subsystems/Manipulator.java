@@ -42,7 +42,8 @@ public class Manipulator extends SubsystemBase
     {
         On,
         Off,
-        Reverse
+        Reverse,
+        ConeEject
     }
     
     //Wrist Controls
@@ -182,20 +183,22 @@ public class Manipulator extends SubsystemBase
 
     public void enableIntake()
     {
-        _intakeMotor.setVoltage(_intakeSpeed * Constants.MOTOR_VOLTAGE);
         _intakeState = IntakeState.On;
     }
 
     public void disableIntake()
     {
-        _intakeMotor.setVoltage(0);
         _intakeState = IntakeState.Off;
     }
 
     public void reverseIntake()
     {
-        _intakeMotor.setVoltage(-_placeSpeed * Constants.MOTOR_VOLTAGE);
         _intakeState = IntakeState.Reverse;
+    }
+
+    public void setIntakeToConeEjectSpeed()
+    {
+        _intakeState = IntakeState.ConeEject;
     }
     
     public double getIntakeSpeed()
@@ -214,6 +217,10 @@ public class Manipulator extends SubsystemBase
             
             case Reverse:    
                 speed = -_placeSpeed;
+                break;
+
+            case ConeEject:
+                speed = -Constants.Manipulator.CONE_EJECT_SPEED;
                 break;
         }        
         
@@ -247,7 +254,7 @@ public class Manipulator extends SubsystemBase
     
     public boolean hasGamePiece()
     {
-    return !_intakeSensor.get();    
+        return !_intakeSensor.get();    
     }
     
     public boolean wristAtAngle()
@@ -329,6 +336,37 @@ public class Manipulator extends SubsystemBase
     public void periodic()
     {
         _wristMotor.setInverted(true);
+        _intakeMotor.setInverted(true);
+
+        switch (_intakeState)
+        {
+            case On:
+                _intakeMotor.setVoltage(_intakeSpeed * Constants.MOTOR_VOLTAGE);
+                break;
+
+            case Reverse:
+                _intakeMotor.setVoltage(-_placeSpeed * Constants.MOTOR_VOLTAGE);
+                break;
+
+            case Off:
+                if (hasGamePiece())
+                {
+                    _intakeMotor.setVoltage(Constants.Manipulator.INTAKE_HOLD_SPEED * Constants.MOTOR_VOLTAGE);
+                }
+                else
+                {
+                    _intakeMotor.setVoltage(0);
+                }
+                break;
+
+            case ConeEject:
+                _intakeMotor.setVoltage(-Constants.Manipulator.CONE_EJECT_SPEED * Constants.MOTOR_VOLTAGE);
+                break;
+
+            default:
+                _intakeMotor.setVoltage(0);
+                break;
+        }
 
         _twistMotor.setVoltage(_twistPID.calculate(getTwistAngle()) * Constants.MOTOR_VOLTAGE);
         

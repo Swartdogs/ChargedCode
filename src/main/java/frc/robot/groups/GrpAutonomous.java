@@ -94,7 +94,7 @@ public class GrpAutonomous extends SequentialCommandGroup
             // Place the first game piece if necessary
             new SequentialCommandGroup(
                 new GrpSetArmPosition(ArmPosition.High, () -> ArmSide.Front, () -> HandMode.Cube),
-                new GrpPlaceGamePiece()
+                new GrpPlaceGamePiece(() -> HandMode.Cube)
             ).unless(() -> _numGamePieces == 0),
 
             // Balance on the charge station OR get the mobility bonus

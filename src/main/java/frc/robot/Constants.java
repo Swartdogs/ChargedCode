@@ -173,6 +173,9 @@ public final class Constants
         public static final double  INTAKE_STOW_DELAY               = 0.50;
 
         public static final double  WRIST_JOYSTICK_RATE             = 60.0 / Constants.LOOPS_PER_SECOND; // Degrees per second
+
+        public static final double  INTAKE_HOLD_SPEED               = 0.15;
+        public static final double  CONE_EJECT_SPEED                = 0.30;
     }
 
     public static class Lookups
@@ -181,18 +184,18 @@ public final class Constants
         public static final ArmData LOW_FRONT_CUBE        = new ArmData(-105,        0,          90,    -15);
         public static final ArmData LOW_BACK_CONE         = new ArmData( 105,        0,         -90,     15);
         public static final ArmData LOW_BACK_CUBE         = new ArmData( 105,        0,         -90,     15);
-        public static final ArmData MID_FRONT_CONE        = new ArmData( -60,        0,          90,     -0);
+        public static final ArmData MID_FRONT_CONE        = new ArmData( -54,      6.5,          90,     -0);
         public static final ArmData MID_FRONT_CUBE        = new ArmData( -60,        0,          90,     40);
-        public static final ArmData MID_BACK_CONE         = new ArmData(  60,        0,         -90,      0);
+        public static final ArmData MID_BACK_CONE         = new ArmData(  54,      6.5,         -90,      0);
         public static final ArmData MID_BACK_CUBE         = new ArmData(  60,        0,         -90,    -40);
         public static final ArmData HIGH_FRONT_CONE       = new ArmData( -52,       26,          90,      5);
         public static final ArmData HIGH_FRONT_CUBE       = new ArmData( -55,       18,          90,     35);
         public static final ArmData HIGH_BACK_CONE        = new ArmData(  52,       26,         -90,     -5);
         public static final ArmData HIGH_BACK_CUBE        = new ArmData(  55,       18,         -90,    -35);
-        public static final ArmData SUBSTATION_FRONT_CONE = new ArmData(  35,        0,         -90,    -45);
-        public static final ArmData SUBSTATION_FRONT_CUBE = new ArmData(  35,        0,         -90,    -45);
-        public static final ArmData SUBSTATION_BACK_CONE  = new ArmData( -35,        0,          90,     45);
-        public static final ArmData SUBSTATION_BACK_CUBE  = new ArmData( -35,        0,          90,     45);
+        public static final ArmData SUBSTATION_FRONT_CONE = new ArmData(  41,        0,         -90,    -45);
+        public static final ArmData SUBSTATION_FRONT_CUBE = new ArmData(  41,        0,         -90,    -45);
+        public static final ArmData SUBSTATION_BACK_CONE  = new ArmData( -41,        0,          90,     45);
+        public static final ArmData SUBSTATION_BACK_CUBE  = new ArmData( -41,        0,          90,     45);
         public static final ArmData GROUND_FRONT_CONE     = new ArmData( 110,        0,         -90,     15);
         public static final ArmData GROUND_FRONT_CUBE     = new ArmData(  90,        0,           0,    -45);
         public static final ArmData GROUND_BACK_CONE      = new ArmData(-110,        0,          90,    -15);

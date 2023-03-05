@@ -105,7 +105,7 @@ public class RobotContainer
     private void configureBindings() 
     {
         CmdDriveStrafeWithJoystick driveStrafeWithJoystick = new CmdDriveStrafeWithJoystick();
-        CmdAutoRotate              driveAutoRotate90       = new CmdAutoRotate(90);
+        CmdAutoRotate              driveAutoRotate90       = new CmdAutoRotate(90, false);
         CmdDriveRotateModules      driveRotateModules      = new CmdDriveRotateModules(90);
 
         CmdArmModifyShoulderAngle     operatorShoulderAdjustment   = new CmdArmModifyShoulderAngle();
@@ -127,7 +127,6 @@ public class RobotContainer
         Controller.DriveJoystick.button( 3).onTrue(driveStrafeWithJoystick);
         Controller.DriveJoystick.button( 3).onFalse(Commands.runOnce(driveStrafeWithJoystick::cancel));
         Controller.DriveJoystick.button( 4).onTrue(driveAutoRotate90);
-        Controller.DriveJoystick.button( 4).onFalse(Commands.runOnce(driveAutoRotate90::cancel));
         Controller.DriveJoystick.button( 7).onTrue(driveRotateModules);
         Controller.DriveJoystick.button( 7).onFalse(Commands.runOnce(driveRotateModules::cancel));
         Controller.DriveJoystick.button( 8).onTrue(driveAutoBalance);
