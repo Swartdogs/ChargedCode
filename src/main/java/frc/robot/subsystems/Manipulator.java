@@ -120,7 +120,7 @@ public class Manipulator extends SubsystemBase
 
         _wristPID.setCoefficient(Coefficient.P, 0, 0.025, 0);
         _wristPID.setCoefficient(Coefficient.I, 0, 0,    0);
-        _wristPID.setCoefficient(Coefficient.D, 0, 0.05, 0);
+        _wristPID.setCoefficient(Coefficient.D, 0, 0.001, 0);
         _wristPID.setInputRange(Constants.Manipulator.WRIST_MIN_ANGLE, Constants.Manipulator.WRIST_MAX_ANGLE);
         _wristPID.setOutputRange(-1, 1);
         _wristPID.setSetpointDeadband(5);
@@ -128,7 +128,7 @@ public class Manipulator extends SubsystemBase
 
         _twistPID.setCoefficient(Coefficient.P, 0, 0.015, 0);
         _twistPID.setCoefficient(Coefficient.I, 0, 0,     0);
-        _twistPID.setCoefficient(Coefficient.D, 0, 0.03,  0);
+        _twistPID.setCoefficient(Coefficient.D, 0, 0.0006,  0);
         _twistPID.setInputRange(Constants.Manipulator.TWIST_MIN_ROTATION, Constants.Manipulator.TWIST_MAX_ROTATION);
         _twistPID.setOutputRange(-0.25, 0.25);
         _twistPID.setSetpointDeadband(8);

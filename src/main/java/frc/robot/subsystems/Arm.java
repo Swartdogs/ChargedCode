@@ -122,7 +122,7 @@ public class Arm extends SubsystemBase
 
         _shoulderPid.setCoefficient(Coefficient.P, 0, 0.0175, 0);
         _shoulderPid.setCoefficient(Coefficient.I, 0, 0, 0);
-        _shoulderPid.setCoefficient(Coefficient.D, 0, 0.05, 0);
+        _shoulderPid.setCoefficient(Coefficient.D, 0, 0.001, 0);
         _shoulderPid.setInputRange(Constants.Arm.SHOULDER_MIN_ANGLE, Constants.Arm.SHOULDER_MAX_ANGLE);
         _shoulderPid.setOutputRange(-0.62, 0.62);
         _shoulderPid.setOutputRamp(0.05, 0.02);
