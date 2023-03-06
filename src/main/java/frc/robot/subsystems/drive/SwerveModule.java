@@ -82,7 +82,7 @@ public class SwerveModule extends Vector
 
         double currentHeading = getHeading();
 
-        _rotatePID.setSetpoint(_rotateSetpoint, currentHeading);
+        _rotatePID.setSetpoint(_rotateSetpoint);
 
         // calling setSetpoint() then calculate() causes previous error to always be the same as the current error, meaning the Derivative coefficient will do nothing
         double rotateSpeed = _rotatePID.calculate(currentHeading);

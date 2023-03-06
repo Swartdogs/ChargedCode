@@ -25,7 +25,7 @@ public class CmdAutoRotate extends DriveCommand
     @Override
     public void initialize() 
     {
-        _rotatePID.setSetpoint(_desiredAngle, _drive.getHeading(), true);
+        _rotatePID.setSetpoint(_desiredAngle, true);
     }
 
     @Override

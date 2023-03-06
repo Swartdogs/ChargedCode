@@ -17,8 +17,9 @@ public class PIDControl
         public double kNow;
     }
 
+    private double _period;
+
     private double  _deadband;
-    private boolean _errorIsPositive;
     private double  _errorPrev;
     private double  _errorTotal;
     private double  _inputMax;
@@ -30,7 +31,6 @@ public class PIDControl
     private double  _rampNow;
     private double  _rampStep;
     private double  _setpoint;
-    private boolean _useRamp;
     private boolean _continuous;
 
     private CoefficientValues _kP;
@@ -39,8 +39,10 @@ public class PIDControl
 
     private IFeedForward _feedForward;
 
-    public PIDControl()
+    public PIDControl(double period)
     {
+        _period = period;
+
         _kP                = new CoefficientValues();
         _kP.threshold      = 0;
         _kP.kAbove         = 0;
@@ -62,7 +64,6 @@ public class PIDControl
         _feedForward       = null;
 
         _deadband          =  0.0;
-        _errorIsPositive   =  false;
         _errorPrev         =  0.0;
         _errorTotal        =  0.0;
         _inputMax          =  0.0;
@@ -74,9 +75,13 @@ public class PIDControl
         _rampNow           =  0.0;
         _rampStep          =  0.0;
         _setpoint          =  0.0;
-        _useRamp           =  false;
 
         _continuous =  false;
+    }
+
+    public PIDControl()
+    {
+        this(0.02);
     }
 
     public boolean atSetpoint()
@@ -109,7 +114,7 @@ public class PIDControl
             }
         }
 
-        double errorDiff = error - _errorPrev;
+        double errorDiff = (error - _errorPrev) / _period;
 
         if (_kP.threshold > 0.0)
         {
@@ -133,7 +138,8 @@ public class PIDControl
 
         else
         {
-            _errorTotal = limit(_errorTotal + error, _outputMin / _kI.kNow, _outputMax / _kI.kNow);
+            _errorTotal += error * _period;
+            _errorTotal = limit(_errorTotal, _outputMin / _kI.kNow, _outputMax / _kI.kNow);
         }
 
         double output = (_kP.kNow * error) +
@@ -145,17 +151,18 @@ public class PIDControl
             System.out.println(String.format("P: %4.2f, I: %4.2f, D: %4.2f", _kP.kNow * error, _kI.kNow * _errorTotal, _kD.kNow * errorDiff));
         }
 
+        // apply feedforward
         if (_feedForward != null)
         {
             output += _feedForward.calculate(_setpoint);
         }
 
-        if (_useRamp)
+        // apply ramp
+        if (_rampStep > 0.0)
         {
-            _rampNow = Math.min(_rampNow + _rampStep, 1.0);
-            _useRamp = (_rampNow < Math.abs(output)) && (_rampNow < 1.0);
-
-            output = limit(output, -_rampNow, _rampNow);
+            _rampNow = Math.min(_rampNow + _rampStep, Math.abs(output));  // increase the ramp unless it's above the output
+            _rampNow = Math.max(_rampNow, _rampMin);                      // keep the ramp at the minimum if it's too low
+            output = limit(output, -_rampNow, _rampNow);                  // actually applies the ramp
         }
 
         if (output > _outputMax)
@@ -172,7 +179,7 @@ public class PIDControl
         {
             if (Math.abs(output) < _outputLowErrorMin)
             {
-                output = _errorIsPositive ? _outputLowErrorMin : -_outputLowErrorMin;
+                output = error >= 0.0 ? _outputLowErrorMin : -_outputLowErrorMin;
             }
         }
 
@@ -226,6 +233,11 @@ public class PIDControl
         }
     }
 
+    public void setCoefficient(Coefficient kWhich, double kAbove)
+    {
+        setCoefficient(kWhich, 0.0, kAbove, 0.0);
+    }
+
     public void setInputRange(double inputMinimum, double inputMaximum)
     {
         _inputMin = inputMinimum;
@@ -250,12 +262,12 @@ public class PIDControl
         _rampStep = Math.abs(rampStep);
     }
 
-    public void setSetpoint(double setpoint, double inputNow)
+    public void setSetpoint(double setpoint)
     {
-        setSetpoint(setpoint, inputNow, true);
+        setSetpoint(setpoint, true);
     }
 
-    public void setSetpoint(double setpoint, double inputNow, boolean resetPID)
+    public void setSetpoint(double setpoint, boolean resetPID)
     {
         if (_inputMax > _inputMin)
         {
@@ -270,14 +282,10 @@ public class PIDControl
         }
 
         _setpoint = setpoint;
-        _errorPrev = _setpoint - inputNow;
-        _errorIsPositive = _errorPrev >= 0.0;
 
         if (resetPID)
         {
-            _errorTotal = 0.0;
-            _rampNow = _rampMin;
-            _useRamp = _rampMin > 0.0;
+            reset();
         }
     }
 

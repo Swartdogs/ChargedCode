@@ -29,7 +29,7 @@ public class CmdDriveBalance extends CommandBase
     @Override
     public void initialize() 
     {
-        _pitchPID.setSetpoint(0, Drive.getInstance().getChassisPitch());
+        _pitchPID.setSetpoint(0);
         _timer = 0;
         Drive.getInstance().setBrakeMode(true);
     }

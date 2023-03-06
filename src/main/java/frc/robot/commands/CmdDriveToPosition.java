@@ -21,11 +21,9 @@ public class CmdDriveToPosition extends DriveCommand
     @Override
     public void initialize() 
     {
-        Vector fieldPosition = _drive.getFieldPosition();
-
-        _xPID.setSetpoint(_targetPosition.getX(), fieldPosition.getX(), true);
-        _yPID.setSetpoint(_targetPosition.getY(), fieldPosition.getY(), true);
-        _rotatePID.setSetpoint(   _targetHeading,  _drive.getHeading(), true);
+        _xPID.setSetpoint(_targetPosition.getX(), true);
+        _yPID.setSetpoint(_targetPosition.getY(), true);
+        _rotatePID.setSetpoint(   _targetHeading, true);
 
         _xPID.setOutputRange(-_maxSpeed, _maxSpeed);
         _yPID.setOutputRange(-_maxSpeed, _maxSpeed);

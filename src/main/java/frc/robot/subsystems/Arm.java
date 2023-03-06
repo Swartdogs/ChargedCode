@@ -128,7 +128,7 @@ public class Arm extends SubsystemBase
         _shoulderPid.setOutputRamp(0.05, 0.02);
         _shoulderPid.setSetpointDeadband(5);
         _shoulderPid.setFeedForward(setpoint -> -Constants.Arm.HORIZONTAL_STAYING_POWER * Math.sin(Math.toRadians(setpoint)));
-        _shoulderPid.setSetpoint(0, getShoulderAngle());
+        _shoulderPid.setSetpoint(0);
 
         _extensionPid.setCoefficient(Coefficient.P, 0, 0.4, 0);
         _extensionPid.setCoefficient(Coefficient.I, 0, 0, 0);
@@ -137,7 +137,7 @@ public class Arm extends SubsystemBase
         _extensionPid.setOutputRange(-0.25, 0.25);
         _extensionPid.setSetpointDeadband(2);
         _extensionPid.setFeedForward(setpoint -> Math.cos(Math.toRadians(getShoulderAngle())) * Constants.Arm.EXTENSION_STAYING_POWER);
-        _extensionPid.setSetpoint(0, getExtensionPosition());
+        _extensionPid.setSetpoint(0);
         _extensionEncoder.setPosition(Constants.Arm.ARM_MAX_EXTENSION / Constants.Arm.EXTENSION_CONVERSION_FACTOR);
 
         if (RobotBase.isSimulation())
@@ -171,17 +171,17 @@ public class Arm extends SubsystemBase
 
     public void setExtensionMotorPosition(double position)
     {
-       _extensionPid.setSetpoint(position, getExtensionPosition());
+       _extensionPid.setSetpoint(position);
     }
   
     public void modifyExtensionMotorPosition(double modification)
     {
-        _extensionPid.setSetpoint(_extensionPid.getSetpoint()+modification, getExtensionPosition());
+        _extensionPid.setSetpoint(_extensionPid.getSetpoint() + modification);
     }
 
     public void setShoulderAngle(double angle)
     {
-        _shoulderPid.setSetpoint(angle, getShoulderAngle(), true);
+        _shoulderPid.setSetpoint(angle, true);
     }
 
     public void modifyShoulderAngle(double modification)
@@ -190,11 +190,11 @@ public class Arm extends SubsystemBase
 
         if (Math.signum(current + modification) != Math.signum(current))
         {
-            _shoulderPid.setSetpoint(0, getShoulderAngle());
+            _shoulderPid.setSetpoint(0);
         }
         else
         {
-            _shoulderPid.setSetpoint(current + modification, getShoulderAngle());
+            _shoulderPid.setSetpoint(current + modification);
         }
     }
 

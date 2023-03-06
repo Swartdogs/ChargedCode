@@ -124,7 +124,7 @@ public class Manipulator extends SubsystemBase
         _wristPID.setInputRange(Constants.Manipulator.WRIST_MIN_ANGLE, Constants.Manipulator.WRIST_MAX_ANGLE);
         _wristPID.setOutputRange(-1, 1);
         _wristPID.setSetpointDeadband(5);
-        _wristPID.setSetpoint(0, getWristAngle());
+        _wristPID.setSetpoint(0);
 
         _twistPID.setCoefficient(Coefficient.P, 0, 0.015, 0);
         _twistPID.setCoefficient(Coefficient.I, 0, 0,     0);
@@ -132,7 +132,7 @@ public class Manipulator extends SubsystemBase
         _twistPID.setInputRange(Constants.Manipulator.TWIST_MIN_ROTATION, Constants.Manipulator.TWIST_MAX_ROTATION);
         _twistPID.setOutputRange(-0.25, 0.25);
         _twistPID.setSetpointDeadband(8);
-        _twistPID.setSetpoint(90, getTwistAngle());
+        _twistPID.setSetpoint(90);
 
         if (RobotBase.isSimulation())
         {
@@ -160,7 +160,7 @@ public class Manipulator extends SubsystemBase
 
     public void setWristAngle(double position)
     {
-        _wristPID.setSetpoint(position, getWristAngle());
+        _wristPID.setSetpoint(position);
     }
 
     public void setWristSpeed(double speed)
@@ -178,7 +178,7 @@ public class Manipulator extends SubsystemBase
 
     public void modifyWristAngle(double modification)
     {
-        _wristPID.setSetpoint(_wristPID.getSetpoint() + modification, getWristAngle());
+        _wristPID.setSetpoint(_wristPID.getSetpoint() + modification);
     }
 
     public void enableIntake()
@@ -229,7 +229,7 @@ public class Manipulator extends SubsystemBase
         
     public void setTwistAngle(double position)
     {
-        _twistPID.setSetpoint(position, getTwistAngle());
+        _twistPID.setSetpoint(position);
     }    
     
     public double getTwistAngle()
