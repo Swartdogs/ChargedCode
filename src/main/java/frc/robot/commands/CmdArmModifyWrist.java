@@ -9,20 +9,20 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Manipulator;
 
-public class CmdManipulatorModifyWrist extends CommandBase 
+public class CmdArmModifyWrist extends CommandBase 
 {
     private DoubleSupplier _modification;
     private boolean        _instant;
     private boolean        _overridden;
 
-    public CmdManipulatorModifyWrist(double modification) 
+    public CmdArmModifyWrist(double modification) 
     {
         _modification = () -> modification;
         _instant = true;
         _overridden = false;
     }
 
-    public CmdManipulatorModifyWrist() 
+    public CmdArmModifyWrist() 
     {
         _modification = () -> -RobotContainer.getInstance().getOperatorY() * Constants.Manipulator.WRIST_JOYSTICK_RATE * Math.signum(Arm.getInstance().getShoulderAngleSetpoint());
         _instant = false;
@@ -32,7 +32,7 @@ public class CmdManipulatorModifyWrist extends CommandBase
     @Override
     public void execute() 
     {
-        if (Manipulator.getInstance().isWristOverridden())
+        if (Arm.getInstance().isWristOverridden())
         {
             if (!_instant && !_overridden)
             {
@@ -51,20 +51,20 @@ public class CmdManipulatorModifyWrist extends CommandBase
                 _overridden = true;
             }
 
-            Manipulator.getInstance().setWristSpeed(_modification.getAsDouble());
+            Arm.getInstance().setWristSpeed(_modification.getAsDouble());
         }
         else
         {
-            Manipulator.getInstance().modifyWristAngle(_modification.getAsDouble());
+            Arm.getInstance().modifyWristAngle(_modification.getAsDouble());
         }
     }
 
     @Override
     public void end(boolean interrupted)
     {
-        if (Manipulator.getInstance().isWristOverridden())
+        if (Arm.getInstance().isWristOverridden())
         {
-            Manipulator.getInstance().setWristSpeed(0);
+            Arm.getInstance().setWristSpeed(0);
         }
     }
 

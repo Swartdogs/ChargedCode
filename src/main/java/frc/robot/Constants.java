@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import frc.robot.subsystems.Arm.ArmPosition;
 import frc.robot.subsystems.Arm.ArmSide;
-import frc.robot.subsystems.Manipulator.HandMode;
+import frc.robot.subsystems.Arm.HandMode;
 import frc.robot.subsystems.drive.Vector;
 
 public final class Constants 
