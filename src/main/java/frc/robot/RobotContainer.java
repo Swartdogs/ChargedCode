@@ -27,6 +27,7 @@ import frc.robot.subsystems.Arm.ArmPosition;
 import frc.robot.subsystems.Arm.ArmSide;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Dashboard;
+import frc.robot.subsystems.Led;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.RobotLog;
 import frc.robot.subsystems.Arm.HandMode;
@@ -89,6 +90,7 @@ public class RobotContainer
         Arm.getInstance();
         Manipulator.getInstance();
         Dashboard.getInstance();
+        Led.getInstance();
 
         _buttonBoxHandmodeSwitch = new Trigger (()-> Controller.ButtonBox.joystick().getRawAxis(0) < -0.5);
         _buttonBoxArmSideSwitch  = new Trigger(()-> Controller.ButtonBox.joystick().getRawAxis(1) < -0.5);
