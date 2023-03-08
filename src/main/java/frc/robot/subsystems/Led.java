@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Arm.ArmSide;
-import frc.robot.subsystems.Manipulator.HandMode;
+import frc.robot.subsystems.Arm.HandMode;
 
 public class Led extends SubsystemBase 
 {
