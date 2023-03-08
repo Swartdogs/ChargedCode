@@ -79,7 +79,11 @@ public class SwerveModule extends Vector
     {
         _driveSpeedSetpoint  = MathUtil.clamp(moduleCommand.getMagnitude(), -1, 1);
         _rotateSetpoint = moduleCommand.getHeading();
+    }
 
+    // actually run the PIDs (call in Drive periodic)
+    public void run()
+    {
         double currentHeading = getHeading();
 
         _rotatePID.setSetpoint(_rotateSetpoint);

@@ -162,11 +162,11 @@ public class Dashboard extends SubsystemBase
         initializeSetting("Max Extend", Constants.Arm.ARM_MAX_EXTENSION, armMaxExtension, Arm.getInstance()::setMaxArmExtension);
         initializeSetting("Arm Min", Constants.Arm.SHOULDER_MIN_ANGLE, armMinAngle, Arm.getInstance()::setMinShoulderAngle);
         initializeSetting("Arm Max", Constants.Arm.SHOULDER_MAX_ANGLE, armMaxAngle, Arm.getInstance()::setMaxShoulderAngle);
+        initializeSetting("Wrist Min", Constants.Arm.WRIST_MIN_ANGLE, wristMinAngle, Arm.getInstance()::setWristMinAngle);
+        initializeSetting("Wrist Max", Constants.Arm.WRIST_MAX_ANGLE, wristMaxAngle, Arm.getInstance()::setWristMaxAngle);
+        initializeSetting("Twist Min", Constants.Arm.TWIST_MIN_ROTATION, twistMinRotation, Arm.getInstance()::setTwistMinRotation);
+        initializeSetting("Twist Max", Constants.Arm.TWIST_MAX_ROTATION, twistMaxRotation, Arm.getInstance()::setTwistMaxRotation);
 
-        initializeSetting("Wrist Min", Constants.Manipulator.WRIST_MIN_ANGLE, wristMinAngle, Manipulator.getInstance()::setWristMinAngle);
-        initializeSetting("Wrist Max", Constants.Manipulator.WRIST_MAX_ANGLE, wristMaxAngle, Manipulator.getInstance()::setWristMaxAngle);
-        initializeSetting("Twist Min", Constants.Manipulator.TWIST_MIN_ROTATION, twistMinRotation, Manipulator.getInstance()::setTwistMinRotation);
-        initializeSetting("Twist Max", Constants.Manipulator.TWIST_MAX_ROTATION, twistMaxRotation, Manipulator.getInstance()::setTwistMaxRotation);
         initializeSetting("Eject Time", Constants.Manipulator.EJECT_TIME, ejectTime, Manipulator.getInstance()::setEjectTime);
         initializeSetting("Intake Speed", Constants.Manipulator.INTAKE_SPEED, intakeSpeed, Manipulator.getInstance()::setIntakeSpeed);
         initializeSetting("Place Speed", Constants.Manipulator.PLACE_SPEED, placeSpeed, Manipulator.getInstance()::setPlaceSpeed);
@@ -224,9 +224,9 @@ public class Dashboard extends SubsystemBase
 
         _shoulderAngle.setDouble(Double.parseDouble(String.format("%6.2f", Arm.getInstance().getShoulderAngle())));
         _extensionDistance.setDouble(Double.parseDouble(String.format("%6.2f", Arm.getInstance().getExtensionPosition())));
-
-        _wristAngle.setDouble(Double.parseDouble(String.format("%6.2f", Manipulator.getInstance().getWristAngle())));
-        _twistAngle.setDouble(Double.parseDouble(String.format("%6.2f", Manipulator.getInstance().getTwistAngle())));
+        _wristAngle.setDouble(Double.parseDouble(String.format("%6.2f", Arm.getInstance().getWristAngle())));
+        _twistAngle.setDouble(Double.parseDouble(String.format("%6.2f", Arm.getInstance().getTwistAngle())));
+        
         _pickupDisplaySpeed.setDouble(Double.parseDouble(String.format("%6.2f", Manipulator.getInstance().getIntakeSpeed())));
 
         //_hasTargetBox.setBoolean(Vision.getInstance().getFrontResult().hasTargets() || Vision.getInstance().getRearResult().hasTargets());

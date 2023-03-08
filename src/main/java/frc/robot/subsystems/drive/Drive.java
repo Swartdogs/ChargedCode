@@ -228,6 +228,12 @@ public class Drive extends SubsystemBase
     public void periodic()
     {
         updateOdometry();
+        
+        // run each swerve pid
+        for (int i = 0; i < _swerveModules.length; i++)
+        {
+            _swerveModules[i].run();
+        }
 
         //System.out.println(String.format("Yaw: %6.2f, Pitch: %6.2f, Roll: %6.2f; Velocity: %s", _gyro.getYaw(), _gyro.getPitch(), _gyro.getRoll(), getChassisVelocity()));
         //System.out.println(String.format("Gyro: %6.2f, Field Position: %s, Chassis Velocity: %s", getHeading(), getFieldPosition(), getChassisVelocity()));
