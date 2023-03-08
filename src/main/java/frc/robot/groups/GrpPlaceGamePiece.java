@@ -9,10 +9,9 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.CmdArmModifyExtensionPosition;
 import frc.robot.commands.CmdArmModifyShoulderAngle;
 import frc.robot.commands.CmdManipulatorPlaceGamePiece;
-import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmPosition;
 import frc.robot.subsystems.Manipulator;
-import frc.robot.subsystems.Manipulator.HandMode;
+import frc.robot.subsystems.Arm.HandMode;
 
 public class GrpPlaceGamePiece extends SequentialCommandGroup
 {

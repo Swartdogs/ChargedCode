@@ -17,7 +17,7 @@ import frc.robot.commands.CmdDriveResetOdometer;
 import frc.robot.commands.CmdDriveRotateModules;
 import frc.robot.commands.CmdDriveStrafeWithJoystick;
 import frc.robot.commands.CmdDriveWithJoystick;
-import frc.robot.commands.CmdManipulatorModifyWrist;
+import frc.robot.commands.CmdArmModifyWrist;
 import frc.robot.groups.GrpManipulatorHandFlip;
 import frc.robot.groups.GrpPlaceGamePiece;
 import frc.robot.groups.GrpAutonomous;
@@ -29,7 +29,7 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Dashboard;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.RobotLog;
-import frc.robot.subsystems.Manipulator.HandMode;
+import frc.robot.subsystems.Arm.HandMode;
 import frc.robot.subsystems.drive.Drive;
 
 public class RobotContainer 
@@ -110,7 +110,7 @@ public class RobotContainer
 
         CmdArmModifyShoulderAngle     operatorShoulderAdjustment   = new CmdArmModifyShoulderAngle();
         CmdArmModifyExtensionPosition operatorExtenstionAdjustment = new CmdArmModifyExtensionPosition();
-        CmdManipulatorModifyWrist     operatorWristAdjustment      = new CmdManipulatorModifyWrist();
+        CmdArmModifyWrist     operatorWristAdjustment      = new CmdArmModifyWrist();
 
         Command driveAutoBalance  = new CmdDriveBalance().andThen(Commands.run(() -> Drive.getInstance().rotateModules(90)));
         Command intakeAdjustment  = Commands.startEnd(Manipulator.getInstance()::enableIntake, Manipulator.getInstance()::disableIntake);
@@ -140,8 +140,8 @@ public class RobotContainer
         Controller.OperatorJoystick.button( 3).onFalse(Commands.runOnce(operatorExtenstionAdjustment::cancel));
         Controller.OperatorJoystick.button( 4).onTrue(operatorWristAdjustment);
         Controller.OperatorJoystick.button( 4).onFalse(Commands.runOnce(operatorWristAdjustment::cancel));
-        Controller.OperatorJoystick.button(11).toggleOnTrue(Manipulator.getInstance().printWristHealthCommand());
-        Controller.OperatorJoystick.button(12).onTrue(Commands.runOnce(Manipulator.getInstance()::overrideWrist));
+        Controller.OperatorJoystick.button(11).toggleOnTrue(Arm.getInstance().printWristHealthCommand());
+        Controller.OperatorJoystick.button(12).onTrue(Commands.runOnce(Arm.getInstance()::overrideWrist));
         
         Controller.ButtonBox.button( 1).onTrue(new GrpPlaceGamePiece());
         Controller.ButtonBox.button( 2).onTrue(intakeAdjustment);

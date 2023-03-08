@@ -17,7 +17,7 @@ import frc.robot.commands.CmdManipulatorSetWristAngle;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmPosition;
 import frc.robot.subsystems.Arm.ArmSide;
-import frc.robot.subsystems.Manipulator.HandMode;
+import frc.robot.subsystems.Arm.HandMode;
 
 public class GrpSetArmPosition extends SequentialCommandGroup 
 {
@@ -41,7 +41,7 @@ public class GrpSetArmPosition extends SequentialCommandGroup
                 Arm.getInstance().setArmPosition(position);
                 if(position == ArmPosition.Stow)
                 {
-                    Manipulator.getInstance().setIsFlipped(false);
+                    Arm.getInstance().setIsFlipped(false);
                 }
             }),
 
