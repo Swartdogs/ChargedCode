@@ -47,7 +47,7 @@ public class Led extends SubsystemBase
         {
             for (int i = 0; i < _ledBuffer.getLength(); i++)
             {
-                if ((i < 13 && armSide == ArmSide.Front) || (i > 13 && armSide == ArmSide.Back))
+                if ((i < 14 && armSide == ArmSide.Front) || (i > 14 && armSide == ArmSide.Back))
                 {
                     if (handMode == HandMode.Cone)
                     {
