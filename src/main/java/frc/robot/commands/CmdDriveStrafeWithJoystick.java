@@ -17,7 +17,7 @@ public class CmdDriveStrafeWithJoystick extends DriveCommand
     @Override
     public void initialize() 
     {
-        _rotatePID.setSetpoint(_drive.getAllianceAngle(), _drive.getHeading(), true);
+        _rotatePID.setSetpoint(_drive.getAllianceAngle(), true);
     }
 
     @Override

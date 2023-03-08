@@ -162,11 +162,11 @@ public class Dashboard extends SubsystemBase
         initializeSetting("Max Extend", Constants.Arm.ARM_MAX_EXTENSION, armMaxExtension, Arm.getInstance()::setMaxArmExtension);
         initializeSetting("Arm Min", Constants.Arm.SHOULDER_MIN_ANGLE, armMinAngle, Arm.getInstance()::setMinShoulderAngle);
         initializeSetting("Arm Max", Constants.Arm.SHOULDER_MAX_ANGLE, armMaxAngle, Arm.getInstance()::setMaxShoulderAngle);
+        initializeSetting("Wrist Min", Constants.Arm.WRIST_MIN_ANGLE, wristMinAngle, Arm.getInstance()::setWristMinAngle);
+        initializeSetting("Wrist Max", Constants.Arm.WRIST_MAX_ANGLE, wristMaxAngle, Arm.getInstance()::setWristMaxAngle);
+        initializeSetting("Twist Min", Constants.Arm.TWIST_MIN_ROTATION, twistMinRotation, Arm.getInstance()::setTwistMinRotation);
+        initializeSetting("Twist Max", Constants.Arm.TWIST_MAX_ROTATION, twistMaxRotation, Arm.getInstance()::setTwistMaxRotation);
 
-        initializeSetting("Wrist Min", Constants.Manipulator.WRIST_MIN_ANGLE, wristMinAngle, Arm.getInstance()::setWristMinAngle);
-        initializeSetting("Wrist Max", Constants.Manipulator.WRIST_MAX_ANGLE, wristMaxAngle, Arm.getInstance()::setWristMaxAngle);
-        initializeSetting("Twist Min", Constants.Manipulator.TWIST_MIN_ROTATION, twistMinRotation, Arm.getInstance()::setTwistMinRotation);
-        initializeSetting("Twist Max", Constants.Manipulator.TWIST_MAX_ROTATION, twistMaxRotation, Arm.getInstance()::setTwistMaxRotation);
         initializeSetting("Eject Time", Constants.Manipulator.EJECT_TIME, ejectTime, Manipulator.getInstance()::setEjectTime);
         initializeSetting("Intake Speed", Constants.Manipulator.INTAKE_SPEED, intakeSpeed, Manipulator.getInstance()::setIntakeSpeed);
         initializeSetting("Place Speed", Constants.Manipulator.PLACE_SPEED, placeSpeed, Manipulator.getInstance()::setPlaceSpeed);

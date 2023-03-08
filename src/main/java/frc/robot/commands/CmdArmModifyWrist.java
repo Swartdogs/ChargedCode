@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Manipulator;
 
 public class CmdArmModifyWrist extends CommandBase 
 {
@@ -24,7 +23,7 @@ public class CmdArmModifyWrist extends CommandBase
 
     public CmdArmModifyWrist() 
     {
-        _modification = () -> -RobotContainer.getInstance().getOperatorY() * Constants.Manipulator.WRIST_JOYSTICK_RATE * Math.signum(Arm.getInstance().getShoulderAngleSetpoint());
+        _modification = () -> -RobotContainer.getInstance().getOperatorY() * Constants.Arm.WRIST_JOYSTICK_RATE * Math.signum(Arm.getInstance().getShoulderAngleSetpoint());
         _instant = false;
         _overridden = false;
     }

@@ -17,7 +17,7 @@ public class CmdDriveBalance extends CommandBase
     {
         _pitchPID = new PIDControl();
         _pitchPID.setCoefficient(Coefficient.P, 11, 0.005, 0);
-        _pitchPID.setCoefficient(Coefficient.I, 4,   0,    0.0001);
+        _pitchPID.setCoefficient(Coefficient.I, 4,   0,    0.005);
         _pitchPID.setCoefficient(Coefficient.D, 0,   0,    0);
         _pitchPID.setInputRange(-20, 20);
         _pitchPID.setOutputRange(-0.1, 0.1);
@@ -29,7 +29,7 @@ public class CmdDriveBalance extends CommandBase
     @Override
     public void initialize() 
     {
-        _pitchPID.setSetpoint(0, Drive.getInstance().getChassisPitch());
+        _pitchPID.setSetpoint(0);
         _timer = 0;
         Drive.getInstance().setBrakeMode(true);
     }

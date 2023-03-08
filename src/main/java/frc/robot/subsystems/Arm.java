@@ -133,10 +133,10 @@ public class Arm extends SubsystemBase
         _twistPID               = new PIDControl();
         _armPosition            = ArmPosition.Stow;
         _reset                  = ResetStatus.NotReset;
-        _wristMinAngle          = Constants.Manipulator.WRIST_MAX_ANGLE;
-        _wristMaxAngle          = Constants.Manipulator.WRIST_MIN_ANGLE;
-        _twistMinRotation       = Constants.Manipulator.TWIST_MIN_ROTATION;
-        _twistMaxRotation       = Constants.Manipulator.TWIST_MAX_ROTATION;
+        _wristMinAngle          = Constants.Arm.WRIST_MAX_ANGLE;
+        _wristMaxAngle          = Constants.Arm.WRIST_MIN_ANGLE;
+        _twistMinRotation       = Constants.Arm.TWIST_MIN_ROTATION;
+        _twistMaxRotation       = Constants.Arm.TWIST_MAX_ROTATION;
         
         /* Settings */
         _minShoulderAngle       = Constants.Arm.SHOULDER_MIN_ANGLE;
@@ -170,13 +170,13 @@ public class Arm extends SubsystemBase
 
         _shoulderPid.setCoefficient(Coefficient.P, 0, 0.0175, 0);
         _shoulderPid.setCoefficient(Coefficient.I, 0, 0, 0);
-        _shoulderPid.setCoefficient(Coefficient.D, 0, 0.05, 0);
+        _shoulderPid.setCoefficient(Coefficient.D, 0, 0.001, 0);
         _shoulderPid.setInputRange(Constants.Arm.SHOULDER_MIN_ANGLE, Constants.Arm.SHOULDER_MAX_ANGLE);
         _shoulderPid.setOutputRange(-0.62, 0.62);
         _shoulderPid.setOutputRamp(0.05, 0.02);
         _shoulderPid.setSetpointDeadband(5);
         _shoulderPid.setFeedForward(setpoint -> -Constants.Arm.HORIZONTAL_STAYING_POWER * Math.sin(Math.toRadians(setpoint)));
-        _shoulderPid.setSetpoint(0, getShoulderAngle());
+        _shoulderPid.setSetpoint(0);
 
         _extensionPid.setCoefficient(Coefficient.P, 0, 0.4, 0);
         _extensionPid.setCoefficient(Coefficient.I, 0, 0, 0);
@@ -185,24 +185,24 @@ public class Arm extends SubsystemBase
         _extensionPid.setOutputRange(-0.25, 0.25);
         _extensionPid.setSetpointDeadband(2);
         _extensionPid.setFeedForward(setpoint -> Math.cos(Math.toRadians(getShoulderAngle())) * Constants.Arm.EXTENSION_STAYING_POWER);
-        _extensionPid.setSetpoint(0, getExtensionPosition());
+        _extensionPid.setSetpoint(0);
         _extensionEncoder.setPosition(Constants.Arm.ARM_MAX_EXTENSION / Constants.Arm.EXTENSION_CONVERSION_FACTOR);
 
         _wristPID.setCoefficient(Coefficient.P, 0, 0.025, 0);
         _wristPID.setCoefficient(Coefficient.I, 0, 0,    0);
-        _wristPID.setCoefficient(Coefficient.D, 0, 0.05, 0);
-        _wristPID.setInputRange(Constants.Manipulator.WRIST_MIN_ANGLE, Constants.Manipulator.WRIST_MAX_ANGLE);
+        _wristPID.setCoefficient(Coefficient.D, 0, 0.001, 0);
+        _wristPID.setInputRange(Constants.Arm.WRIST_MIN_ANGLE, Constants.Arm.WRIST_MAX_ANGLE);
         _wristPID.setOutputRange(-1, 1);
         _wristPID.setSetpointDeadband(5);
-        _wristPID.setSetpoint(0, getWristAngle());
+        _wristPID.setSetpoint(0);
 
         _twistPID.setCoefficient(Coefficient.P, 0, 0.015, 0);
         _twistPID.setCoefficient(Coefficient.I, 0, 0,     0);
-        _twistPID.setCoefficient(Coefficient.D, 0, 0.03,  0);
-        _twistPID.setInputRange(Constants.Manipulator.TWIST_MIN_ROTATION, Constants.Manipulator.TWIST_MAX_ROTATION);
+        _twistPID.setCoefficient(Coefficient.D, 0, 0.0006,  0);
+        _twistPID.setInputRange(Constants.Arm.TWIST_MIN_ROTATION, Constants.Arm.TWIST_MAX_ROTATION);
         _twistPID.setOutputRange(-0.25, 0.25);
         _twistPID.setSetpointDeadband(8);
-        _twistPID.setSetpoint(90, getTwistAngle());
+        _twistPID.setSetpoint(90);
 
         if (RobotBase.isSimulation())
         {
@@ -238,17 +238,17 @@ public class Arm extends SubsystemBase
 
     public void setExtensionMotorPosition(double position)
     {
-       _extensionPid.setSetpoint(position, getExtensionPosition());
+       _extensionPid.setSetpoint(position);
     }
   
     public void modifyExtensionMotorPosition(double modification)
     {
-        _extensionPid.setSetpoint(_extensionPid.getSetpoint()+modification, getExtensionPosition());
+        _extensionPid.setSetpoint(_extensionPid.getSetpoint() + modification);
     }
 
     public void setShoulderAngle(double angle)
     {
-        _shoulderPid.setSetpoint(angle, getShoulderAngle(), true);
+        _shoulderPid.setSetpoint(angle, true);
     }
 
     public void modifyShoulderAngle(double modification)
@@ -257,11 +257,11 @@ public class Arm extends SubsystemBase
 
         if (Math.signum(current + modification) != Math.signum(current))
         {
-            _shoulderPid.setSetpoint(0, getShoulderAngle());
+            _shoulderPid.setSetpoint(0);
         }
         else
         {
-            _shoulderPid.setSetpoint(current + modification, getShoulderAngle());
+            _shoulderPid.setSetpoint(current + modification);
         }
     }
 
@@ -308,7 +308,7 @@ public class Arm extends SubsystemBase
 
     public void setWristAngle(double position)
     {
-        _wristPID.setSetpoint(position, getWristAngle());
+        _wristPID.setSetpoint(position);
     }
 
     public void setWristSpeed(double speed)
@@ -321,22 +321,22 @@ public class Arm extends SubsystemBase
 
     public double getWristAngle()
     {
-        return (_wristEncoder.getAbsolutePosition() - Constants.Manipulator.WRIST_OFFSET) * Constants.DEGREES_PER_REVOLUTION;
+        return (_wristEncoder.getAbsolutePosition() - Constants.Arm.WRIST_OFFSET) * Constants.DEGREES_PER_REVOLUTION;
     }
 
     public void modifyWristAngle(double modification)
     {
-        _wristPID.setSetpoint(_wristPID.getSetpoint() + modification, getWristAngle());
+        _wristPID.setSetpoint(_wristPID.getSetpoint() + modification);
     }
     
     public void setTwistAngle(double position)
     {
-        _twistPID.setSetpoint(position, getTwistAngle());
+        _twistPID.setSetpoint(position);
     }    
     
     public double getTwistAngle()
     {
-        return MathUtil.inputModulus((_twistEncoder.getAbsolutePosition() - Constants.Manipulator.TWIST_OFFSET) * Constants.DEGREES_PER_REVOLUTION, -Constants.DEGREES_PER_HALF_REVOLUTION, Constants.DEGREES_PER_HALF_REVOLUTION);
+        return MathUtil.inputModulus((_twistEncoder.getAbsolutePosition() - Constants.Arm.TWIST_OFFSET) * Constants.DEGREES_PER_REVOLUTION, -Constants.DEGREES_PER_HALF_REVOLUTION, Constants.DEGREES_PER_HALF_REVOLUTION);
     }    
     
     public double getTwistTargetAngle()

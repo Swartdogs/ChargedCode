@@ -22,8 +22,8 @@ public abstract class DriveCommand extends CommandBase
         for (PIDControl pid : new PIDControl[] { _xPID, _yPID })
         {
             pid.setCoefficient(Coefficient.P, 0.0, 0.012, 0.0); // based on previous code
-            pid.setCoefficient(Coefficient.I, 5.0, 0.0, 0.001);
-            pid.setCoefficient(Coefficient.D, 0.0, 0.008, 0.0);
+            pid.setCoefficient(Coefficient.I, 5.0, 0.0, 0.05);
+            pid.setCoefficient(Coefficient.D, 0.0, 0.00016, 0.0);
             pid.setInputRange(-720.0, 720.0); // assumed unit of inches
             pid.setOutputRange(-1.0, 1.0);
             pid.setOutputRamp(0.1, 0.05);
@@ -31,8 +31,8 @@ public abstract class DriveCommand extends CommandBase
         }
 
         _rotatePID.setCoefficient(Coefficient.P, 0.0, 0.008, 0.0);
-        _rotatePID.setCoefficient(Coefficient.I, 20.0, 0.0, 0.00027);
-        _rotatePID.setCoefficient(Coefficient.D, 0.0, 0.001, 0.0);
+        _rotatePID.setCoefficient(Coefficient.I, 20.0, 0.0, 0.0135);
+        _rotatePID.setCoefficient(Coefficient.D, 0.0, 0.00002, 0.0);
         _rotatePID.setInputRange(-180.0, 180.0);
         _rotatePID.setContinuous(true);
         _rotatePID.setOutputRange(-1.0, 1.0);
