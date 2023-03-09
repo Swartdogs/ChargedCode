@@ -10,6 +10,7 @@ import frc.robot.commands.CmdArmModifyExtensionPosition;
 import frc.robot.commands.CmdArmModifyShoulderAngle;
 import frc.robot.commands.CmdManipulatorPlaceGamePiece;
 import frc.robot.subsystems.Arm.ArmPosition;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Arm.HandMode;
 
@@ -35,7 +36,7 @@ public class GrpPlaceGamePiece extends SequentialCommandGroup
                 (
                     // Modify the shoulder downward and wait for it to be in position
                     new CmdArmModifyShoulderAngle(5),
-                    Commands.waitSeconds(1),
+                    Commands.waitUntil(Arm.getInstance()::shoulderAtAngle),
 
                     // Retract the arm, but also run the intake in reverse as long as we're retracting
                     new ParallelDeadlineGroup
@@ -44,7 +45,7 @@ public class GrpPlaceGamePiece extends SequentialCommandGroup
                         new SequentialCommandGroup
                         (
                             new CmdArmModifyExtensionPosition(-6),
-                            Commands.waitSeconds(1)
+                            Commands.waitUntil(Arm.getInstance()::extensionAtDistance)
                         ),
 
                         // Start the intake when retraction starts, disable the intake when retraction ends

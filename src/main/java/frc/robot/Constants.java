@@ -179,9 +179,9 @@ public final class Constants
         public static final ArmData LOW_FRONT_CUBE        = new ArmData(-105,        0,          90,    -15);
         public static final ArmData LOW_BACK_CONE         = new ArmData( 105,        0,         -90,     15);
         public static final ArmData LOW_BACK_CUBE         = new ArmData( 105,        0,         -90,     15);
-        public static final ArmData MID_FRONT_CONE        = new ArmData( -54,      6.5,          90,     -0);
+        public static final ArmData MID_FRONT_CONE        = new ArmData( -58,      6.5,          90,     -0);
         public static final ArmData MID_FRONT_CUBE        = new ArmData( -60,        0,          90,     40);
-        public static final ArmData MID_BACK_CONE         = new ArmData(  54,      6.5,         -90,      0);
+        public static final ArmData MID_BACK_CONE         = new ArmData(  58,      6.5,         -90,      0);
         public static final ArmData MID_BACK_CUBE         = new ArmData(  60,        0,         -90,    -40);
         public static final ArmData HIGH_FRONT_CONE       = new ArmData( -52,       26,          90,      5);
         public static final ArmData HIGH_FRONT_CUBE       = new ArmData( -55,       18,          90,     35);
@@ -191,9 +191,9 @@ public final class Constants
         public static final ArmData SUBSTATION_FRONT_CUBE = new ArmData(  41,        0,         -90,    -45);
         public static final ArmData SUBSTATION_BACK_CONE  = new ArmData( -41,        0,          90,     45);
         public static final ArmData SUBSTATION_BACK_CUBE  = new ArmData( -41,        0,          90,     45);
-        public static final ArmData GROUND_FRONT_CONE     = new ArmData( 110,        0,         -90,     15);
+        public static final ArmData GROUND_FRONT_CONE     = new ArmData( 115,        0,         -90,     30);
         public static final ArmData GROUND_FRONT_CUBE     = new ArmData(  90,        0,           0,    -45);
-        public static final ArmData GROUND_BACK_CONE      = new ArmData(-110,        0,          90,    -15);
+        public static final ArmData GROUND_BACK_CONE      = new ArmData(-115,        0,          90,    -30);
         public static final ArmData GROUND_BACK_CUBE      = new ArmData( -90,        0,          -0,     45);
         public static final ArmData STOW_FRONT_CONE       = new ArmData(   0,        0,          90,      0);
         public static final ArmData STOW_FRONT_CUBE       = new ArmData(   0,        0,          90,      0);
