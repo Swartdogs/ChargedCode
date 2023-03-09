@@ -56,7 +56,7 @@ public class GrpSetArmPosition extends SequentialCommandGroup
                 // If the product of the signs is -1, we're crossing sides
                 // If the product of the signs is  0, we're either stowing or are already stowed
                 // If the product of the signs is  1, the arm is NOT changing which side it's on  
-            ).unless(() -> Math.signum(_armData.getArmAngle()) * Math.signum(Arm.getInstance().getShoulderAngleSetpoint()) >= 0),
+            ).unless(() -> Math.signum(_armData.getArmAngle()) * Math.signum(Arm.getInstance().getShoulderTargetAngle()) >= 0),
 
             new ParallelCommandGroup
             (

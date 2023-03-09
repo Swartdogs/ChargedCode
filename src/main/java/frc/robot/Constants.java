@@ -158,6 +158,10 @@ public final class Constants
         public static final double  EXTENSION_JOYSTICK_RATE         = 10.0 / Constants.LOOPS_PER_SECOND; // inches per second
         public static final double  SHOULDER_JOYSTICK_RATE          = 30.0 / Constants.LOOPS_PER_SECOND; // degrees per second
         public static final double  WRIST_JOYSTICK_RATE             = 60.0 / Constants.LOOPS_PER_SECOND; // Degrees per second
+
+        public static final double  HAND_LENGTH                     = 18;
+        public static final double  SHOULDER_HEIGHT                 = 17;
+        public static final double  ARM_RETRACTED_LENGTH            = 17;
     }
  
     public static class Manipulator

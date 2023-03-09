@@ -28,7 +28,7 @@ public class CmdArmModifyShoulderAngle extends CommandBase
     @Override
     public void execute() 
     {
-        Arm.getInstance().modifyShoulderAngle(_modification.getAsDouble() * Math.signum(Arm.getInstance().getShoulderAngleSetpoint()));
+        Arm.getInstance().modifyShoulderAngle(_modification.getAsDouble() * Math.signum(Arm.getInstance().getShoulderTargetAngle()));
     }
 
     @Override

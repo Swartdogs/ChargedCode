@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.Vector;
 
 public class Arm extends SubsystemBase 
 {
@@ -100,6 +101,8 @@ public class Arm extends SubsystemBase
     private ArmPosition         _armPosition;
     private ResetStatus         _reset;
     private boolean             _isFlipped;
+    private Vector              _coordinate;
+    private double              _handAngle;
 
     // Simulation
     private DIOSim              _limitSwitchSim;
@@ -226,9 +229,9 @@ public class Arm extends SubsystemBase
         return !_limitSwitch.get();
     }
 
-    public double getExtensionPosition()
+    public void setExtensionEncoderPosition(double positon)
     {
-        return _extensionEncoder.getPosition() * Constants.Arm.EXTENSION_CONVERSION_FACTOR;
+        _extensionEncoder.setPosition(positon);
     }
 
     public double getShoulderAngle()
@@ -236,19 +239,94 @@ public class Arm extends SubsystemBase
         return (_shoulderEncoder.getAbsolutePosition() - Constants.Arm.SHOULDER_SENSOR_MIN) * Constants.Arm.SHOULDER_SLOPE + Constants.Arm.SHOULDER_SCALED_MIN;
     }
 
-    public void setExtensionMotorPosition(double position)
+    public double getExtensionDistance()
     {
-       _extensionPid.setSetpoint(position);
+        return _extensionEncoder.getPosition() * Constants.Arm.EXTENSION_CONVERSION_FACTOR;
+    }
+
+    public double getWristAngle()
+    {
+        return (_wristEncoder.getAbsolutePosition() - Constants.Arm.WRIST_OFFSET) * Constants.DEGREES_PER_REVOLUTION;
+    }
+
+    public double getTwistAngle()
+    {
+        return MathUtil.inputModulus((_twistEncoder.getAbsolutePosition() - Constants.Arm.TWIST_OFFSET) * Constants.DEGREES_PER_REVOLUTION, -Constants.DEGREES_PER_HALF_REVOLUTION, Constants.DEGREES_PER_HALF_REVOLUTION);
+    }
+    
+    public double getShoulderTargetAngle()
+    {
+        return _shoulderPid.getSetpoint();
+    }
+
+    public double getExtensionTargetDistance()
+    {
+        return _extensionPid.getSetpoint();
+    }
+
+    public double getWristTargetAngle()
+    {
+        return _wristPID.getSetpoint();
+    }
+
+    public double getTwistTargetAngle()
+    {
+        return _twistPID.getSetpoint();
+    }
+    
+    public boolean shoulderAtAngle()
+    {
+        return _shoulderPid.atSetpoint();
+    }
+
+    public boolean extensionAtDistance()
+    {
+        return _extensionPid.atSetpoint();
+    }
+
+    public boolean wristAtAngle()
+    {
+        return _wristPID.atSetpoint();
+    }
+
+    public boolean twistAtAngle()
+    {
+        return _twistPID.atSetpoint();
+    }
+
+    public void setArmPosition(Vector coordinate, double handAngle)
+    {
+        _coordinate = coordinate;
+        _handAngle  = handAngle; 
+
+        double sin = Math.sin(Math.toRadians(_handAngle));
+        double cos = Math.cos(Math.toRadians(_handAngle));
+
+        double x = _coordinate.getX() - Constants.Arm.HAND_LENGTH * sin;
+        double y = _coordinate.getY() - Constants.Arm.HAND_LENGTH * cos; 
+
+        double a = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+        double s = Math.toDegrees(Math.atan2(x, y));
+        double w = s - _handAngle;
+
+        _shoulderPid.setSetpoint(s);
+        _extensionPid.setSetpoint(a - Constants.Arm.ARM_RETRACTED_LENGTH);
+        _wristPID.setSetpoint(w);
+    }
+
+    public Vector getCoordinate()
+    {
+        return _coordinate;
+    }
+
+    public double getHandAngle()
+    {
+        return _handAngle;
     }
   
     public void modifyExtensionMotorPosition(double modification)
     {
         _extensionPid.setSetpoint(_extensionPid.getSetpoint() + modification);
-    }
-
-    public void setShoulderAngle(double angle)
-    {
-        _shoulderPid.setSetpoint(angle, true);
     }
 
     public void modifyShoulderAngle(double modification)
@@ -265,21 +343,6 @@ public class Arm extends SubsystemBase
         }
     }
 
-    public double getShoulderAngleSetpoint()
-    {
-        return _shoulderPid.getSetpoint();
-    }
-
-    public boolean shoulderAtAngle()
-    {
-        return _shoulderPid.atSetpoint();
-    }
-
-    public boolean extensionAtDistance()
-    {
-        return _extensionPid.atSetpoint();
-    }
-
     public void setArmPosition(ArmPosition position)
     {
         _armPosition = position;
@@ -290,40 +353,6 @@ public class Arm extends SubsystemBase
         return _armPosition;
     }
 
-    public void setExtensionEncoderPosition(double positon)
-    {
-        _extensionEncoder.setPosition(positon);
-    }
-
-    public void overrideWrist()
-    {
-        _wristOverride = true;
-        _wristMotor.setIdleMode(IdleMode.kBrake);
-    }
-
-    public boolean isWristOverridden()
-    {
-        return _wristOverride;
-    }
-
-    public void setWristAngle(double position)
-    {
-        _wristPID.setSetpoint(position);
-    }
-
-    public void setWristSpeed(double speed)
-    {
-        if (_wristOverride)
-        {
-            _wristMotor.setVoltage(speed * Constants.MOTOR_VOLTAGE);
-        }
-    }
-
-    public double getWristAngle()
-    {
-        return (_wristEncoder.getAbsolutePosition() - Constants.Arm.WRIST_OFFSET) * Constants.DEGREES_PER_REVOLUTION;
-    }
-
     public void modifyWristAngle(double modification)
     {
         _wristPID.setSetpoint(_wristPID.getSetpoint() + modification);
@@ -332,17 +361,7 @@ public class Arm extends SubsystemBase
     public void setTwistAngle(double position)
     {
         _twistPID.setSetpoint(position);
-    }    
-    
-    public double getTwistAngle()
-    {
-        return MathUtil.inputModulus((_twistEncoder.getAbsolutePosition() - Constants.Arm.TWIST_OFFSET) * Constants.DEGREES_PER_REVOLUTION, -Constants.DEGREES_PER_HALF_REVOLUTION, Constants.DEGREES_PER_HALF_REVOLUTION);
-    }    
-    
-    public double getTwistTargetAngle()
-    {
-        return _twistPID.getSetpoint();
-    }    
+    } 
     
     public void setIsFlipped(boolean isFlipped)
     {
@@ -352,16 +371,6 @@ public class Arm extends SubsystemBase
     public boolean isFlipped()
     {
         return _isFlipped;
-    }    
-
-    public boolean wristAtAngle()
-    {
-        return _wristPID.atSetpoint();
-    }
-
-    public boolean twistAtAngle()
-    {
-        return _twistPID.atSetpoint();
     }
 
     //Settings Functions
@@ -449,7 +458,7 @@ public class Arm extends SubsystemBase
         }
 
         _shoulderMotor.setVoltage(_shoulderPid.calculate(getShoulderAngle() + Math.min(Math.max(Drive.getInstance().getChassisPitch(), -15.0), 15.0)) * Constants.MOTOR_VOLTAGE);
-        _extensionMotor.setVoltage(_extensionPid.calculate(getExtensionPosition()) * Constants.MOTOR_VOLTAGE);
+        _extensionMotor.setVoltage(_extensionPid.calculate(getExtensionDistance()) * Constants.MOTOR_VOLTAGE);
     }
 
     @Override

@@ -23,7 +23,7 @@ public class CmdArmModifyWrist extends CommandBase
 
     public CmdArmModifyWrist() 
     {
-        _modification = () -> -RobotContainer.getInstance().getOperatorY() * Constants.Arm.WRIST_JOYSTICK_RATE * Math.signum(Arm.getInstance().getShoulderAngleSetpoint());
+        _modification = () -> -RobotContainer.getInstance().getOperatorY() * Constants.Arm.WRIST_JOYSTICK_RATE * Math.signum(Arm.getInstance().getShoulderTargetAngle());
         _instant = false;
         _overridden = false;
     }
@@ -37,7 +37,7 @@ public class CmdArmModifyWrist extends CommandBase
             {
                 _modification = () -> 
                 {
-                    var sign = Math.signum(Arm.getInstance().getShoulderAngleSetpoint());
+                    var sign = Math.signum(Arm.getInstance().getShoulderTargetAngle());
 
                     if (sign == 0)
                     {
