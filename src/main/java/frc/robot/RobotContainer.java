@@ -217,7 +217,7 @@ public class RobotContainer
 
     public double getDriveJoyZ()
     {
-        return getJoystickAxis(Controller.DriveJoystick.joystick().getZ(), false, 4, 0.1);
+        return getJoystickAxis(Controller.DriveJoystick.joystick().getZ(), false, 4, 0.05) * 0.8;  // for sean
     }
 
     public boolean driveIsRobotCentric()
