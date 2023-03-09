@@ -44,4 +44,9 @@ public class ArmData
     {
         _twistAngle = angle;
     }
+
+    public ArmData opposite()
+    {
+        return new ArmData(new Vector(-_coordinate.getX(), _coordinate.getY()), -_handAngle, -_twistAngle);
+    }
 }

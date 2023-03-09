@@ -207,9 +207,9 @@ public final class Constants
         public static final ArmData GROUND_BACK_CONE      = new ArmData(-110,        0,          90,    -15);
         public static final ArmData GROUND_BACK_CUBE      = new ArmData( -90,        0,          -0,     45);
         public static final ArmData STOW_FRONT_CONE       = new ArmData(new Vector( 0.0, Arm.SHOULDER_HEIGHT + Arm.ARM_RETRACTED_LENGTH + Arm.HAND_LENGTH), 0.0,  90.0);
-        public static final ArmData STOW_FRONT_CUBE       = new ArmData(new Vector( 0.0, Arm.SHOULDER_HEIGHT + Arm.ARM_RETRACTED_LENGTH + Arm.HAND_LENGTH), 0.0,  90.0);
-        public static final ArmData STOW_BACK_CONE        = new ArmData(new Vector(-0.0, Arm.SHOULDER_HEIGHT + Arm.ARM_RETRACTED_LENGTH + Arm.HAND_LENGTH), 0.0, -90.0);
-        public static final ArmData STOW_BACK_CUBE        = new ArmData(new Vector(-0.0, Arm.SHOULDER_HEIGHT + Arm.ARM_RETRACTED_LENGTH + Arm.HAND_LENGTH), 0.0, -90.0);
+        public static final ArmData STOW_FRONT_CUBE       = STOW_FRONT_CONE;
+        public static final ArmData STOW_BACK_CONE        = STOW_FRONT_CONE.opposite();
+        public static final ArmData STOW_BACK_CUBE        = STOW_FRONT_CUBE.opposite();
 
         private static final HashMap<ArmTuple, ArmData> _lookup = new HashMap<ArmTuple, ArmData>(){{
             /*               Position                Side           Hand Mode                   Shoulder    Extension   Twist   Wrist */
