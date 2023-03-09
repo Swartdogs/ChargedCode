@@ -1,44 +1,50 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.ArmData;
 import frc.robot.Constants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.drive.Vector;
 
-public class CmdArmSetPosition extends CommandBase 
+public class CmdArmModifyPosition extends CommandBase 
 {
-    private Vector _targetCoordinate;
-    private Vector _diff;
-    private double _targetHandAngle;
+    private Vector _modifyCoordinate;
+    private double _modifyHandAngle;
+    private double _modifyTwistAngle;
+
+    private Vector _diff;    
     private double _initalHandAngle;
-    private double _targetTwistAngle;
     private double _initalTwistAngle;
-    private double _speed;
+
+    private Vector _targetCoordinate;
+    private double _targetHandAngle;
+    private double _targetTwistAngle;
+
     private int    _step;
     private int    _steps;
 
-    public CmdArmSetPosition(Vector coordinate, double handAngle, double twistAngle, double speed) 
+    public CmdArmModifyPosition(Vector coordinate, double handAngle, double twistAngle, double speed) 
     {
-        _targetCoordinate = coordinate;
-        _targetHandAngle  = handAngle;
-        _targetTwistAngle = twistAngle;
+        _modifyCoordinate = coordinate;
+        _modifyHandAngle  = handAngle;
+        _modifyTwistAngle = twistAngle;
 
-        _speed   = speed;
-    }
-
-    public CmdArmSetPosition(ArmData data, double speed)
-    {
-        this(data.getCoordinate(), data.getHandAngle(), data.getTwistAngle(), speed);
+        _steps = Math.max((int) (Constants.LOOPS_PER_SECOND * _modifyCoordinate.getMagnitude() / speed), 1);
     }
 
     @Override
     public void initialize() 
     {
-        _diff = Arm.getInstance().getCoordinate().subtract(_targetCoordinate);
-        _initalHandAngle = Arm.getInstance().getHandAngle();
-        _initalTwistAngle = Arm.getInstance().getTwistTargetAngle();
-        _steps = Math.max((int) (Constants.LOOPS_PER_SECOND * _diff.getMagnitude() / _speed), 1);
+        Vector initialCoordinate = Arm.getInstance().getCoordinate();
+        _initalHandAngle   = Arm.getInstance().getHandAngle();
+        _initalTwistAngle  = Arm.getInstance().getTwistTargetAngle();
+
+        _diff = _modifyCoordinate.clone();
+        _diff.setX(_diff.getX() * Math.signum(initialCoordinate.getX()));
+
+        _targetCoordinate = initialCoordinate.add(_diff);
+        _targetHandAngle  = _initalHandAngle  + _modifyHandAngle  * Math.signum(initialCoordinate.getX());
+        _targetTwistAngle = _initalTwistAngle + _modifyTwistAngle * Math.signum(initialCoordinate.getX());
+
         _step = 0;
 
     }

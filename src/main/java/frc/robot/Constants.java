@@ -155,13 +155,20 @@ public final class Constants
         public static final double  SHOULDER_SLOPE                  = (SHOULDER_SCALED_MAX-SHOULDER_SCALED_MIN)/(SHOULDER_SENSOR_MAX-SHOULDER_SENSOR_MIN);
         public static final double  EXTENSION_CONVERSION_FACTOR     = 25.625 / 125.0947;
 
-        public static final double  EXTENSION_JOYSTICK_RATE         = 10.0 / Constants.LOOPS_PER_SECOND; // inches per second
-        public static final double  SHOULDER_JOYSTICK_RATE          = 30.0 / Constants.LOOPS_PER_SECOND; // degrees per second
+        // joystick scaling
+        public static final double  REACH_JOYSTICK_RATE             = 10.0 / Constants.LOOPS_PER_SECOND; // inches per second
+        public static final double  HEIGHT_JOYSTICK_RATE            = 10.0 / Constants.LOOPS_PER_SECOND; // inches per second
         public static final double  WRIST_JOYSTICK_RATE             = 60.0 / Constants.LOOPS_PER_SECOND; // Degrees per second
 
-        public static final double  HAND_LENGTH                     = 18;
-        public static final double  SHOULDER_HEIGHT                 = 17;
-        public static final double  ARM_RETRACTED_LENGTH            = 17;
+        // all of these in inches per second
+        public static final double  PRESET_MOTION_RATE              = 8.0; // for buttons (stow, high, floor, etc.)
+        public static final double  PLACE_MOTION_RATE               = 5.0; // vertical and horizontal placing
+        public static final double  ADJUST_MOTION_RATE              = 5.0; // adjustment buttons
+
+        // inverse kinematics
+        public static final double  HAND_LENGTH                     = 18.0;
+        public static final double  SHOULDER_HEIGHT                 = 17.0;
+        public static final double  ARM_RETRACTED_LENGTH            = 17.0;
     }
  
     public static class Manipulator
@@ -199,10 +206,10 @@ public final class Constants
         public static final ArmData GROUND_FRONT_CUBE     = new ArmData(  90,        0,           0,    -45);
         public static final ArmData GROUND_BACK_CONE      = new ArmData(-110,        0,          90,    -15);
         public static final ArmData GROUND_BACK_CUBE      = new ArmData( -90,        0,          -0,     45);
-        public static final ArmData STOW_FRONT_CONE       = new ArmData(   0,        0,          90,      0);
-        public static final ArmData STOW_FRONT_CUBE       = new ArmData(   0,        0,          90,      0);
-        public static final ArmData STOW_BACK_CONE        = new ArmData(  -0,        0,         -90,     -0);
-        public static final ArmData STOW_BACK_CUBE        = new ArmData(  -0,        0,         -90,     -0);
+        public static final ArmData STOW_FRONT_CONE       = new ArmData(new Vector( 0.0, Arm.SHOULDER_HEIGHT + Arm.ARM_RETRACTED_LENGTH + Arm.HAND_LENGTH), 0.0,  90.0);
+        public static final ArmData STOW_FRONT_CUBE       = new ArmData(new Vector( 0.0, Arm.SHOULDER_HEIGHT + Arm.ARM_RETRACTED_LENGTH + Arm.HAND_LENGTH), 0.0,  90.0);
+        public static final ArmData STOW_BACK_CONE        = new ArmData(new Vector(-0.0, Arm.SHOULDER_HEIGHT + Arm.ARM_RETRACTED_LENGTH + Arm.HAND_LENGTH), 0.0, -90.0);
+        public static final ArmData STOW_BACK_CUBE        = new ArmData(new Vector(-0.0, Arm.SHOULDER_HEIGHT + Arm.ARM_RETRACTED_LENGTH + Arm.HAND_LENGTH), 0.0, -90.0);
 
         private static final HashMap<ArmTuple, ArmData> _lookup = new HashMap<ArmTuple, ArmData>(){{
             /*               Position                Side           Hand Mode                   Shoulder    Extension   Twist   Wrist */

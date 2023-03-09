@@ -75,6 +75,7 @@ public class Arm extends SubsystemBase
     private DutyCycleEncoder    _shoulderEncoder;
     private CANSparkMax         _shoulderMotor;
     private PIDControl          _shoulderPid;
+    private double              _shoulderSetpoint;
     
     //Wrist Controls
     private CANSparkMax         _wristMotor;
@@ -100,7 +101,6 @@ public class Arm extends SubsystemBase
     // Controls
     private ArmPosition         _armPosition;
     private ResetStatus         _reset;
-    private boolean             _isFlipped;
     private Vector              _coordinate;
     private double              _handAngle;
 
@@ -147,7 +147,6 @@ public class Arm extends SubsystemBase
         _maxArmExtension        = Constants.Arm.ARM_MAX_EXTENSION;
         _wristSpeed             = 0;
         _wristOverride          = false;
-        _isFlipped              = false;
 
         _extensionMotor.restoreFactoryDefaults();
         _shoulderMotor.restoreFactoryDefaults();
@@ -294,11 +293,8 @@ public class Arm extends SubsystemBase
         return _twistPID.atSetpoint();
     }
 
-    public void setArmPosition(Vector coordinate, double handAngle)
+    private void updateArmSetpoints()
     {
-        _coordinate = coordinate;
-        _handAngle  = handAngle; 
-
         double sin = Math.sin(Math.toRadians(_handAngle));
         double cos = Math.cos(Math.toRadians(_handAngle));
 
@@ -309,9 +305,35 @@ public class Arm extends SubsystemBase
         double s = Math.toDegrees(Math.atan2(x, y));
         double w = s - _handAngle;
 
-        _shoulderPid.setSetpoint(s);
+        _shoulderSetpoint = s;
         _extensionPid.setSetpoint(a - Constants.Arm.ARM_RETRACTED_LENGTH);
         _wristPID.setSetpoint(w);
+    }
+
+    public void setArmPosition(Vector coordinate, double handAngle, double twistAngle)
+    {
+        _coordinate = coordinate;
+        _handAngle  = handAngle; 
+        _twistPID.setSetpoint(twistAngle);
+        
+        updateArmSetpoints();
+    }
+
+    public void modifyArmPosition(Vector coordinate, double handAngle, double twistAngle)
+    {
+        coordinate.setX(coordinate.getX() * Math.signum(_coordinate.getX()));
+        coordinate = _coordinate.add(coordinate);
+        if (Math.signum(coordinate.getX()) != Math.signum(_coordinate.getX()))
+        {
+            coordinate.setX(0);
+        }
+
+        _coordinate = coordinate;
+
+        _handAngle += handAngle * Math.signum(_coordinate.getX()); 
+        _twistPID.setSetpoint(twistAngle);
+        
+        updateArmSetpoints();
     }
 
     public Vector getCoordinate()
@@ -323,24 +345,12 @@ public class Arm extends SubsystemBase
     {
         return _handAngle;
     }
-  
-    public void modifyExtensionMotorPosition(double modification)
-    {
-        _extensionPid.setSetpoint(_extensionPid.getSetpoint() + modification);
-    }
 
-    public void modifyShoulderAngle(double modification)
+    public void modifyHandAngle(double modification)
     {
-        double current = _shoulderPid.getSetpoint();
+        _handAngle += modification * Math.signum(_coordinate.getX());
 
-        if (Math.signum(current + modification) != Math.signum(current))
-        {
-            _shoulderPid.setSetpoint(0);
-        }
-        else
-        {
-            _shoulderPid.setSetpoint(current + modification);
-        }
+        updateArmSetpoints();
     }
 
     public void setArmPosition(ArmPosition position)
@@ -353,24 +363,14 @@ public class Arm extends SubsystemBase
         return _armPosition;
     }
 
-    public void modifyWristAngle(double modification)
-    {
-        _wristPID.setSetpoint(_wristPID.getSetpoint() + modification);
-    }
-    
     public void setTwistAngle(double position)
     {
         _twistPID.setSetpoint(position);
-    } 
-    
-    public void setIsFlipped(boolean isFlipped)
+    }
+
+    public void flipHand()
     {
-        _isFlipped = isFlipped;
-    }    
-    
-    public boolean isFlipped()
-    {
-        return _isFlipped;
+        _twistPID.setSetpoint(-_twistPID.getSetpoint());
     }
 
     //Settings Functions
@@ -457,7 +457,9 @@ public class Arm extends SubsystemBase
             _wristMotor.setVoltage(_wristSpeed * Constants.MOTOR_VOLTAGE);
         }
 
-        _shoulderMotor.setVoltage(_shoulderPid.calculate(getShoulderAngle() + Math.min(Math.max(Drive.getInstance().getChassisPitch(), -15.0), 15.0)) * Constants.MOTOR_VOLTAGE);
+        _shoulderPid.setSetpoint(_shoulderSetpoint - Math.min(Math.max(Drive.getInstance().getChassisPitch(), -20.0), 20.0)); // preserve input range
+
+        _shoulderMotor.setVoltage(_shoulderPid.calculate(getShoulderAngle()) * Constants.MOTOR_VOLTAGE);
         _extensionMotor.setVoltage(_extensionPid.calculate(getExtensionDistance()) * Constants.MOTOR_VOLTAGE);
     }
 

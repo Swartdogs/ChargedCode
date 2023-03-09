@@ -1,38 +1,38 @@
 package frc.robot;
 
+import frc.robot.subsystems.drive.Vector;
+
 public class ArmData 
 {
-    private double _armAngle;
-    private double _armExtension;
+    private Vector _coordinate;
+    private double _handAngle;
     private double _twistAngle;
-    private double _wristAngle;
     
-    public ArmData(double armAngle, double armExtension, double twistAngle, double wristAngle) 
+    public ArmData(Vector coordinate, double handAngle, double twistAngle) 
     {
-        _armAngle     = armAngle;
-        _armExtension = armExtension;
-        _twistAngle   = twistAngle;
-        _wristAngle   = wristAngle;
+        _coordinate = coordinate;
+        _handAngle  = handAngle;
+        _twistAngle = twistAngle;
     }
 
-    public double getArmAngle()
+    public Vector getCoordinate()
     {
-        return _armAngle;
+        return _coordinate;
     }
 
-    public void setArmAngle(double angle)
+    public void setCoordinate(Vector coordinate)
     {
-        _armAngle = angle;
+        _coordinate = coordinate;
     }
 
-    public double getArmExtension()
+    public double getHandAngle()
     {
-        return _armExtension;
+        return _handAngle;
     }
 
-    public void setArmExtension(double extension)
+    public void setHandAngle(double handAngle)
     {
-        _armExtension = extension;
+        _handAngle = handAngle;
     }
 
     public double getTwistAngle()
@@ -43,15 +43,5 @@ public class ArmData
     public void setTwistAngle(double angle)
     {
         _twistAngle = angle;
-    }
-
-    public double getWristAngle()
-    {
-        return _wristAngle;
-    }
-
-    public void setWristAngle(double angle)
-    {
-        _wristAngle = angle;
     }
 }

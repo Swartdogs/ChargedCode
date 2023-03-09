@@ -9,16 +9,14 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.CmdArmModifyExtensionPosition;
-import frc.robot.commands.CmdArmModifyShoulderAngle;
 import frc.robot.commands.CmdAutoRotate;
 import frc.robot.commands.CmdDriveBalance;
 import frc.robot.commands.CmdDriveResetOdometer;
 import frc.robot.commands.CmdDriveRotateModules;
 import frc.robot.commands.CmdDriveStrafeWithJoystick;
 import frc.robot.commands.CmdDriveWithJoystick;
-import frc.robot.commands.CmdArmModifyWrist;
-import frc.robot.groups.GrpManipulatorHandFlip;
+import frc.robot.commands.CmdArmAdjustContinuous;
+import frc.robot.commands.CmdArmModifyPosition;
 import frc.robot.groups.GrpPlaceGamePiece;
 import frc.robot.groups.GrpAutonomous;
 import frc.robot.groups.GrpIntakeGamePiece;
@@ -32,6 +30,7 @@ import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.RobotLog;
 import frc.robot.subsystems.Arm.HandMode;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.Vector;
 
 public class RobotContainer 
 {
@@ -110,9 +109,9 @@ public class RobotContainer
         CmdAutoRotate              driveAutoRotate90       = new CmdAutoRotate(90, false);
         CmdDriveRotateModules      driveRotateModules      = new CmdDriveRotateModules(90);
 
-        CmdArmModifyShoulderAngle     operatorShoulderAdjustment   = new CmdArmModifyShoulderAngle();
-        CmdArmModifyExtensionPosition operatorExtenstionAdjustment = new CmdArmModifyExtensionPosition();
-        CmdArmModifyWrist     operatorWristAdjustment      = new CmdArmModifyWrist();
+        CmdArmAdjustContinuous operatorHeightAdjustment = new CmdArmAdjustContinuous(()-> 0.0, ()-> getOperatorY() * Constants.Arm.HEIGHT_JOYSTICK_RATE, ()-> 0.0, ()-> 0.0);
+        CmdArmAdjustContinuous operatorReachAdjustment  = new CmdArmAdjustContinuous(()-> getOperatorY() * Constants.Arm.REACH_JOYSTICK_RATE, ()-> 0.0, ()-> 0.0, ()-> 0.0);
+        CmdArmAdjustContinuous operatorWristAdjustment  = new CmdArmAdjustContinuous(()-> 0.0, ()-> 0.0, ()-> getOperatorY() * Constants.Arm.WRIST_JOYSTICK_RATE, ()-> 0.0);
 
         Command driveAutoBalance  = new CmdDriveBalance().andThen(Commands.run(() -> Drive.getInstance().rotateModules(90)));
         Command intakeAdjustment  = Commands.startEnd(Manipulator.getInstance()::enableIntake, Manipulator.getInstance()::disableIntake);
@@ -135,27 +134,27 @@ public class RobotContainer
         Controller.DriveJoystick.button( 8).onFalse(Commands.runOnce(driveAutoBalance::cancel));
         Controller.DriveJoystick.button(11).onTrue(new CmdDriveResetOdometer());
 
-        Controller.OperatorJoystick.button( 1).onTrue(operatorShoulderAdjustment);
-        Controller.OperatorJoystick.button( 1).onFalse(Commands.runOnce(operatorShoulderAdjustment::cancel));
-        Controller.OperatorJoystick.button( 2).onTrue(new GrpManipulatorHandFlip());
-        Controller.OperatorJoystick.button( 3).onTrue(operatorExtenstionAdjustment);
-        Controller.OperatorJoystick.button( 3).onFalse(Commands.runOnce(operatorExtenstionAdjustment::cancel));
+        Controller.OperatorJoystick.button( 1).onTrue(operatorHeightAdjustment);
+        Controller.OperatorJoystick.button( 1).onFalse(Commands.runOnce(operatorHeightAdjustment::cancel));
+        Controller.OperatorJoystick.button( 2).onTrue(Commands.runOnce(Arm.getInstance()::flipHand));
+        Controller.OperatorJoystick.button( 3).onTrue(operatorReachAdjustment);
+        Controller.OperatorJoystick.button( 3).onFalse(Commands.runOnce(operatorReachAdjustment::cancel));
         Controller.OperatorJoystick.button( 4).onTrue(operatorWristAdjustment);
         Controller.OperatorJoystick.button( 4).onFalse(Commands.runOnce(operatorWristAdjustment::cancel));
         Controller.OperatorJoystick.button(11).toggleOnTrue(Arm.getInstance().printWristHealthCommand());
-        Controller.OperatorJoystick.button(12).onTrue(Commands.runOnce(Arm.getInstance()::overrideWrist));
+        //Controller.OperatorJoystick.button(12).onTrue(Commands.runOnce(Arm.getInstance()::overrideWrist));
         
         Controller.ButtonBox.button( 1).onTrue(new GrpPlaceGamePiece());
         Controller.ButtonBox.button( 2).onTrue(intakeAdjustment);
         Controller.ButtonBox.button( 2).onFalse(Commands.runOnce(intakeAdjustment::cancel));
         Controller.ButtonBox.button( 3).onTrue(new GrpSetArmPosition(ArmPosition.High)); 
         Controller.ButtonBox.button( 4).onTrue(new GrpSetArmPosition(ArmPosition.Stow));
-        Controller.ButtonBox.button( 5).onTrue(new CmdArmModifyExtensionPosition(3));
-        Controller.ButtonBox.button( 6).onTrue(new CmdArmModifyShoulderAngle(-3));
+        Controller.ButtonBox.button( 5).onTrue(new CmdArmModifyPosition(new Vector(3.0, 0.0), 0.0, 0.0, Constants.Arm.ADJUST_MOTION_RATE));
+        Controller.ButtonBox.button( 6).onTrue(new CmdArmModifyPosition(new Vector(0.0, 3.0), 0.0, 0.0, Constants.Arm.ADJUST_MOTION_RATE));
         Controller.ButtonBox.button( 7).onTrue(new GrpSetArmPosition(ArmPosition.Middle));
         Controller.ButtonBox.button( 8).onTrue(new GrpIntakeGamePiece(ArmPosition.Substation));
-        Controller.ButtonBox.button( 9).onTrue(new CmdArmModifyExtensionPosition(-3));
-        Controller.ButtonBox.button(10).onTrue(new CmdArmModifyShoulderAngle(3));
+        Controller.ButtonBox.button( 9).onTrue(new CmdArmModifyPosition(new Vector(-3.0, 0.0), 0.0, 0.0, Constants.Arm.ADJUST_MOTION_RATE));
+        Controller.ButtonBox.button(10).onTrue(new CmdArmModifyPosition(new Vector(0.0, -3.0), 0.0, 0.0, Constants.Arm.ADJUST_MOTION_RATE));
         Controller.ButtonBox.button(11).onTrue(new GrpSetArmPosition(ArmPosition.Low));
         Controller.ButtonBox.button(12).onTrue(new GrpIntakeGamePiece(ArmPosition.Ground));
 
