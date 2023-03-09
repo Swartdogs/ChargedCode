@@ -6,7 +6,6 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -35,7 +34,6 @@ public class Manipulator extends SubsystemBase
     
     //Intake Controls
     private CANSparkMax         _intakeMotor;
-    private DigitalInput        _intakeSensor;
     private IntakeState         _intakeState;
 
     //Settings
@@ -45,10 +43,12 @@ public class Manipulator extends SubsystemBase
     private double              _intakeStopDelay;
     private double              _intakeStowDelay;
 
+    private boolean             _hasGamePiece;
+    private double              _maxIntakeVelocity;
+
     private Manipulator()
     {
         _intakeMotor        = new CANSparkMax(Constants.CAN.INTAKE_ID, MotorType.kBrushless);
-        _intakeSensor       = new DigitalInput(Constants.DIO.LIGHT_SENSOR_PORT);
         _intakeState        = IntakeState.Off;
 
         _ejectTime          = Constants.Manipulator.EJECT_TIME;
@@ -102,7 +102,7 @@ public class Manipulator extends SubsystemBase
                 break;
             
             case Off:    
-                speed = 0;
+                speed = hasGamePiece() ? Constants.Manipulator.INTAKE_HOLD_SPEED : 0;
                 break;
             
             case Reverse:    
@@ -119,7 +119,7 @@ public class Manipulator extends SubsystemBase
     
     public boolean hasGamePiece()
     {
-        return !_intakeSensor.get();    
+        return _hasGamePiece;    
     }
     
     //Settings Functions
@@ -163,39 +163,33 @@ public class Manipulator extends SubsystemBase
         return _intakeStowDelay;
     }
 
+    public double getIntakeVelocity()
+    {
+        return _intakeMotor.getEncoder().getVelocity();
+    }
+
     @Override
     public void periodic()
     {
         _intakeMotor.setInverted(true);
 
-        switch (_intakeState)
+        double intakeSpeed = getIntakeSpeed();
+        double intakeVelocity = getIntakeVelocity();
+
+        if (intakeSpeed == 0.0)
         {
-            case On:
-                _intakeMotor.setVoltage(_intakeSpeed * Constants.MOTOR_VOLTAGE);
-                break;
-
-            case Reverse:
-                _intakeMotor.setVoltage(-_placeSpeed * Constants.MOTOR_VOLTAGE);
-                break;
-
-            case Off:
-                if (hasGamePiece())
-                {
-                    _intakeMotor.setVoltage(Constants.Manipulator.INTAKE_HOLD_SPEED * Constants.MOTOR_VOLTAGE);
-                }
-                else
-                {
-                    _intakeMotor.setVoltage(0);
-                }
-                break;
-
-            case ConeEject:
-                _intakeMotor.setVoltage(-Constants.Manipulator.CONE_EJECT_SPEED * Constants.MOTOR_VOLTAGE);
-                break;
-
-            default:
-                _intakeMotor.setVoltage(0);
-                break;
+            
         }
+
+        if (hasGamePiece())
+        {
+
+        }
+        else
+        {
+
+        }
+
+        _intakeMotor.setVoltage(intakeSpeed * Constants.MOTOR_VOLTAGE);
     }
 }

@@ -51,6 +51,6 @@ public class CmdManipulatorIntakeGamePiece extends CommandBase
     @Override
     public boolean isFinished() 
     {
-        return _timer <= 0;
+        return _timer <= 0 && _timerActive;
     }
 }
