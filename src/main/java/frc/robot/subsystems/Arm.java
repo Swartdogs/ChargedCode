@@ -15,8 +15,6 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
@@ -81,8 +79,6 @@ public class Arm extends SubsystemBase
     private CANSparkMax         _wristMotor;
     private DutyCycleEncoder    _wristEncoder;
     private PIDControl          _wristPID;
-    private double              _wristSpeed;
-    private boolean             _wristOverride;
 
     //Twist Motion Controls
     private CANSparkMax         _twistMotor;
@@ -145,8 +141,6 @@ public class Arm extends SubsystemBase
         _minShoulderAngle       = Constants.Arm.SHOULDER_MIN_ANGLE;
         _maxShoulderAngle       = Constants.Arm.SHOULDER_MAX_ANGLE;
         _maxArmExtension        = Constants.Arm.ARM_MAX_EXTENSION;
-        _wristSpeed             = 0;
-        _wristOverride          = false;
 
         _extensionMotor.restoreFactoryDefaults();
         _shoulderMotor.restoreFactoryDefaults();
@@ -321,14 +315,17 @@ public class Arm extends SubsystemBase
 
     public void modifyArmPosition(Vector coordinate, double handAngle, double twistAngle)
     {
-        coordinate.setX(coordinate.getX() * Math.signum(_coordinate.getX()));
-        coordinate = _coordinate.add(coordinate);
-        if (Math.signum(coordinate.getX()) != Math.signum(_coordinate.getX()))
+        var diff = coordinate.clone();
+        diff.setX(diff.getX() * Math.signum(_coordinate.getX()));
+
+        var target = _coordinate.add(diff);
+
+        if (Math.signum(target.getX()) != Math.signum(_coordinate.getX()))
         {
-            coordinate.setX(0);
+            target.setX(0);
         }
 
-        _coordinate = coordinate;
+        _coordinate = target;
 
         _handAngle += handAngle * Math.signum(_coordinate.getX()); 
         _twistPID.setSetpoint(twistAngle);
@@ -448,19 +445,13 @@ public class Arm extends SubsystemBase
             default:
                 break;
         }
-
-        _twistMotor.setVoltage(_twistPID.calculate(getTwistAngle()) * Constants.MOTOR_VOLTAGE);
         
-        if (!_wristOverride)
-        {
-            _wristSpeed = _wristPID.calculate(getWristAngle());
-            _wristMotor.setVoltage(_wristSpeed * Constants.MOTOR_VOLTAGE);
-        }
-
         _shoulderPid.setSetpoint(_shoulderSetpoint - Math.min(Math.max(Drive.getInstance().getChassisPitch(), -20.0), 20.0)); // preserve input range
-
+        
         _shoulderMotor.setVoltage(_shoulderPid.calculate(getShoulderAngle()) * Constants.MOTOR_VOLTAGE);
         _extensionMotor.setVoltage(_extensionPid.calculate(getExtensionDistance()) * Constants.MOTOR_VOLTAGE);
+        _wristMotor.setVoltage(_wristPID.calculate(getWristAngle()) * Constants.MOTOR_VOLTAGE);
+        _twistMotor.setVoltage(_twistPID.calculate(getTwistAngle()) * Constants.MOTOR_VOLTAGE);
     }
 
     @Override
@@ -470,15 +461,5 @@ public class Arm extends SubsystemBase
         _pitchEncoderSim.set(_shoulderMotor.getEncoder().getPosition());
         _wristEncoderSim.set(_wristMotor.getEncoder().getPosition());
         _twistEncoderSim.set(_twistMotor.getEncoder().getPosition());
-    }
-    
-    public Command printWristHealthCommand()
-    {
-        return Commands.either
-        (
-            Commands.print(String.format("Wrist Angle: %6.2f, Wrist Command: %5.2f, Wrist Setpoint: %6.2f", getWristAngle(), _wristSpeed, _wristPID.getSetpoint())),
-            Commands.print(String.format("Wrist overridden!")),
-            () -> !_wristOverride
-        ).repeatedly();
     }
 }

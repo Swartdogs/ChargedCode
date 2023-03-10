@@ -3,7 +3,6 @@ package frc.robot.groups;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.ArmData;
@@ -39,20 +38,14 @@ public class GrpSetArmPosition extends SequentialCommandGroup
                 Arm.getInstance().setArmPosition(position);
             }),
 
-            new ParallelCommandGroup
-            (
-                new ProxyCommand(()-> new CmdArmSetPosition(Constants.Lookups.STOW_FRONT_CUBE, Constants.Arm.PRESET_MOTION_RATE))
-
+            new ProxyCommand(()-> new CmdArmSetPosition(Constants.Lookups.STOW_FRONT_CUBE, Constants.Arm.PRESET_MOTION_RATE))
                 // If the signs of where we are and where we need to go are different, we need to stow.
                 // If the product of the signs is -1, we're crossing sides
                 // If the product of the signs is  0, we're either stowing or are already stowed
                 // If the product of the signs is  1, the arm is NOT changing which side it's on  
-            ).unless(() -> Math.signum(_armData.getCoordinate().getX()) * Math.signum(Arm.getInstance().getCoordinate().getX()) >= 0),
+            .unless(() -> Math.signum(_armData.getCoordinate().getX()) * Math.signum(Arm.getInstance().getCoordinate().getX()) >= 0),
 
-            new ParallelCommandGroup
-            (
-                new ProxyCommand(()-> new CmdArmSetPosition(_armData, Constants.Arm.PRESET_MOTION_RATE))
-            )
+            new ProxyCommand(()-> new CmdArmSetPosition(_armData, Constants.Arm.PRESET_MOTION_RATE))
         );
 
         addRequirements(Arm.getInstance(), Manipulator.getInstance());

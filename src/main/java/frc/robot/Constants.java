@@ -186,6 +186,7 @@ public final class Constants
 
     public static class Lookups
     {
+        /* Original numbers
         public static final ArmData LOW_FRONT_CONE        = new ArmData(-105,        0,          90,    -15);
         public static final ArmData LOW_FRONT_CUBE        = new ArmData(-105,        0,          90,    -15);
         public static final ArmData LOW_BACK_CONE         = new ArmData( 105,        0,         -90,     15);
@@ -206,6 +207,30 @@ public final class Constants
         public static final ArmData GROUND_FRONT_CUBE     = new ArmData(  90,        0,           0,    -45);
         public static final ArmData GROUND_BACK_CONE      = new ArmData(-110,        0,          90,    -15);
         public static final ArmData GROUND_BACK_CUBE      = new ArmData( -90,        0,          -0,     45);
+        */
+
+        /*                                                                          X         Y         Angle    Twist */
+        public static final ArmData LOW_FRONT_CONE        = new ArmData(new Vector( -34.42,   12.60),  -90.00,   90.00);
+        public static final ArmData LOW_FRONT_CUBE        = new ArmData(new Vector( -34.42,   12.60),  -90.00,   90.00);
+        public static final ArmData LOW_BACK_CONE         = new ArmData(new Vector(  34.42,   12.60),   90.00,  -90.00);
+        public static final ArmData LOW_BACK_CUBE         = new ArmData(new Vector(  34.42,   12.60),   90.00,  -90.00);
+        public static final ArmData MID_FRONT_CONE        = new ArmData(new Vector( -33.57,   41.39),  -54.00,   90.00);
+        public static final ArmData MID_FRONT_CUBE        = new ArmData(new Vector( -32.45,   22.37), -100.00,   90.00);
+        public static final ArmData MID_BACK_CONE         = new ArmData(new Vector(  33.57,   41.39),   54.00,  -90.00);
+        public static final ArmData MID_BACK_CUBE         = new ArmData(new Vector(  32.45,   22.37),  100.00,  -90.00);
+        public static final ArmData HIGH_FRONT_CONE       = new ArmData(new Vector( -48.98,   53.28),  -57.00,   90.00);
+        public static final ArmData HIGH_FRONT_CUBE       = new ArmData(new Vector( -46.67,   37.08),  -90.00,   90.00);
+        public static final ArmData HIGH_BACK_CONE        = new ArmData(new Vector(  48.98,   53.28),   57.00,  -90.00);
+        public static final ArmData HIGH_BACK_CUBE        = new ArmData(new Vector(  46.67,   37.08),   90.00,  -90.00);
+        public static final ArmData SUBSTATION_FRONT_CONE = new ArmData(new Vector(  29.11,   31.09),   86.00,  -90.00);
+        public static final ArmData SUBSTATION_FRONT_CUBE = new ArmData(new Vector(  29.11,   31.09),   86.00,  -90.00);
+        public static final ArmData SUBSTATION_BACK_CONE  = new ArmData(new Vector( -29.11,   31.09),  -86.00,   90.00);
+        public static final ArmData SUBSTATION_BACK_CUBE  = new ArmData(new Vector( -29.11,   31.09),  -86.00,   90.00);
+        public static final ArmData GROUND_FRONT_CONE     = new ArmData(new Vector(  33.91,    9.62),   95.00,  -90.00);
+        public static final ArmData GROUND_FRONT_CUBE     = new ArmData(new Vector(  29.73,    4.27),  135.00,    0.00);
+        public static final ArmData GROUND_BACK_CONE      = new ArmData(new Vector( -33.91,    9.62),  -95.00,   90.00);
+        public static final ArmData GROUND_BACK_CUBE      = new ArmData(new Vector( -29.73,    4.27), -135.00,    0.00);
+
         public static final ArmData STOW_FRONT_CONE       = new ArmData(new Vector( 0.0, Arm.SHOULDER_HEIGHT + Arm.ARM_RETRACTED_LENGTH + Arm.HAND_LENGTH), 0.0,  90.0);
         public static final ArmData STOW_FRONT_CUBE       = STOW_FRONT_CONE;
         public static final ArmData STOW_BACK_CONE        = STOW_FRONT_CONE.opposite();

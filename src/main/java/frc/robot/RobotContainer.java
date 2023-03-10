@@ -141,8 +141,6 @@ public class RobotContainer
         Controller.OperatorJoystick.button( 3).onFalse(Commands.runOnce(operatorReachAdjustment::cancel));
         Controller.OperatorJoystick.button( 4).onTrue(operatorWristAdjustment);
         Controller.OperatorJoystick.button( 4).onFalse(Commands.runOnce(operatorWristAdjustment::cancel));
-        Controller.OperatorJoystick.button(11).toggleOnTrue(Arm.getInstance().printWristHealthCommand());
-        //Controller.OperatorJoystick.button(12).onTrue(Commands.runOnce(Arm.getInstance()::overrideWrist));
         
         Controller.ButtonBox.button( 1).onTrue(new GrpPlaceGamePiece());
         Controller.ButtonBox.button( 2).onTrue(intakeAdjustment);
@@ -153,8 +151,8 @@ public class RobotContainer
         Controller.ButtonBox.button( 6).onTrue(new CmdArmModifyPosition(new Vector(0.0, 3.0), 0.0, 0.0, Constants.Arm.ADJUST_MOTION_RATE));
         Controller.ButtonBox.button( 7).onTrue(new GrpSetArmPosition(ArmPosition.Middle));
         Controller.ButtonBox.button( 8).onTrue(new GrpIntakeGamePiece(ArmPosition.Substation));
-        Controller.ButtonBox.button( 9).onTrue(new CmdArmModifyPosition(new Vector(-3.0, 0.0), 0.0, 0.0, Constants.Arm.ADJUST_MOTION_RATE));
-        Controller.ButtonBox.button(10).onTrue(new CmdArmModifyPosition(new Vector(0.0, -3.0), 0.0, 0.0, Constants.Arm.ADJUST_MOTION_RATE));
+        Controller.ButtonBox.button( 9).onTrue(new CmdArmModifyPosition(new Vector(-3.0,  0.0), 0.0, 0.0, Constants.Arm.ADJUST_MOTION_RATE));
+        Controller.ButtonBox.button(10).onTrue(new CmdArmModifyPosition(new Vector( 0.0, -3.0), 0.0, 0.0, Constants.Arm.ADJUST_MOTION_RATE));
         Controller.ButtonBox.button(11).onTrue(new GrpSetArmPosition(ArmPosition.Low));
         Controller.ButtonBox.button(12).onTrue(new GrpIntakeGamePiece(ArmPosition.Ground));
 
