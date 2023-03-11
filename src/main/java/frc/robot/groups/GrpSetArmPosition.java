@@ -14,11 +14,10 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmPosition;
 import frc.robot.subsystems.Arm.ArmSide;
 import frc.robot.subsystems.Arm.HandMode;
-import frc.robot.subsystems.drive.Vector;
 
 public class GrpSetArmPosition extends SequentialCommandGroup 
 {
-    private ArmData _armData = new ArmData(new Vector(), 0, 0);
+    private ArmData _armData = Constants.Lookups.STOW_FRONT_CONE;
 
     public GrpSetArmPosition(ArmPosition position)
     {
