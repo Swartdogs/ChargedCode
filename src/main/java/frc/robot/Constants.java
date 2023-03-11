@@ -173,6 +173,11 @@ public final class Constants
         public static final double  CONE_EJECT_SPEED                = 0.30;
     }
 
+    public static class Led
+    {
+        public static final int     NUM_LEDS                        = 25;
+    }
+
     public static class Lookups
     {
         public static final ArmData LOW_FRONT_CONE        = new ArmData(-105,        0,          90,    -15);
