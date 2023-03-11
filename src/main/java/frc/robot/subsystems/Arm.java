@@ -293,7 +293,7 @@ public class Arm extends SubsystemBase
         double cos = Math.cos(Math.toRadians(_handAngle));
 
         double x = _coordinate.getX() - Constants.Arm.HAND_LENGTH * sin;
-        double y = _coordinate.getY() - Constants.Arm.HAND_LENGTH * cos; 
+        double y = _coordinate.getY() - Constants.Arm.HAND_LENGTH * cos - Constants.Arm.SHOULDER_HEIGHT; 
 
         double a = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
         double s = Math.toDegrees(Math.atan2(x, y));
