@@ -5,8 +5,9 @@ import java.util.function.Supplier;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import frc.robot.commands.CmdArmModifyPosition;
+import frc.robot.commands.CmdArmSetPosition;
 import frc.robot.commands.CmdManipulatorPlaceGamePiece;
 import frc.robot.subsystems.Arm.ArmPosition;
 import frc.robot.subsystems.Manipulator;
@@ -34,18 +35,13 @@ public class GrpPlaceGamePiece extends SequentialCommandGroup
                 new SequentialCommandGroup
                 (
                     // Modify the shoulder downward and wait for it to be in position
-                    new CmdArmModifyPosition(new Vector(0, -6), 0.0, 0.0, 0.0),
-                    Commands.waitSeconds(1),
+                    new CmdArmSetPosition(new Vector(0, -6), 0.0, 0.0, Constants.Arm.PLACE_MOTION_RATE, false),
 
                     // Retract the arm, but also run the intake in reverse as long as we're retracting
                     new ParallelDeadlineGroup
                     (
                         // Retract the arm and wait for it to be retracted
-                        new SequentialCommandGroup
-                        (
-                            new CmdArmModifyPosition(new Vector(-6, 0), 0.0, 0.0, 0.0),
-                            Commands.waitSeconds(1)
-                        ),
+                        new CmdArmSetPosition(new Vector(-6, 0), 0.0, 0.0, Constants.Arm.PLACE_MOTION_RATE, false),
 
                         // Start the intake when retraction starts, disable the intake when retraction ends
                         Commands.startEnd(Manipulator.getInstance()::setIntakeToConeEjectSpeed, Manipulator.getInstance()::disableIntake)

@@ -16,7 +16,7 @@ import frc.robot.commands.CmdDriveRotateModules;
 import frc.robot.commands.CmdDriveStrafeWithJoystick;
 import frc.robot.commands.CmdDriveWithJoystick;
 import frc.robot.commands.CmdArmAdjustContinuous;
-import frc.robot.commands.CmdArmModifyPosition;
+import frc.robot.commands.CmdArmSetPosition;
 import frc.robot.groups.GrpPlaceGamePiece;
 import frc.robot.groups.GrpAutonomous;
 import frc.robot.groups.GrpIntakeGamePiece;
@@ -136,7 +136,7 @@ public class RobotContainer
 
         Controller.OperatorJoystick.button( 1).onTrue(operatorHeightAdjustment);
         Controller.OperatorJoystick.button( 1).onFalse(Commands.runOnce(operatorHeightAdjustment::cancel));
-        Controller.OperatorJoystick.button( 2).onTrue(Commands.runOnce(Arm.getInstance()::flipHand));
+        Controller.OperatorJoystick.button( 2).onTrue(Commands.runOnce(() -> Arm.getInstance().setHandIsFlipped(!Arm.getInstance().handIsFlipped())));
         Controller.OperatorJoystick.button( 3).onTrue(operatorReachAdjustment);
         Controller.OperatorJoystick.button( 3).onFalse(Commands.runOnce(operatorReachAdjustment::cancel));
         Controller.OperatorJoystick.button( 4).onTrue(operatorWristAdjustment);
@@ -147,12 +147,12 @@ public class RobotContainer
         Controller.ButtonBox.button( 2).onFalse(Commands.runOnce(intakeAdjustment::cancel));
         Controller.ButtonBox.button( 3).onTrue(new GrpSetArmPosition(ArmPosition.High)); 
         Controller.ButtonBox.button( 4).onTrue(new GrpSetArmPosition(ArmPosition.Stow));
-        Controller.ButtonBox.button( 5).onTrue(new CmdArmModifyPosition(new Vector(3.0, 0.0), 0.0, 0.0, Constants.Arm.ADJUST_MOTION_RATE));
-        Controller.ButtonBox.button( 6).onTrue(new CmdArmModifyPosition(new Vector(0.0, 3.0), 0.0, 0.0, Constants.Arm.ADJUST_MOTION_RATE));
+        Controller.ButtonBox.button( 5).onTrue(new CmdArmSetPosition(new Vector(3.0, 0.0), 0.0, 0.0, Constants.Arm.ADJUST_MOTION_RATE, false));
+        Controller.ButtonBox.button( 6).onTrue(new CmdArmSetPosition(new Vector(0.0, 3.0), 0.0, 0.0, Constants.Arm.ADJUST_MOTION_RATE, false));
         Controller.ButtonBox.button( 7).onTrue(new GrpSetArmPosition(ArmPosition.Middle));
         Controller.ButtonBox.button( 8).onTrue(new GrpIntakeGamePiece(ArmPosition.Substation));
-        Controller.ButtonBox.button( 9).onTrue(new CmdArmModifyPosition(new Vector(-3.0,  0.0), 0.0, 0.0, Constants.Arm.ADJUST_MOTION_RATE));
-        Controller.ButtonBox.button(10).onTrue(new CmdArmModifyPosition(new Vector( 0.0, -3.0), 0.0, 0.0, Constants.Arm.ADJUST_MOTION_RATE));
+        Controller.ButtonBox.button( 9).onTrue(new CmdArmSetPosition(new Vector(-3.0,  0.0), 0.0, 0.0, Constants.Arm.ADJUST_MOTION_RATE, false));
+        Controller.ButtonBox.button(10).onTrue(new CmdArmSetPosition(new Vector( 0.0, -3.0), 0.0, 0.0, Constants.Arm.ADJUST_MOTION_RATE, false));
         Controller.ButtonBox.button(11).onTrue(new GrpSetArmPosition(ArmPosition.Low));
         Controller.ButtonBox.button(12).onTrue(new GrpIntakeGamePiece(ArmPosition.Ground));
 

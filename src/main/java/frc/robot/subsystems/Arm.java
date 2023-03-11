@@ -99,6 +99,7 @@ public class Arm extends SubsystemBase
     private ResetStatus         _reset;
     private Vector              _coordinate;
     private double              _handAngle;
+    private boolean             _handFlipped;
 
     // Simulation
     private DIOSim              _limitSwitchSim;
@@ -136,6 +137,10 @@ public class Arm extends SubsystemBase
         _wristMaxAngle          = Constants.Arm.WRIST_MIN_ANGLE;
         _twistMinRotation       = Constants.Arm.TWIST_MIN_ROTATION;
         _twistMaxRotation       = Constants.Arm.TWIST_MAX_ROTATION;
+
+        _coordinate             = Constants.Lookups.STOW_FRONT_CONE.getCoordinate();
+        _handAngle              = Constants.Lookups.STOW_FRONT_CONE.getHandAngle();
+        _handFlipped            = false;
         
         /* Settings */
         _minShoulderAngle       = Constants.Arm.SHOULDER_MIN_ANGLE;
@@ -307,29 +312,9 @@ public class Arm extends SubsystemBase
     public void setArmPosition(Vector coordinate, double handAngle, double twistAngle)
     {
         _coordinate = coordinate;
-        _handAngle  = handAngle; 
-        _twistPID.setSetpoint(twistAngle);
-        
-        updateArmSetpoints();
-    }
+        _handAngle  = handAngle;
 
-    public void modifyArmPosition(Vector coordinate, double handAngle, double twistAngle)
-    {
-        var diff = coordinate.clone();
-        diff.setX(diff.getX() * Math.signum(_coordinate.getX()));
-
-        var target = _coordinate.add(diff);
-
-        if (Math.signum(target.getX()) != Math.signum(_coordinate.getX()))
-        {
-            target.setX(0);
-        }
-
-        _coordinate = target;
-
-        _handAngle += handAngle * Math.signum(_coordinate.getX()); 
-        _twistPID.setSetpoint(twistAngle);
-        
+        setTwistAngle(twistAngle);
         updateArmSetpoints();
     }
 
@@ -343,14 +328,7 @@ public class Arm extends SubsystemBase
         return _handAngle;
     }
 
-    public void modifyHandAngle(double modification)
-    {
-        _handAngle += modification * Math.signum(_coordinate.getX());
-
-        updateArmSetpoints();
-    }
-
-    public void setArmPosition(ArmPosition position)
+    public void setTargetArmPreset(ArmPosition position)
     {
         _armPosition = position;
     }
@@ -362,12 +340,22 @@ public class Arm extends SubsystemBase
 
     public void setTwistAngle(double position)
     {
+        if (_handFlipped)
+        {
+            position *= -1;
+        }
+
         _twistPID.setSetpoint(position);
     }
 
-    public void flipHand()
+    public void setHandIsFlipped(boolean flipped)
     {
-        _twistPID.setSetpoint(-_twistPID.getSetpoint());
+        _handFlipped = flipped;
+    }
+
+    public boolean handIsFlipped()
+    {
+        return _handFlipped;
     }
 
     //Settings Functions
@@ -446,12 +434,14 @@ public class Arm extends SubsystemBase
                 break;
         }
         
-        _shoulderPid.setSetpoint(_shoulderSetpoint - Math.min(Math.max(Drive.getInstance().getChassisPitch(), -20.0), 20.0)); // preserve input range
+        _shoulderPid.setSetpoint(_shoulderSetpoint - Math.min(Math.max(Drive.getInstance().getChassisPitch(), -20.0), 20.0), false); // preserve input range
         
         _shoulderMotor.setVoltage(_shoulderPid.calculate(getShoulderAngle()) * Constants.MOTOR_VOLTAGE);
         _extensionMotor.setVoltage(_extensionPid.calculate(getExtensionDistance()) * Constants.MOTOR_VOLTAGE);
         _wristMotor.setVoltage(_wristPID.calculate(getWristAngle()) * Constants.MOTOR_VOLTAGE);
         _twistMotor.setVoltage(_twistPID.calculate(getTwistAngle()) * Constants.MOTOR_VOLTAGE);
+
+        //System.out.println(String.format("Shoulder Setpoint: %6.2f, Shoulder Current: %6.2f, Shoulder Out: %6.2f", _shoulderPid.getSetpoint(), getShoulderAngle(), shoulderOutput));
     }
 
     @Override

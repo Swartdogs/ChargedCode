@@ -1,8 +1,8 @@
 import math
 
-A = 17 # Set to Arm.ARM_RETRACTED_LENGTH
-H = 18 # Set to Arm.HAND_LENGTH
-SH = 17 # Set to Arm.SHOULDER_HEIGHT
+A  = 30.5 # Set to Arm.ARM_RETRACTED_LENGTH
+H  = 11 # Set to Arm.HAND_LENGTH
+SH = 17.5 # Set to Arm.SHOULDER_HEIGHT
 
 def vectorize(s, e, t, w):
     a = A + e
@@ -37,4 +37,4 @@ print('Position                 X         Y         Angle    Twist')
 print('-----------------------------------------------------------')
 
 for name, s, e, t, w in entries:
-    print((name + ": ").ljust(23, ' ') + vectorize(s, e, t, w))
+    print("        public static final ArmData %s = new ArmData(new Vector%s);"%(name.ljust(21," "), vectorize(s, e, t, w)))

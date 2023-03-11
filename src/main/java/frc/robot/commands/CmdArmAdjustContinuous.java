@@ -30,11 +30,20 @@ public class CmdArmAdjustContinuous extends CommandBase
     @Override
     public void execute() 
     {
-        Vector coord      = new Vector(_modifyX.getAsDouble(), _modifyY.getAsDouble());
-        double handAngle  = _modifyHandAngle.getAsDouble();
-        double twistAngle = _modifyTwistAngle.getAsDouble(); 
+        Vector initialCoordinate = Arm.getInstance().getCoordinate();
+        double coordSign         = Math.signum(initialCoordinate.getX());
 
-        Arm.getInstance().modifyArmPosition(coord, handAngle, twistAngle);
+        Vector coord = initialCoordinate.add(new Vector(_modifyX.getAsDouble() * coordSign, _modifyY.getAsDouble()));
+
+        if (Math.signum(coord.getX()) != coordSign)
+        {
+            coord.setX(0);
+        }
+
+        double handAngle  = Arm.getInstance().getHandAngle()        + _modifyHandAngle.getAsDouble()  * coordSign;
+        double twistAngle = Arm.getInstance().getTwistTargetAngle() + _modifyTwistAngle.getAsDouble() * coordSign; 
+
+        Arm.getInstance().setArmPosition(coord, handAngle, twistAngle);
     }
 
     @Override

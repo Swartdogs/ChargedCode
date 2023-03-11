@@ -34,17 +34,17 @@ public class GrpSetArmPosition extends SequentialCommandGroup
             new InstantCommand(()-> 
             {
                 _armData = Constants.Lookups.lookUpArmData(position, armSideSupplier.get(), handModeSupplier.get());
-                Arm.getInstance().setArmPosition(position);
+                Arm.getInstance().setTargetArmPreset(position);
             }),
 
-            new ProxyCommand(()-> new CmdArmSetPosition(Constants.Lookups.STOW_FRONT_CUBE, Constants.Arm.PRESET_MOTION_RATE))
+            new ProxyCommand(()-> new CmdArmSetPosition(Constants.Lookups.STOW_FRONT_CUBE, Constants.Arm.PRESET_MOTION_RATE, true))
                 // If the signs of where we are and where we need to go are different, we need to stow.
                 // If the product of the signs is -1, we're crossing sides
                 // If the product of the signs is  0, we're either stowing or are already stowed
                 // If the product of the signs is  1, the arm is NOT changing which side it's on  
             .unless(() -> Math.signum(_armData.getCoordinate().getX()) * Math.signum(Arm.getInstance().getCoordinate().getX()) >= 0),
 
-            new ProxyCommand(()-> new CmdArmSetPosition(_armData, Constants.Arm.PRESET_MOTION_RATE))
+            new ProxyCommand(()-> new CmdArmSetPosition(_armData, Constants.Arm.PRESET_MOTION_RATE, true))
         );
 
         addRequirements(Arm.getInstance(), Manipulator.getInstance());
