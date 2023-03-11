@@ -8,6 +8,7 @@ import com.revrobotics.REVPhysicsSim;
 // import com.revrobotics.RelativeEncoder;
 // import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.wpilibj.DriverStation;
 // import PIDControl.PIDControl;
 // import PIDControl.PIDControl.Coefficient;
 // import edu.wpi.first.math.MathUtil;
@@ -15,12 +16,18 @@ import com.revrobotics.REVPhysicsSim;
 // import edu.wpi.first.wpilibj.DutyCycleEncoder;
 // import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.CmdLEDWaterfallSolidColor;
+import frc.robot.commands.CmdLedAutonomous;
+import frc.robot.commands.CmdLedDisabled;
+import frc.robot.commands.CmdLedTeleop;
 // import edu.wpi.first.wpilibj2.command.Commands;
 // import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 // import frc.robot.subsystems.Manipulator;
 // import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Led;
 
 public class Robot extends TimedRobot 
 {
@@ -190,6 +197,13 @@ public class Robot extends TimedRobot
         // );
     }
 
+    @Override
+    public void disabledInit()
+    {
+        Led.getInstance().switchDefaultCommand(new CmdLedDisabled());
+
+        new CmdLEDWaterfallSolidColor(Constants.Led.ORANGE).schedule();
+    }
   
     @Override
     public void autonomousInit() 
@@ -200,6 +214,27 @@ public class Robot extends TimedRobot
         {
             _autonomousCommand.schedule();
         }
+
+        Led.getInstance().switchDefaultCommand(new CmdLedAutonomous());
+
+        Color c;
+
+        switch(DriverStation.getAlliance())
+        {
+            case Red:
+                c = Constants.Led.RED;
+                break;
+
+            case Blue:
+                c = Constants.Led.BLUE;
+                break;
+
+            default:
+                c = Constants.Led.GREEN;
+                break;
+        }
+
+        new CmdLEDWaterfallSolidColor(c).schedule();
     }
 
     @Override
@@ -209,6 +244,8 @@ public class Robot extends TimedRobot
         {
             _autonomousCommand.cancel();
         }
+
+        Led.getInstance().switchDefaultCommand(new CmdLedTeleop());
     }
 
     @Override

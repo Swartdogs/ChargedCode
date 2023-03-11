@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
@@ -17,6 +18,8 @@ import frc.robot.commands.CmdDriveStrafeWithJoystick;
 import frc.robot.commands.CmdDriveWithJoystick;
 import frc.robot.commands.CmdArmAdjustContinuous;
 import frc.robot.commands.CmdArmSetPosition;
+import frc.robot.commands.CmdLEDWaterfallSolidColor;
+import frc.robot.commands.CmdLedPeriodic;
 import frc.robot.groups.GrpPlaceGamePiece;
 import frc.robot.groups.GrpAutonomous;
 import frc.robot.groups.GrpIntakeGamePiece;
@@ -101,6 +104,7 @@ public class RobotContainer
     private void configureDefaultCommands()
     {
         Drive.getInstance().setDefaultCommand(new CmdDriveWithJoystick());
+        Led.getInstance().setDefaultCommand(new CmdLedPeriodic());
     }
 
     private void configureBindings() 
@@ -141,6 +145,8 @@ public class RobotContainer
         Controller.OperatorJoystick.button( 3).onFalse(Commands.runOnce(operatorReachAdjustment::cancel));
         Controller.OperatorJoystick.button( 4).onTrue(operatorWristAdjustment);
         Controller.OperatorJoystick.button( 4).onFalse(Commands.runOnce(operatorWristAdjustment::cancel));
+        Controller.OperatorJoystick.button( 5).onTrue(new CmdLEDWaterfallSolidColor(new Color(255, 0, 0)).ignoringDisable(true));
+        Controller.OperatorJoystick.button( 6).onTrue(new CmdLEDWaterfallSolidColor(new Color(0, 0, 255)).ignoringDisable(true));
         
         Controller.ButtonBox.button( 1).onTrue(new GrpPlaceGamePiece());
         Controller.ButtonBox.button( 2).onTrue(intakeAdjustment);

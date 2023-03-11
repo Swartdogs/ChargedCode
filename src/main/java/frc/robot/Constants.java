@@ -2,6 +2,7 @@ package frc.robot;
 
 import java.util.HashMap;
 
+import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.subsystems.Arm.ArmPosition;
 import frc.robot.subsystems.Arm.ArmSide;
 import frc.robot.subsystems.Arm.HandMode;
@@ -182,6 +183,19 @@ public final class Constants
 
         public static final double  INTAKE_HOLD_SPEED               = 0.15;
         public static final double  CONE_EJECT_SPEED                = 0.30;
+    }
+
+    public static class Led
+    {
+        public static final int     NUM_LEDS                        = 25;
+
+        public static final Color   RED                             = new Color(255, 0, 0);
+        public static final Color   BLUE                            = new Color(0, 0, 255);
+        public static final Color   YELLOW                          = new Color(255, 115, 0);
+        public static final Color   PURPLE                          = new Color(127, 0, 255);
+        public static final Color   ORANGE                          = new Color(255, 50, 0);
+        public static final Color   GREEN                           = new Color(0, 115, 0);
+        public static final Color   OFF                             = new Color(0, 0, 0);
     }
 
     public static class Lookups
