@@ -223,7 +223,7 @@ public class Dashboard extends SubsystemBase
         _allianceBox.setBoolean(DriverStation.getAlliance() == Alliance.Blue);
 
         _shoulderAngle.setDouble(Double.parseDouble(String.format("%6.2f", Arm.getInstance().getShoulderAngle())));
-        _extensionDistance.setDouble(Double.parseDouble(String.format("%6.2f", Arm.getInstance().getExtensionPosition())));
+        _extensionDistance.setDouble(Double.parseDouble(String.format("%6.2f", Arm.getInstance().getExtensionDistance())));
         _wristAngle.setDouble(Double.parseDouble(String.format("%6.2f", Arm.getInstance().getWristAngle())));
         _twistAngle.setDouble(Double.parseDouble(String.format("%6.2f", Arm.getInstance().getTwistAngle())));
         

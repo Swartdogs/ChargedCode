@@ -18,13 +18,8 @@ public class CmdManipulatorSetTwistAngle extends CommandBase
     @Override
     public void initialize() 
     {
-        double angle = _twistAngle;
-        if(_armSubsystem.isFlipped())
-        {
-            angle *= -1;
-        }
-        RobotLog.getInstance().log(String.format("Setting twist angle to %6.2f", angle));
-        _armSubsystem.setTwistAngle(angle);
+        RobotLog.getInstance().log(String.format("Setting twist angle to %6.2f", _twistAngle));
+        _armSubsystem.setTwistAngle(_twistAngle);
     }
     
     @Override

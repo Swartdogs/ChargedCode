@@ -1,38 +1,40 @@
 package frc.robot;
 
+import frc.robot.subsystems.drive.Vector;
+
 public class ArmData 
 {
-    private double _armAngle;
-    private double _armExtension;
-    private double _twistAngle;
-    private double _wristAngle;
+    private Vector  _coordinate;
+    private double  _handAngle;
+    private double  _twistAngle;
+    private boolean _preserveHandFlip;
     
-    public ArmData(double armAngle, double armExtension, double twistAngle, double wristAngle) 
+    public ArmData(Vector coordinate, double handAngle, double twistAngle, boolean preserveHandFlip) 
     {
-        _armAngle     = armAngle;
-        _armExtension = armExtension;
-        _twistAngle   = twistAngle;
-        _wristAngle   = wristAngle;
+        _coordinate       = coordinate;
+        _handAngle        = handAngle;
+        _twistAngle       = twistAngle;
+        _preserveHandFlip = preserveHandFlip;
     }
 
-    public double getArmAngle()
+    public Vector getCoordinate()
     {
-        return _armAngle;
+        return _coordinate;
     }
 
-    public void setArmAngle(double angle)
+    public void setCoordinate(Vector coordinate)
     {
-        _armAngle = angle;
+        _coordinate = coordinate;
     }
 
-    public double getArmExtension()
+    public double getHandAngle()
     {
-        return _armExtension;
+        return _handAngle;
     }
 
-    public void setArmExtension(double extension)
+    public void setHandAngle(double handAngle)
     {
-        _armExtension = extension;
+        _handAngle = handAngle;
     }
 
     public double getTwistAngle()
@@ -45,13 +47,18 @@ public class ArmData
         _twistAngle = angle;
     }
 
-    public double getWristAngle()
+    public boolean preserveHandFlip()
     {
-        return _wristAngle;
+        return _preserveHandFlip;
     }
 
-    public void setWristAngle(double angle)
+    public void setPreserveHandFlip(boolean preserveHandFlip)
     {
-        _wristAngle = angle;
+        _preserveHandFlip = preserveHandFlip;
+    }
+
+    public ArmData opposite()
+    {
+        return new ArmData(new Vector(-_coordinate.getX(), _coordinate.getY()), -_handAngle, -_twistAngle, _preserveHandFlip);
     }
 }
