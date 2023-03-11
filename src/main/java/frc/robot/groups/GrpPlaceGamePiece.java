@@ -41,7 +41,7 @@ public class GrpPlaceGamePiece extends SequentialCommandGroup
                     new ParallelDeadlineGroup
                     (
                         // Retract the arm and wait for it to be retracted
-                        new CmdArmSetPosition(new Vector(-6, 0), 0.0, 0.0, Constants.Arm.PLACE_MOTION_RATE, false),
+                        new CmdArmSetPosition(new Vector(-10, 0), 0.0, 0.0, Constants.Arm.PLACE_MOTION_RATE, false),
 
                         // Start the intake when retraction starts, disable the intake when retraction ends
                         Commands.startEnd(Manipulator.getInstance()::setIntakeToConeEjectSpeed, Manipulator.getInstance()::disableIntake)

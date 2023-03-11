@@ -161,9 +161,9 @@ public final class Constants
         public static final double  WRIST_JOYSTICK_RATE             = 60.0 / Constants.LOOPS_PER_SECOND; // Degrees per second
 
         // all of these in inches per second
-        public static final double  PRESET_MOTION_RATE              = 32.0; // for buttons (stow, high, floor, etc.)
-        public static final double  PLACE_MOTION_RATE               = 10.0; // vertical and horizontal placing
-        public static final double  ADJUST_MOTION_RATE              = 10.0; // adjustment buttons
+        public static final double  PRESET_MOTION_RATE              = 40.0; // for buttons (stow, high, floor, etc.)
+        public static final double  PLACE_MOTION_RATE               = 24.0; // vertical and horizontal placing
+        public static final double  ADJUST_MOTION_RATE              = 16.0; // adjustment buttons
 
         // inverse kinematics
         public static final double  HAND_LENGTH                     = 11.0;

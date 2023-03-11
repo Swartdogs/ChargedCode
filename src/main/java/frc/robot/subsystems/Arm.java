@@ -350,12 +350,22 @@ public class Arm extends SubsystemBase
 
     public void setHandIsFlipped(boolean flipped)
     {
-        _handFlipped = flipped;
+        if(flipped != handIsFlipped())
+        {
+            flipHand();
+        }
     }
 
     public boolean handIsFlipped()
     {
         return _handFlipped;
+    }
+
+    public void flipHand()
+    {
+        _handFlipped = !_handFlipped;
+
+        _twistPID.setSetpoint(-_twistPID.getSetpoint());
     }
 
     //Settings Functions
@@ -442,6 +452,7 @@ public class Arm extends SubsystemBase
         _twistMotor.setVoltage(_twistPID.calculate(getTwistAngle()) * Constants.MOTOR_VOLTAGE);
 
         //System.out.println(String.format("Shoulder Setpoint: %6.2f, Shoulder Current: %6.2f, Shoulder Out: %6.2f", _shoulderPid.getSetpoint(), getShoulderAngle(), shoulderOutput));
+        System.out.println(String.format("Shoulder: %b, Extension: %b, Wrist: %b, Twist: %b", shoulderAtAngle(), extensionAtDistance(), wristAtAngle(), twistAtAngle()));
     }
 
     @Override

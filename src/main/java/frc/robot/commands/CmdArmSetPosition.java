@@ -76,10 +76,10 @@ public class CmdArmSetPosition extends CommandBase
         {
             var coordSign = Math.signum(_initialCoordinate.getX());
 
-            diff = _givenCoordinate.multiply(-1);
+            diff = _givenCoordinate.clone();
             diff.setX(diff.getX() * coordSign);
 
-            _targetCoordinate = _initialCoordinate.add(_givenCoordinate);
+            _targetCoordinate = _initialCoordinate.add(diff);
             _targetHandAngle  = _initialHandAngle  + _givenHandAngle  * coordSign;
             _targetTwistAngle = _initialTwistAngle + _givenTwistAngle * coordSign;
         }

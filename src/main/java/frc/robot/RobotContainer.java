@@ -136,7 +136,7 @@ public class RobotContainer
 
         Controller.OperatorJoystick.button( 1).onTrue(operatorHeightAdjustment);
         Controller.OperatorJoystick.button( 1).onFalse(Commands.runOnce(operatorHeightAdjustment::cancel));
-        Controller.OperatorJoystick.button( 2).onTrue(Commands.runOnce(() -> Arm.getInstance().setHandIsFlipped(!Arm.getInstance().handIsFlipped())));
+        Controller.OperatorJoystick.button( 2).onTrue(Commands.runOnce(Arm.getInstance()::flipHand));
         Controller.OperatorJoystick.button( 3).onTrue(operatorReachAdjustment);
         Controller.OperatorJoystick.button( 3).onFalse(Commands.runOnce(operatorReachAdjustment::cancel));
         Controller.OperatorJoystick.button( 4).onTrue(operatorWristAdjustment);
