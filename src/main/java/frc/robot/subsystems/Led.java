@@ -2,13 +2,9 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
-import frc.robot.subsystems.Arm.ArmSide;
-import frc.robot.subsystems.Arm.HandMode;
 
 public class Led extends SubsystemBase 
 {
@@ -24,12 +20,12 @@ public class Led extends SubsystemBase
         return _instance;
     }
 
-    private AddressableLED _led;
+    private AddressableLED       _led;
     private AddressableLEDBuffer _ledBuffer;
 
     private Led()
     {
-        _led = new AddressableLED(0);
+        _led       = new AddressableLED(0);
         _ledBuffer = new AddressableLEDBuffer(Constants.Led.NUM_LEDS);
 
         _led.setLength(_ledBuffer.getLength());
@@ -49,4 +45,15 @@ public class Led extends SubsystemBase
         return _ledBuffer;
     }
 
+    public void switchDefaultCommand(Command defaultCommand)
+    {
+        var command = getDefaultCommand();
+
+        if(command != null)
+        {
+            command.cancel();
+        }
+
+        setDefaultCommand(command);
+    }
 }
