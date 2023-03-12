@@ -10,6 +10,7 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.CmdArmSetPosition;
 import frc.robot.commands.CmdManipulatorPlaceGamePiece;
 import frc.robot.subsystems.Arm.ArmPosition;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Arm.HandMode;
 import frc.robot.subsystems.drive.Vector;
@@ -49,7 +50,7 @@ public class GrpPlaceGamePiece extends SequentialCommandGroup
                 ),
 
                 // The supplied hand mode determines which sequence we use
-                () -> handModeSupplier.get() == HandMode.Cube
+                () -> handModeSupplier.get() == HandMode.Cube || Arm.getInstance().getTargetArmPreset() == ArmPosition.Low
             ),
             new GrpSetArmPosition(ArmPosition.Stow)
         );

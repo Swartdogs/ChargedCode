@@ -333,7 +333,7 @@ public class Arm extends SubsystemBase
         _armPosition = position;
     }
 
-    public ArmPosition getArmPosition()
+    public ArmPosition getTargetArmPreset()
     {
         return _armPosition;
     }
