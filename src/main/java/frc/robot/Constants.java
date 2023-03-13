@@ -185,7 +185,7 @@ public final class Constants
         public static final double  CONE_EJECT_SPEED                = 0.30;
     }
 
-    public static class Led
+    public static class LED
     {
         public static final int     NUM_LEDS                        = 25;
 

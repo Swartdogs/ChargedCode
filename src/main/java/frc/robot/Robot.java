@@ -9,10 +9,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.CmdLEDDripSolidColor;
 import frc.robot.commands.CmdLEDWaterfallSolidColor;
-import frc.robot.commands.CmdLedAutonomous;
-import frc.robot.commands.CmdLedDisabled;
-import frc.robot.commands.CmdLedTeleop;
-import frc.robot.subsystems.Led;
+import frc.robot.commands.CmdLEDAutonomous;
+import frc.robot.commands.CmdLEDDisabled;
+import frc.robot.commands.CmdLEDTeleop;
+import frc.robot.commands.CmdLEDTeleopInit;
+import frc.robot.subsystems.LED;
 
 public class Robot extends TimedRobot 
 {
@@ -35,9 +36,9 @@ public class Robot extends TimedRobot
     @Override
     public void disabledInit()
     {
-        Led.getInstance().switchDefaultCommand(new CmdLedDisabled());
+        LED.getInstance().switchDefaultCommand(new CmdLEDDisabled());
 
-        new CmdLEDDripSolidColor(Constants.Led.ORANGE).schedule();
+        new CmdLEDDripSolidColor(Constants.LED.ORANGE).schedule();
     }
   
     @Override
@@ -50,22 +51,22 @@ public class Robot extends TimedRobot
             _autonomousCommand.schedule();
         }
 
-        Led.getInstance().switchDefaultCommand(new CmdLedAutonomous());
+        LED.getInstance().switchDefaultCommand(new CmdLEDAutonomous());
 
         Color c;
 
         switch(DriverStation.getAlliance())
         {
             case Red:
-                c = Constants.Led.RED;
+                c = Constants.LED.RED;
                 break;
 
             case Blue:
-                c = Constants.Led.BLUE;
+                c = Constants.LED.BLUE;
                 break;
 
             default:
-                c = Constants.Led.GREEN;
+                c = Constants.LED.GREEN;
                 break;
         }
 
@@ -80,7 +81,8 @@ public class Robot extends TimedRobot
             _autonomousCommand.cancel();
         }
 
-        Led.getInstance().switchDefaultCommand(new CmdLedTeleop());
+        LED.getInstance().switchDefaultCommand(new CmdLEDTeleop());
+        new CmdLEDTeleopInit().schedule();
     }
 
     @Override

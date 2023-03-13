@@ -3,22 +3,22 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.Led;
+import frc.robot.subsystems.LED;
 import frc.robot.subsystems.Arm.ArmSide;
 import frc.robot.subsystems.Arm.HandMode;
 import frc.robot.RobotContainer;
 
-public class CmdLedTeleop extends CommandBase 
+public class CmdLEDTeleop extends CommandBase 
 {
-    public CmdLedTeleop()
+    public CmdLEDTeleop()
     {
-        addRequirements(Led.getInstance());
+        addRequirements(LED.getInstance());
     }
 
     @Override
     public void execute() 
     {
-        AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(Constants.Led.NUM_LEDS);
+        AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(Constants.LED.NUM_LEDS);
         ArmSide              armSide   = RobotContainer.getInstance().getArmSide();
         HandMode             handMode  = RobotContainer.getInstance().getHandMode();
 
@@ -28,18 +28,20 @@ public class CmdLedTeleop extends CommandBase
             {
                 if (handMode == HandMode.Cone)
                 {
-                    ledBuffer.setLED(i, Constants.Led.YELLOW);
+                    ledBuffer.setLED(i, Constants.LED.YELLOW);
                 }
                 else if (handMode == HandMode.Cube)
                 {
-                    ledBuffer.setLED(i, Constants.Led.PURPLE);
+                    ledBuffer.setLED(i, Constants.LED.PURPLE);
                 }
             }
             else
             {
-                ledBuffer.setLED(i, Constants.Led.OFF);
+                ledBuffer.setLED(i, Constants.LED.OFF);
             }
         }
+
+        LED.getInstance().setLEDs(ledBuffer);
     }
 
 

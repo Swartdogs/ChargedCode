@@ -5,31 +5,31 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.Led;
+import frc.robot.subsystems.LED;
 
-public class CmdLedAutonomous extends CommandBase 
+public class CmdLEDAutonomous extends CommandBase 
 {
-    public CmdLedAutonomous() 
+    public CmdLEDAutonomous() 
     {
-        addRequirements(Led.getInstance());
+        addRequirements(LED.getInstance());
     }
 
     @Override
     public void execute() 
     {
         Color c;
-        AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(Constants.Led.NUM_LEDS);
+        AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(Constants.LED.NUM_LEDS);
 
         switch (DriverStation.getAlliance())
         {
             case Red:
-                c = Constants.Led.RED;
+                c = Constants.LED.RED;
                 break;
             case Blue:
-                c = Constants.Led.BLUE;
+                c = Constants.LED.BLUE;
                 break;
             default:
-                c = Constants.Led.GREEN;
+                c = Constants.LED.GREEN;
                 break;
         }
 
@@ -38,7 +38,7 @@ public class CmdLedAutonomous extends CommandBase
             ledBuffer.setLED(i, c);
         }
 
-        Led.getInstance().setLEDs(ledBuffer);
+        LED.getInstance().setLEDs(ledBuffer);
     }
     
     @Override

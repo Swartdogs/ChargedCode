@@ -9,15 +9,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.leds.LEDAnimationFrame;
 
-public class Led extends SubsystemBase 
+public class LED extends SubsystemBase 
 {
-    private static Led _instance;
+    private static LED _instance;
 
-    public static Led getInstance()
+    public static LED getInstance()
     {
         if (_instance == null)
         {
-            _instance = new Led();
+            _instance = new LED();
         }
 
         return _instance;
@@ -29,10 +29,10 @@ public class Led extends SubsystemBase
     // Simulation
     private AddressableLEDSim    _ledSim;
 
-    private Led()
+    private LED()
     {
         _led       = new AddressableLED(0);
-        _ledBuffer = new AddressableLEDBuffer(Constants.Led.NUM_LEDS);
+        _ledBuffer = new AddressableLEDBuffer(Constants.LED.NUM_LEDS);
 
         _led.setLength(_ledBuffer.getLength());
 

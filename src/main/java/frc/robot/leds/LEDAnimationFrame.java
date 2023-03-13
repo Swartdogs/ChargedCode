@@ -13,9 +13,9 @@ public class LEDAnimationFrame
     
     public LEDAnimationFrame(Color[] pattern, double time)
     {
-        if (pattern.length != Constants.Led.NUM_LEDS)
+        if (pattern.length != Constants.LED.NUM_LEDS)
         {
-            throw new IllegalArgumentException(String.format("Each LED animation frame must contain %d LEDs!", Constants.Led.NUM_LEDS));
+            throw new IllegalArgumentException(String.format("Each LED animation frame must contain %d LEDs!", Constants.LED.NUM_LEDS));
         }
 
         _pattern = new ArrayList<Color>();

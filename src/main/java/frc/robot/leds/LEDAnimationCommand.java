@@ -1,7 +1,7 @@
 package frc.robot.leds;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Led;
+import frc.robot.subsystems.LED;
 
 public abstract class LEDAnimationCommand extends CommandBase
 {
@@ -9,7 +9,7 @@ public abstract class LEDAnimationCommand extends CommandBase
 
     public LEDAnimationCommand()
     {
-        addRequirements(Led.getInstance());
+        addRequirements(LED.getInstance());
     }
 
     public LEDAnimationCommand(LEDAnimation animation)
@@ -35,7 +35,7 @@ public abstract class LEDAnimationCommand extends CommandBase
     {
         _animation.play();
 
-        Led.getInstance().applyAnimationFrame(_animation.getCurrentFrame());
+        LED.getInstance().applyAnimationFrame(_animation.getCurrentFrame());
     }
 
     @Override

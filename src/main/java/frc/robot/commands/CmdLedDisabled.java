@@ -3,26 +3,26 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.Led;
+import frc.robot.subsystems.LED;
 
-public class CmdLedDisabled extends CommandBase 
+public class CmdLEDDisabled extends CommandBase 
 {
-    public CmdLedDisabled() 
+    public CmdLEDDisabled() 
     {
-        addRequirements(Led.getInstance());
+        addRequirements(LED.getInstance());
     }
 
     @Override
     public void execute() 
     {
-        var ledBuffer = new AddressableLEDBuffer(Constants.Led.NUM_LEDS);
+        var ledBuffer = new AddressableLEDBuffer(Constants.LED.NUM_LEDS);
 
         for (int i = 0; i < ledBuffer.getLength(); i++)
         {
-            ledBuffer.setLED(i, Constants.Led.ORANGE);
+            ledBuffer.setLED(i, Constants.LED.ORANGE);
         }
 
-        Led.getInstance().setLEDs(ledBuffer);
+        LED.getInstance().setLEDs(ledBuffer);
     }
 
     @Override

@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.leds.LEDAnimation;
 import frc.robot.leds.LEDAnimationCommand;
 import frc.robot.leds.LEDAnimationFrame;
-import frc.robot.subsystems.Led;
+import frc.robot.subsystems.LED;
 
 public class CmdLEDDripSolidColor extends LEDAnimationCommand
 {
@@ -18,7 +18,7 @@ public class CmdLEDDripSolidColor extends LEDAnimationCommand
     @Override
     public void initialize()
     {
-        var initialFrame = Led.getInstance().getLEDs();
+        var initialFrame = LED.getInstance().getLEDs();
         
         var _0  = initialFrame.getLED(0);
         var _1  = initialFrame.getLED(1);

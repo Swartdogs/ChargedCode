@@ -16,10 +16,11 @@ import frc.robot.commands.CmdDriveResetOdometer;
 import frc.robot.commands.CmdDriveRotateModules;
 import frc.robot.commands.CmdDriveStrafeWithJoystick;
 import frc.robot.commands.CmdDriveWithJoystick;
+import frc.robot.commands.CmdLEDChangeHandMode;
+import frc.robot.commands.CmdLEDTeleopSwapSides;
 import frc.robot.commands.CmdArmAdjustContinuous;
 import frc.robot.commands.CmdArmSetPosition;
 import frc.robot.commands.CmdLEDWaterfallSolidColor;
-import frc.robot.commands.CmdLedPeriodic;
 import frc.robot.groups.GrpPlaceGamePiece;
 import frc.robot.groups.GrpAutonomous;
 import frc.robot.groups.GrpIntakeGamePiece;
@@ -28,7 +29,7 @@ import frc.robot.subsystems.Arm.ArmPosition;
 import frc.robot.subsystems.Arm.ArmSide;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Dashboard;
-import frc.robot.subsystems.Led;
+import frc.robot.subsystems.LED;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.RobotLog;
 import frc.robot.subsystems.Arm.HandMode;
@@ -92,7 +93,7 @@ public class RobotContainer
         Arm.getInstance();
         Manipulator.getInstance();
         Dashboard.getInstance();
-        Led.getInstance();
+        LED.getInstance();
 
         _buttonBoxHandmodeSwitch = new Trigger (()-> Controller.ButtonBox.joystick().getRawAxis(0) < -0.5);
         _buttonBoxArmSideSwitch  = new Trigger(()-> Controller.ButtonBox.joystick().getRawAxis(1) < -0.5);
@@ -104,7 +105,6 @@ public class RobotContainer
     private void configureDefaultCommands()
     {
         Drive.getInstance().setDefaultCommand(new CmdDriveWithJoystick());
-        Led.getInstance().setDefaultCommand(new CmdLedPeriodic());
     }
 
     private void configureBindings() 
@@ -164,9 +164,13 @@ public class RobotContainer
 
         _buttonBoxHandmodeSwitch.onTrue(new ProxyCommand(()-> new GrpSetArmPosition(Arm.getInstance().getTargetArmPreset())));
         _buttonBoxHandmodeSwitch.onFalse(new ProxyCommand(()-> new GrpSetArmPosition(Arm.getInstance().getTargetArmPreset())));
+        _buttonBoxHandmodeSwitch.onTrue(new CmdLEDChangeHandMode());
+        _buttonBoxHandmodeSwitch.onFalse(new CmdLEDChangeHandMode());
         
         _buttonBoxArmSideSwitch.onTrue(new GrpSetArmPosition(ArmPosition.Stow));
         _buttonBoxArmSideSwitch.onFalse(new GrpSetArmPosition(ArmPosition.Stow));
+        _buttonBoxArmSideSwitch.onTrue(new CmdLEDTeleopSwapSides());
+        _buttonBoxArmSideSwitch.onFalse(new CmdLEDTeleopSwapSides()); 
     }
 
     public Command getAutonomousCommand() 
