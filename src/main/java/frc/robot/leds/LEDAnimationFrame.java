@@ -1,25 +1,40 @@
 package frc.robot.leds;
 
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
+import edu.wpi.first.wpilibj.util.Color;
+import frc.robot.Constants;
 
 public class LEDAnimationFrame
 {
-    private AddressableLEDBuffer _leds;
-    private double               _time;
+    private ArrayList<Color> _pattern;
+    private double      _duration;
     
-    public LEDAnimationFrame(AddressableLEDBuffer leds, double time)
+    public LEDAnimationFrame(Color[] pattern, double time)
     {
-        _leds = leds;
-        _time = time;
+        if (pattern.length != Constants.Led.NUM_LEDS)
+        {
+            throw new IllegalArgumentException(String.format("Each LED animation frame must contain %d LEDs!", Constants.Led.NUM_LEDS));
+        }
+
+        _pattern = new ArrayList<Color>();
+
+        for (int i = 0; i < pattern.length; i++)
+        {
+            _pattern.add(pattern[i]);
+        }
+
+        _duration = time;
     }
 
-    public AddressableLEDBuffer getLEDPattern()
+    public List<Color> getLEDPattern()
     {
-        return _leds;
+        return _pattern;
     }
 
     public double getDuration()
     {
-        return _time;
+        return _duration;
     }
 }

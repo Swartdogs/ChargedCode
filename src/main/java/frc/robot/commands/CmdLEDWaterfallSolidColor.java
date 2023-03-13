@@ -1,66 +1,29 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
-import frc.robot.subsystems.Led;
+import frc.robot.leds.LEDAnimation;
+import frc.robot.leds.LEDAnimationFrame;
+import frc.robot.leds.LEDAnimationCommand;
 
-public class CmdLEDWaterfallSolidColor extends CommandBase
+public class CmdLEDWaterfallSolidColor extends LEDAnimationCommand
 {
-    private final int FRAME_DURATION = (int)(Constants.LOOPS_PER_SECOND * 0.02);
-
-    private Color _color;
-    private int   _numLEDsColored;
-    private int   _timer;
-
-    public CmdLEDWaterfallSolidColor(Color color)
+    public CmdLEDWaterfallSolidColor(Color c)
     {
-        _color          = color;
-        _numLEDsColored = 0;
-        _timer          = 0;
-
-        addRequirements(Led.getInstance());
-    }
-
-    @Override
-    public void initialize()
-    {
-        _numLEDsColored = 0;
-        _timer          = 0;
-    }
-
-    @Override
-    public void execute()
-    {
-        _timer++;
-
-        if (_timer % FRAME_DURATION == 0)
-        {
-            _numLEDsColored++;
-        }
-
-        var curBuffer = Led.getInstance().getLEDs();
-
-        for (int i = 0; i < curBuffer.getLength(); i++)
-        {
-            if (i >= ((Constants.Led.NUM_LEDS / 2) - _numLEDsColored) && i <= ((Constants.Led.NUM_LEDS / 2) + _numLEDsColored))
-            {
-                curBuffer.setLED(i, _color);
-            } 
-        }
-
-        Led.getInstance().setLEDs(curBuffer);
-    }
-
-    @Override
-    public boolean runsWhenDisabled()
-    {
-        return true;
-    }
-
-    @Override
-    public boolean isFinished()
-    {
-        return _numLEDsColored - 1 > Constants.Led.NUM_LEDS / 2;
+        super(new LEDAnimation
+        (
+            new LEDAnimationFrame(new Color[] { null, null, null, null, null, null, null, null, null, null, null, null, c,    null, null, null, null, null, null, null, null, null, null, null, null }, 0.02),
+            new LEDAnimationFrame(new Color[] { null, null, null, null, null, null, null, null, null, null, null, c,    c,    c,    null, null, null, null, null, null, null, null, null, null, null }, 0.02),
+            new LEDAnimationFrame(new Color[] { null, null, null, null, null, null, null, null, null, null, c,    c,    c,    c,    c,    null, null, null, null, null, null, null, null, null, null }, 0.02),
+            new LEDAnimationFrame(new Color[] { null, null, null, null, null, null, null, null, null, c,    c,    c,    c,    c,    c,    c,    null, null, null, null, null, null, null, null, null }, 0.02),
+            new LEDAnimationFrame(new Color[] { null, null, null, null, null, null, null, null, c,    c,    c,    c,    c,    c,    c,    c,    c,    null, null, null, null, null, null, null, null }, 0.02),
+            new LEDAnimationFrame(new Color[] { null, null, null, null, null, null, null, c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    null, null, null, null, null, null, null }, 0.02),
+            new LEDAnimationFrame(new Color[] { null, null, null, null, null, null, c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    null, null, null, null, null, null }, 0.02),
+            new LEDAnimationFrame(new Color[] { null, null, null, null, null, c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    null, null, null, null, null }, 0.02),
+            new LEDAnimationFrame(new Color[] { null, null, null, null, c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    null, null, null, null }, 0.02),
+            new LEDAnimationFrame(new Color[] { null, null, null, c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    null, null, null }, 0.02),
+            new LEDAnimationFrame(new Color[] { null, null, c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    null, null }, 0.02),
+            new LEDAnimationFrame(new Color[] { null, c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    null }, 0.02),
+            new LEDAnimationFrame(new Color[] { c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c,    c    }, 0.02)
+        ));
     }
 }

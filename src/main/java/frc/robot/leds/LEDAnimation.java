@@ -2,7 +2,6 @@ package frc.robot.leds;
 
 import java.util.ArrayList;
 
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Timer;
 
 public class LEDAnimation 
@@ -18,38 +17,44 @@ public class LEDAnimation
         _currentFrame = 0;
     }
 
-    public void start()
+    public LEDAnimation(LEDAnimationFrame... animationFrames)
     {
-        _currentFrame = 0;
+        this();
+
+        for (var frame : animationFrames)
+        {
+            addFrame(frame);
+        }
+    }
+
+    private void startFrame(int frame)
+    {
+        _currentFrame = frame;
         _frameTimer.reset();
         _frameTimer.start();
+    }
+
+    public void start()
+    {
+        startFrame(0);
+    }
+
+    public void play()
+    {
+        if (_currentFrame < _frames.size() && _frameTimer.hasElapsed(_frames.get(_currentFrame).getDuration()))
+        {
+            startFrame(_currentFrame + 1);
+        }
+    }
+
+    public LEDAnimationFrame getCurrentFrame()
+    {
+        return _frames.get(Math.min(_currentFrame, _frames.size() - 1));
     }
 
     public void addFrame(LEDAnimationFrame frame)
     {
         _frames.add(frame);
-    }
-
-    public AddressableLEDBuffer getCurrentFramePattern()
-    {
-        // Get the current frame. If we've already finished, return the last frame instead
-        var currentFrame = _frames.get(Math.min(_currentFrame, _frames.size() - 1));
-
-        // If we're done with the current frame advance to the next frame
-        if (_frameTimer.hasElapsed(currentFrame.getDuration()) && !isFinished())
-        {
-            _currentFrame++;
-            _frameTimer.reset();
-
-            // If we have another frame to advance to, advance to it
-            if (!isFinished())
-            {
-                currentFrame = _frames.get(_currentFrame);
-                _frameTimer.start();
-            }
-        }
-
-        return currentFrame.getLEDPattern();
     }
 
     public boolean isFinished()
