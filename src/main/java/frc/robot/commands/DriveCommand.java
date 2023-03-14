@@ -3,6 +3,7 @@ package frc.robot.commands;
 import PIDControl.PIDControl;
 import PIDControl.PIDControl.Coefficient;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
 
 public abstract class DriveCommand extends CommandBase 
@@ -12,6 +13,10 @@ public abstract class DriveCommand extends CommandBase
     protected PIDControl _xPID;
     protected PIDControl _yPID;
     protected PIDControl _rotatePID;
+
+    protected PIDControl _xVelocityPID;
+    protected PIDControl _yVelocityPID;
+    protected PIDControl _rotateVelocityPID;
 
     public DriveCommand() 
     {
@@ -38,5 +43,31 @@ public abstract class DriveCommand extends CommandBase
         _rotatePID.setOutputRange(-1.0, 1.0);
         _rotatePID.setOutputRamp(0.1, 0.05);
         _rotatePID.setSetpointDeadband(2.0);
+
+        // velocity control
+        _xVelocityPID = new PIDControl();
+        _yVelocityPID = new PIDControl();
+        _rotateVelocityPID = new PIDControl();
+
+        for (PIDControl pid : new PIDControl[] { _xVelocityPID, _yVelocityPID })
+        {
+            pid.setFeedForward((setpoint) -> setpoint / Constants.Drive.MAX_DRIVE_SPEED);
+            pid.setCoefficient(Coefficient.P, 0.0, 0.05, 0.0); // FIXME: needs tuning
+            pid.setCoefficient(Coefficient.I, 0.0, 0.01, 0.0);
+            pid.setCoefficient(Coefficient.D, 0.0, 0.005, 0.0);
+            pid.setInputRange(-Constants.Drive.MAX_DRIVE_SPEED, Constants.Drive.MAX_DRIVE_SPEED);
+            pid.setOutputRange(-1.0, 1.0);
+            pid.setOutputRamp(0.1, 0.05);
+            pid.setSetpointDeadband(2.0); // keep within 2 in/s
+        }
+
+        _rotateVelocityPID.setFeedForward((setpoint) -> setpoint / Constants.Drive.MAX_ROTATE_SPEED);
+        _rotateVelocityPID.setCoefficient(Coefficient.P, 0.0, 0.05, 0.0); // FIXME: needs tuning
+        _rotateVelocityPID.setCoefficient(Coefficient.I, 0.0, 0.01, 0.0);
+        _rotateVelocityPID.setCoefficient(Coefficient.D, 0.0, 0.005, 0.0);
+        _rotateVelocityPID.setInputRange(-Constants.Drive.MAX_ROTATE_SPEED, Constants.Drive.MAX_ROTATE_SPEED);
+        _rotateVelocityPID.setOutputRange(-1.0, 1.0);
+        _rotateVelocityPID.setOutputRamp(0.1, 0.05);
+        _rotateVelocityPID.setSetpointDeadband(2.0); // keep within 2 deg/s
     }
 }

@@ -1,59 +1,69 @@
 package frc.robot.commands;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-
-import PIDControl.PIDControl;
-import PIDControl.PIDControl.Coefficient;
-import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.paths.Trajectory;
+import frc.robot.paths.TrajectoryFrame;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.Vector;
 
-// TODO implement class
-public class CmdDrivePath extends CommandBase {
-    double _time = 0;
+public class CmdDrivePath extends DriveCommand
+{
+    Timer _timer;
 
-    PIDControl _xPID;
-    PIDControl _yPID;
-    PIDControl _rotatePID;
+    Trajectory _trajectory;
 
-    public CmdDrivePath(Trajectory path) {
+    public CmdDrivePath(Trajectory path)
+    {
+        _trajectory = path;
+
+        _timer = new Timer();
         
         addRequirements(Drive.getInstance());
     }
 
     @Override
-    public void initialize() {
-
+    public void initialize()
+    {
+        _timer.reset();
+        _timer.start();
     }
 
     @Override
-    public void execute() {
+    public void execute()
+    {
         // update the time 
-
+        double time = _timer.get();
         
         // get the current target speed and position
+        TrajectoryFrame frame = _trajectory.getFrame(time);
 
+        _xPID.setSetpoint(frame.getPosition().getX());
+        _yPID.setSetpoint(frame.getPosition().getY());
+        _rotatePID.setSetpoint(frame.getHeading());
 
+        _xVelocityPID.setSetpoint(frame.getVelocity().getX());
+        _yVelocityPID.setSetpoint(frame.getVelocity().getY());
+        _rotateVelocityPID.setSetpoint(frame.getAngularVelocity());
 
+        Vector odometer = Drive.getInstance().getFieldPosition();
+        Vector driveVelocity = Drive.getInstance().getFieldVelocity();
 
+        double x = _xPID.calculate(odometer.getX()) + _xVelocityPID.calculate(driveVelocity.getX());
+        double y = _yPID.calculate(odometer.getY()) + _yVelocityPID.calculate(driveVelocity.getY());
+        double rotate = _rotatePID.calculate(Drive.getInstance().getHeading()) + _rotateVelocityPID.calculate(Drive.getInstance().getHeadingVelocity());
 
+        Drive.getInstance().fieldDrive(x, y, rotate);
     }
 
     @Override
-    public void end(boolean interrupted) {
+    public void end(boolean interrupted)
+    {
         Drive.getInstance().chassisDrive(0, 0, 0);
     }
 
     @Override
-    public boolean isFinished() {
-        return false;
+    public boolean isFinished()
+    {
+        return _trajectory.isFinished(_timer.get());
     }
-
 }

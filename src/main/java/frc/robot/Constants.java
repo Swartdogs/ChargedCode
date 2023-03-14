@@ -59,6 +59,7 @@ public final class Constants
         public static final double  BASE_WIDTH                      = 20.00;
         public static final double  BASE_LENGTH                     = 28.75;
 
+        // FIXME: set these
         public static final double  MAX_DRIVE_SPEED                 = 180.0; // in/s usually
         public static final double  MAX_ROTATE_SPEED                = 400.0;   // deg/s
 

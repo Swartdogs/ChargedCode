@@ -11,9 +11,13 @@ public class TrajectoryFrame
     private double _heading;
     private double _angularVelocity;
 
-    public TrajectoryFrame()
+    public TrajectoryFrame(double time, Vector position, Vector velocity, double heading, double angularVelocity)
     {
-
+        _time = time;
+        _position = position;
+        _velocity = velocity;
+        _heading = heading;
+        _angularVelocity = angularVelocity;
     }
 
     public TrajectoryFrame(String csvLine)
@@ -28,5 +32,30 @@ public class TrajectoryFrame
 
         // _heading = Double.parseDouble(csvList[7]);
         // _angularVelocity = Double.parseDouble(csvList[9]);
+    }
+
+    public double getTime()
+    {
+        return _time;
+    }
+
+    public Vector getPosition()
+    {
+        return _position;
+    }
+
+    public Vector getVelocity()
+    {
+        return _velocity;
+    }
+
+    public double getHeading()
+    {
+        return _heading;
+    }
+
+    public double getAngularVelocity()
+    {
+        return _angularVelocity;
     }
 }
