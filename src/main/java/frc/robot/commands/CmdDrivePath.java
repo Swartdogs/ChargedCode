@@ -11,6 +11,7 @@ import PIDControl.PIDControl.Coefficient;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.paths.Trajectory;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.Vector;
 
@@ -22,17 +23,7 @@ public class CmdDrivePath extends CommandBase {
     PIDControl _yPID;
     PIDControl _rotatePID;
 
-    public CmdDrivePath(String file) {
-        // load path from file
-        try {
-            BufferedReader reader = new BufferedReader(
-                new InputStreamReader(Files.newInputStream(Filesystem.getDeployDirectory().toPath().resolve(file)))
-            );
-        }
-        catch (IOException e)
-        {
-
-        }
+    public CmdDrivePath(Trajectory path) {
         
         addRequirements(Drive.getInstance());
     }
@@ -63,11 +54,6 @@ public class CmdDrivePath extends CommandBase {
     @Override
     public boolean isFinished() {
         return false;
-    }
-
-    private Vector metersToInches(double x, double y)
-    {
-        return new Vector();
     }
 
 }

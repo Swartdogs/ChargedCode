@@ -9,7 +9,7 @@ import frc.robot.Constants;
 public class LEDAnimationFrame
 {
     private ArrayList<Color> _pattern;
-    private double      _duration;
+    private double           _duration;
     
     public LEDAnimationFrame(Color[] pattern, double time)
     {
