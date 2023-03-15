@@ -26,6 +26,9 @@ public class CmdDrivePath extends DriveCommand
     {
         _timer.reset();
         _timer.start();
+
+        _drive.setPosition(_trajectory.getFrame(0).getPosition());
+        _drive.setGyro(_trajectory.getFrame(0).getHeading());
     }
 
     @Override

@@ -17,10 +17,12 @@ public class Trajectory
     public Trajectory()
     {
         _prevFrame = 0;
+        _frames = new ArrayList<TrajectoryFrame>();
     }
 
     public Trajectory(String csvFile)
     {
+        this();
         // load path from file
         try {
             BufferedReader reader = new BufferedReader(
@@ -50,7 +52,7 @@ public class Trajectory
             _prevFrame = 0;
         }
 
-        while (_prevFrame < _frames.size() - 1 && _frames.get(_prevFrame + 1).getTime() < time)
+        while (_prevFrame < _frames.size() - 2 && _frames.get(_prevFrame + 1).getTime() < time)
         {
             _prevFrame++;
         }

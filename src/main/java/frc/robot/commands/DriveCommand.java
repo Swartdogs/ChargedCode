@@ -52,9 +52,9 @@ public abstract class DriveCommand extends CommandBase
         for (PIDControl pid : new PIDControl[] { _xVelocityPID, _yVelocityPID })
         {
             pid.setFeedForward((setpoint) -> setpoint / Constants.Drive.MAX_DRIVE_SPEED);
-            pid.setCoefficient(Coefficient.P, 0.0, 0.05, 0.0); // FIXME: needs tuning
-            pid.setCoefficient(Coefficient.I, 0.0, 0.01, 0.0);
-            pid.setCoefficient(Coefficient.D, 0.0, 0.005, 0.0);
+            pid.setCoefficient(Coefficient.P, 1 / Constants.Drive.MAX_DRIVE_SPEED); // FIXME: needs tuning
+            pid.setCoefficient(Coefficient.I, 0.0, 0.00, 0.0);
+            pid.setCoefficient(Coefficient.D, 0.0, 0.00, 0.0);
             pid.setInputRange(-Constants.Drive.MAX_DRIVE_SPEED, Constants.Drive.MAX_DRIVE_SPEED);
             pid.setOutputRange(-1.0, 1.0);
             pid.setOutputRamp(0.1, 0.05);
@@ -62,12 +62,20 @@ public abstract class DriveCommand extends CommandBase
         }
 
         _rotateVelocityPID.setFeedForward((setpoint) -> setpoint / Constants.Drive.MAX_ROTATE_SPEED);
-        _rotateVelocityPID.setCoefficient(Coefficient.P, 0.0, 0.05, 0.0); // FIXME: needs tuning
-        _rotateVelocityPID.setCoefficient(Coefficient.I, 0.0, 0.01, 0.0);
-        _rotateVelocityPID.setCoefficient(Coefficient.D, 0.0, 0.005, 0.0);
+        _rotateVelocityPID.setCoefficient(Coefficient.P, 1 / Constants.Drive.MAX_ROTATE_SPEED); // FIXME: needs tuning
+        _rotateVelocityPID.setCoefficient(Coefficient.I, 0.0, 0.0, 0.0);
+        _rotateVelocityPID.setCoefficient(Coefficient.D, 0.0, 0.0, 0.0);
         _rotateVelocityPID.setInputRange(-Constants.Drive.MAX_ROTATE_SPEED, Constants.Drive.MAX_ROTATE_SPEED);
         _rotateVelocityPID.setOutputRange(-1.0, 1.0);
         _rotateVelocityPID.setOutputRamp(0.1, 0.05);
         _rotateVelocityPID.setSetpointDeadband(2.0); // keep within 2 deg/s
+
+        addRequirements(_drive);
+    }
+
+    @Override
+    public void end(boolean interrupted)
+    {
+        _drive.chassisDrive(0, 0, 0);
     }
 }

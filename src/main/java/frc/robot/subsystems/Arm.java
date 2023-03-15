@@ -452,7 +452,7 @@ public class Arm extends SubsystemBase
         _twistMotor.setVoltage(_twistPID.calculate(getTwistAngle()) * Constants.MOTOR_VOLTAGE);
 
         //System.out.println(String.format("Shoulder Setpoint: %6.2f, Shoulder Current: %6.2f, Shoulder Out: %6.2f", _shoulderPid.getSetpoint(), getShoulderAngle(), shoulderOutput));
-        System.out.println(String.format("Shoulder: %b, Extension: %b, Wrist: %b, Twist: %b, %s", shoulderAtAngle(), extensionAtDistance(), wristAtAngle(), twistAtAngle(), _reset));
+        //System.out.println(String.format("Shoulder: %b, Extension: %b, Wrist: %b, Twist: %b, %s", shoulderAtAngle(), extensionAtDistance(), wristAtAngle(), twistAtAngle(), _reset));
     }
 
     @Override
