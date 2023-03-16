@@ -10,7 +10,9 @@ import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.CmdDriveBalance;
+import frc.robot.commands.CmdDrivePath;
 import frc.robot.commands.CmdDriveToPosition;
+import frc.robot.paths.Trajectory;
 import frc.robot.subsystems.Dashboard;
 import frc.robot.subsystems.Arm.ArmPosition;
 import frc.robot.subsystems.Arm.ArmSide;
@@ -142,12 +144,7 @@ public class GrpAutonomous extends SequentialCommandGroup
                 new CmdDriveToPosition(DrivePosition.SubstationInsideCommunityChargeStationDocked.getPosition(), Drive.getInstance().getAllianceAngle(), 0.3)
             ),
             // We haven't left the community yet, so we need to go around the charge station to get mobility before we balance
-            new SequentialCommandGroup
-            (
-                new CmdDriveToPosition(DrivePosition.SubstationOutsideCommunity.getPosition(),                    Drive.getInstance().getAllianceAngle(), 0.6),
-                new CmdDriveToPosition(DrivePosition.SubstationOutsideCommunityChargeStationAlign.getPosition(),  Drive.getInstance().getAllianceAngle(), 0.2),
-                new CmdDriveToPosition(DrivePosition.SubstationOutsideCommunityChargeStationDocked.getPosition(), Drive.getInstance().getAllianceAngle(), 0.3)
-            ),
+            new CmdDrivePath(new Trajectory("pathplanner/generatedCSV/Substation Charging.csv")),
             () -> _numGamePieces > 1
         );
     }

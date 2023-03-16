@@ -30,8 +30,8 @@ public class TrajectoryFrame
         _velocity.setMagnitude(Units.metersToInches(Double.parseDouble(csvList[4])));
         _velocity.setHeading(-Double.parseDouble(csvList[3]) + 90);
 
-        // _heading = Double.parseDouble(csvList[7]);
-        // _angularVelocity = Double.parseDouble(csvList[9]);
+        _heading = -Double.parseDouble(csvList[7]) + 90;
+        _angularVelocity = -Double.parseDouble(csvList[9]);
     }
 
     public double getTime()

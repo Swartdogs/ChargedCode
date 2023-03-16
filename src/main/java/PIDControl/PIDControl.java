@@ -264,7 +264,7 @@ public class PIDControl
 
     public void setSetpoint(double setpoint)
     {
-        setSetpoint(setpoint, true);
+        setSetpoint(setpoint, false);
     }
 
     public void setSetpoint(double setpoint, boolean resetPID)
