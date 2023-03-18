@@ -31,7 +31,7 @@ public abstract class DriveCommand extends CommandBase
             pid.setCoefficient(Coefficient.D, 0.0, 0.00016, 0.0);
             pid.setInputRange(-720.0, 720.0); // assumed unit of inches
             pid.setOutputRange(-1.0, 1.0);
-            pid.setOutputRamp(0.1, 0.05);
+            pid.setOutputRamp(0.2, 0.1);
             pid.setSetpointDeadband(2.0);
         }
 
@@ -41,7 +41,7 @@ public abstract class DriveCommand extends CommandBase
         _rotatePID.setInputRange(-180.0, 180.0);
         _rotatePID.setContinuous(true);
         _rotatePID.setOutputRange(-1.0, 1.0);
-        _rotatePID.setOutputRamp(0.1, 0.05);
+        _rotatePID.setOutputRamp(0.2, 0.1);
         _rotatePID.setSetpointDeadband(2.0);
 
         // velocity control
@@ -57,7 +57,7 @@ public abstract class DriveCommand extends CommandBase
             pid.setCoefficient(Coefficient.D, 0.0, 0.00, 0.0);
             pid.setInputRange(-Constants.Drive.MAX_DRIVE_SPEED, Constants.Drive.MAX_DRIVE_SPEED);
             pid.setOutputRange(-1.0, 1.0);
-            pid.setOutputRamp(0.1, 0.05);
+            pid.setOutputRamp(0.2, 0.1);
             pid.setSetpointDeadband(2.0); // keep within 2 in/s
         }
 
@@ -67,7 +67,7 @@ public abstract class DriveCommand extends CommandBase
         _rotateVelocityPID.setCoefficient(Coefficient.D, 0.0, 0.0, 0.0);
         _rotateVelocityPID.setInputRange(-Constants.Drive.MAX_ROTATE_SPEED, Constants.Drive.MAX_ROTATE_SPEED);
         _rotateVelocityPID.setOutputRange(-1.0, 1.0);
-        _rotateVelocityPID.setOutputRamp(0.1, 0.05);
+        _rotateVelocityPID.setOutputRamp(0.2, 0.1);
         _rotateVelocityPID.setSetpointDeadband(2.0); // keep within 2 deg/s
 
         addRequirements(_drive);

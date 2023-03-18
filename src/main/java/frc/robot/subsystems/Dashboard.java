@@ -103,6 +103,7 @@ public class Dashboard extends SubsystemBase
         _autoGamePiecesChooser = new SendableChooser<Integer>();
         _autoGamePiecesChooser.setDefaultOption("0", 0);
         _autoGamePiecesChooser.addOption("1", 1);
+        _autoGamePiecesChooser.addOption("2", 2);
         autonomousOptions.add("Number Of Pieces", _autoGamePiecesChooser).withPosition(0, 2).withSize(1, 1).withWidget(BuiltInWidgets.kSplitButtonChooser);
 
         _autoBalanceChooser = new SendableChooser<Boolean>();

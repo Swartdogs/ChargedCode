@@ -142,7 +142,7 @@ public class RobotContainer
         Controller.DriveJoystick.button( 8).onTrue(driveAutoBalance);
         Controller.DriveJoystick.button( 8).onFalse(Commands.runOnce(driveAutoBalance::cancel));
         Controller.DriveJoystick.button( 9).whileTrue(driveVelocityCommand);
-        Controller.DriveJoystick.button(10).whileTrue(new CmdDrivePath(new Trajectory("pathplanner/generatedCSV/TestArc.csv")));
+        Controller.DriveJoystick.button(10).whileTrue(new CmdDrivePath(new Trajectory("pathplanner/generatedCSV/TestArc.csv", true)));
         Controller.DriveJoystick.button(11).onTrue(new CmdDriveResetOdometer());
         Controller.DriveJoystick.button(12).whileTrue(velocityCommand);
 

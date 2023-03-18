@@ -6,7 +6,9 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.util.ArrayList;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.subsystems.drive.Vector;
 
 public class Trajectory
@@ -20,7 +22,7 @@ public class Trajectory
         _frames = new ArrayList<TrajectoryFrame>();
     }
 
-    public Trajectory(String csvFile)
+    public Trajectory(String csvFile, boolean mirror)
     {
         this();
         // load path from file
@@ -34,7 +36,7 @@ public class Trajectory
             {
                 if (!line.substring(0, 1).equals("#"))
                 {
-                    _frames.add(new TrajectoryFrame(line));
+                    _frames.add(new TrajectoryFrame(line, mirror));
                 }
             }
         }
@@ -43,6 +45,11 @@ public class Trajectory
             e.printStackTrace();
             System.out.println(String.format("Failed to read trajectory from file %s", csvFile));
         }
+    }
+
+    public Trajectory(String csvFile)
+    {
+        this(csvFile, DriverStation.getAlliance() == Alliance.Red);
     }
 
     public TrajectoryFrame getFrame(double time)

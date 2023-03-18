@@ -1,6 +1,9 @@
 package frc.robot.paths;
 
+import org.opencv.core.Point;
+
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants;
 import frc.robot.subsystems.drive.Vector;
 
 public class TrajectoryFrame
@@ -20,18 +23,27 @@ public class TrajectoryFrame
         _angularVelocity = angularVelocity;
     }
 
-    public TrajectoryFrame(String csvLine)
+    public TrajectoryFrame(String csvLine, boolean mirror)
     {
         String[] csvList = csvLine.split(",");
         
         _time = Double.parseDouble(csvList[0]);
-        _position = new Vector(Units.metersToInches(Double.parseDouble(csvList[1])), Units.metersToInches(Double.parseDouble(csvList[2])));// TODO: translate to our coord system 
+        _position = new Vector(Units.metersToInches(Double.parseDouble(csvList[1])), Units.metersToInches(Double.parseDouble(csvList[2])));
+        _position = _position.subtract(Constants.Drive.PATH_PLANNER_ORIGIN);
         _velocity = new Vector();
         _velocity.setMagnitude(Units.metersToInches(Double.parseDouble(csvList[4])));
         _velocity.setHeading(-Double.parseDouble(csvList[3]) + 90);
 
         _heading = -Double.parseDouble(csvList[7]) + 90;
         _angularVelocity = -Double.parseDouble(csvList[9]);
+
+        if (mirror)
+        {
+            _position.setX(-_position.getX());
+            _velocity.setX(-_velocity.getX());
+            _heading *= -1;
+            _angularVelocity *= -1;
+        }
     }
 
     public double getTime()

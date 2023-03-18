@@ -8,7 +8,9 @@ import frc.robot.subsystems.drive.Drive;
 
 public class CmdDriveBalance extends CommandBase 
 {
-    private final double BALANCE_TIME = 0.3;
+    private final double BALANCE_TIME = 0.22;
+    private final double REVERSE_PITCH_THRESHOLD = 10;
+    private final double BALANCED_PITCH_THRESHOLD = 3;
 
     private PIDControl _pitchPID;
     private int        _timer;
@@ -37,16 +39,29 @@ public class CmdDriveBalance extends CommandBase
     @Override
     public void execute() 
     {
-        Drive.getInstance().chassisDrive(_pitchPID.calculate(Drive.getInstance().getChassisPitch()), 0, 0);
+        var pitch     = Drive.getInstance().getChassisPitch();
+        var direction = Math.signum(pitch);
+        var speed     = 0.0;
 
-        if (_pitchPID.atSetpoint())
+        if (Math.abs(pitch) < BALANCED_PITCH_THRESHOLD)
         {
             _timer++;
+            speed = 0;
+        }
+        else if (Math.abs(pitch) < REVERSE_PITCH_THRESHOLD)
+        {
+            _timer++;
+            speed = 0.1 * direction;
         }
         else
         {
             _timer = 0;
+            speed = -0.15 * direction;
         }
+
+        System.out.println(pitch);
+
+        Drive.getInstance().chassisDrive(speed, 0, 0);
     }
 
     @Override

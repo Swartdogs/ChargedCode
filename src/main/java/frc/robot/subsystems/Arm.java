@@ -169,12 +169,12 @@ public class Arm extends SubsystemBase
 
         followerShoulderMotor.follow(_shoulderMotor, true);
 
-        _shoulderPid.setCoefficient(Coefficient.P, 0, 0.015, 0);
+        _shoulderPid.setCoefficient(Coefficient.P, 5, 0.02, 0.015);
         _shoulderPid.setCoefficient(Coefficient.I, 0, 0, 0);
-        _shoulderPid.setCoefficient(Coefficient.D, 0, 0.001, 0);
+        _shoulderPid.setCoefficient(Coefficient.D, 5, 0.002, 0.001);
         _shoulderPid.setInputRange(Constants.Arm.SHOULDER_MIN_ANGLE, Constants.Arm.SHOULDER_MAX_ANGLE);
-        _shoulderPid.setOutputRange(-0.62, 0.62);
-        _shoulderPid.setOutputRamp(0.05, 0.02);
+        _shoulderPid.setOutputRange(-0.545, 0.545);
+        _shoulderPid.setOutputRamp(0.0, 0.02);
         _shoulderPid.setSetpointDeadband(4.5);
         _shoulderPid.setFeedForward(setpoint -> -Constants.Arm.HORIZONTAL_STAYING_POWER * Math.sin(Math.toRadians(setpoint)));
         _shoulderPid.setSetpoint(0);

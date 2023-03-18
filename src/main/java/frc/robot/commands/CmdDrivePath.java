@@ -8,17 +8,24 @@ import frc.robot.subsystems.drive.Vector;
 
 public class CmdDrivePath extends DriveCommand
 {
-    Timer _timer;
+    private Timer _timer;
 
-    Trajectory _trajectory;
+    private Trajectory _trajectory;
 
-    public CmdDrivePath(Trajectory path)
+    private boolean _resetPosition;
+
+    public CmdDrivePath(Trajectory path, boolean resetPosition)
     {
         _trajectory = path;
-
+        _resetPosition = resetPosition;
         _timer = new Timer();
         
         addRequirements(Drive.getInstance());
+    }
+
+    public CmdDrivePath(Trajectory path)
+    {
+        this(path, false);
     }
 
     @Override
@@ -27,8 +34,12 @@ public class CmdDrivePath extends DriveCommand
         _timer.reset();
         _timer.start();
 
-        _drive.setPosition(_trajectory.getFrame(0).getPosition());
-        _drive.setGyro(_trajectory.getFrame(0).getHeading());
+        if (_resetPosition)
+        {
+            _drive.setPosition(_trajectory.getFrame(0).getPosition());
+            _drive.setGyro(_trajectory.getFrame(0).getHeading());
+        }
+        
     }
 
     @Override

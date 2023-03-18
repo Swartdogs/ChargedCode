@@ -6,13 +6,19 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.ArmData;
+import frc.robot.Constants;
+import frc.robot.commands.CmdArmSetPosition;
 import frc.robot.commands.CmdDriveBalance;
 import frc.robot.commands.CmdDrivePath;
 import frc.robot.commands.CmdDriveToPosition;
 import frc.robot.paths.Trajectory;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Dashboard;
 import frc.robot.subsystems.Arm.ArmPosition;
 import frc.robot.subsystems.Arm.ArmSide;
@@ -99,6 +105,17 @@ public class GrpAutonomous extends SequentialCommandGroup
                 new GrpPlaceGamePiece(() -> HandMode.Cube)
             ).unless(() -> _numGamePieces == 0),
 
+            Commands.select
+            (
+                Map.of
+                (
+                    DrivePosition.SubstationStart, getSubstationSecondPieceCommand(),
+                    DrivePosition.WallStart,       getWallSecondPieceCommand(),
+                    DrivePosition.MiddleStart,     getMiddleSecondPieceCommand()
+                ),
+                () -> _startPosition
+            ).unless(() -> _numGamePieces < 2),
+
             // Balance on the charge station OR get the mobility bonus
             Commands.either
             (
@@ -122,8 +139,8 @@ public class GrpAutonomous extends SequentialCommandGroup
                 (
                     Map.of
                     (
-                        DrivePosition.SubstationStart, new CmdDriveToPosition(DrivePosition.SubstationOutsideCommunity.getPosition(), Drive.getInstance().getAllianceAngle(), 0.6),
-                        DrivePosition.WallStart,       new CmdDriveToPosition(DrivePosition.WallOutsideCommunity.getPosition(),       Drive.getInstance().getAllianceAngle(), 0.6),
+                        DrivePosition.SubstationStart, new CmdDrivePath(new Trajectory("pathplanner/generatedCSV/Substation Mobility.csv")),
+                        DrivePosition.WallStart,       new CmdDrivePath(new Trajectory("pathplanner/generatedCSV/Wall Mobility.csv")),
                         DrivePosition.MiddleStart,     Commands.none()
                     ),
                     () -> _startPosition
@@ -160,12 +177,7 @@ public class GrpAutonomous extends SequentialCommandGroup
                 new CmdDriveToPosition(DrivePosition.WallInsideCommunityChargeStationDocked.getPosition(), Drive.getInstance().getAllianceAngle(), 0.3)
             ),
             // We haven't left the community yet, so we need to go around the charge station to get mobility before we balance
-            new SequentialCommandGroup
-            (
-                new CmdDriveToPosition(DrivePosition.WallOutsideCommunity.getPosition(),                    Drive.getInstance().getAllianceAngle(), 0.6),
-                new CmdDriveToPosition(DrivePosition.WallOutsideCommunityChargeStationAlign.getPosition(),  Drive.getInstance().getAllianceAngle(), 0.2),
-                new CmdDriveToPosition(DrivePosition.WallOutsideCommunityChargeStationDocked.getPosition(), Drive.getInstance().getAllianceAngle(), 0.3)
-            ),
+            new CmdDrivePath(new Trajectory("pathplanner/generatedCSV/Wall Charging.csv")),
             () -> _numGamePieces > 1
         );
         
@@ -192,5 +204,42 @@ public class GrpAutonomous extends SequentialCommandGroup
         // );
 
         return new CmdDriveToPosition(DrivePosition.MiddleInsideCommunityChargeStationDocked.getPosition(), Drive.getInstance().getAllianceAngle(), 0.3);
+    }
+
+    public Command getSubstationSecondPieceCommand()
+    {
+        return new SequentialCommandGroup(
+            new ParallelDeadlineGroup(
+                new CmdDrivePath(new Trajectory("pathplanner/generatedCSV/Substation Pickup.csv"), true),
+                new GrpIntakeGamePiece(ArmPosition.Ground, ()-> ArmSide.Front, ()-> HandMode.Cone)
+            ),
+            new ParallelCommandGroup(
+                new CmdArmSetPosition(Constants.Lookups.STOW_FRONT_CONE, Constants.Arm.PRESET_MOTION_RATE, true),
+                new CmdDrivePath(new Trajectory("pathplanner/generatedCSV/Substation Place.csv"))
+            ),
+            new CmdArmSetPosition(Constants.Lookups.MID_FRONT_CUBE, Constants.Arm.PRESET_MOTION_RATE, true),
+            new GrpPlaceGamePiece(() -> Arm.HandMode.Cube)
+        );
+    }
+
+    public Command getWallSecondPieceCommand()
+    {
+        return new SequentialCommandGroup(
+            new ParallelDeadlineGroup(
+                new CmdDrivePath(new Trajectory("pathplanner/generatedCSV/Wall Pickup.csv"), true),
+                new GrpIntakeGamePiece(ArmPosition.Ground, ()-> ArmSide.Front, ()-> HandMode.Cone)
+            ),
+            new ParallelCommandGroup(
+                new CmdArmSetPosition(Constants.Lookups.STOW_FRONT_CONE, Constants.Arm.PRESET_MOTION_RATE, true),
+                new CmdDrivePath(new Trajectory("pathplanner/generatedCSV/Wall Place.csv"))
+            ),
+            new CmdArmSetPosition(Constants.Lookups.MID_FRONT_CUBE, Constants.Arm.PRESET_MOTION_RATE, true),
+            new GrpPlaceGamePiece(() -> Arm.HandMode.Cube)
+        );
+    }
+
+    public Command getMiddleSecondPieceCommand()
+    {
+        return new SequentialCommandGroup();
     }
 }

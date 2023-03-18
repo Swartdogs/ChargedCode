@@ -88,6 +88,8 @@ public final class Constants
         public static final double FR_OFFSET = 26.0;
         public static final double BL_OFFSET = -212.5;
         public static final double BR_OFFSET = 146.2;
+
+        public static final Vector PATH_PLANNER_ORIGIN = new Vector(325.63, 157.75);
     }
 
     public static class Vision
@@ -163,7 +165,7 @@ public final class Constants
         public static final double  WRIST_JOYSTICK_RATE             = 60.0 / Constants.LOOPS_PER_SECOND; // Degrees per second
 
         // all of these in inches per second
-        public static final double  PRESET_MOTION_RATE              = 40.0; // for buttons (stow, high, floor, etc.)
+        public static final double  PRESET_MOTION_RATE              = 54.0; // for buttons (stow, high, floor, etc.)
         public static final double  PLACE_MOTION_RATE               = 24.0; // vertical and horizontal placing
         public static final double  ADJUST_MOTION_RATE              = 16.0; // adjustment buttons
 
@@ -246,7 +248,7 @@ public final class Constants
         public static final ArmData GROUND_BACK_CONE      = GROUND_FRONT_CONE.opposite();
         public static final ArmData GROUND_BACK_CUBE      = new ArmData(new Vector( -38.28,    9.72), -135.00,    0.00,   false);
 
-        public static final ArmData STOW_FRONT_CONE       = new ArmData(new Vector( 0.0, Arm.SHOULDER_HEIGHT + Arm.ARM_RETRACTED_LENGTH + Arm.HAND_LENGTH), 0.0,  90.0, false);
+        public static final ArmData STOW_FRONT_CONE       = new ArmData(new Vector( 8.5, 57.8), 0.0,  90.0, false);
         public static final ArmData STOW_FRONT_CUBE       = STOW_FRONT_CONE;
         public static final ArmData STOW_BACK_CONE        = STOW_FRONT_CONE.opposite();
         public static final ArmData STOW_BACK_CUBE        = STOW_FRONT_CUBE.opposite();
