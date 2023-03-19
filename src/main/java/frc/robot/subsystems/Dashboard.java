@@ -14,12 +14,11 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.groups.GrpAutonomous.DrivePosition;
 import frc.robot.subsystems.drive.Drive;
 
-public class Dashboard extends SubsystemBase 
+public class Dashboard
 {
     private static Dashboard _instance;
 
@@ -173,6 +172,8 @@ public class Dashboard extends SubsystemBase
         initializeSetting("Place Speed", Constants.Manipulator.PLACE_SPEED, placeSpeed, Manipulator.getInstance()::setPlaceSpeed);
         initializeSetting("Intake Stop Delay", Constants.Manipulator.INTAKE_STOP_DELAY, intakeStopDelay, Manipulator.getInstance()::setIntakeStopDelay);
         initializeSetting("Intake Stow Delay", Constants.Manipulator.INTAKE_STOW_DELAY, intakeStowDelay, Manipulator.getInstance()::setIntakeStowDelay);
+
+        startDashboard();
     }
 
     public void initializeSetting(String key, double defaultValue, GenericEntry entry, DoubleConsumer consumer)
@@ -218,7 +219,16 @@ public class Dashboard extends SubsystemBase
         return _autoBalanceChooser.getSelected();
     }
 
-    @Override
+    public void startDashboard()
+    {
+        Thread thread = new Thread(()->
+        {
+            while (true) periodic();
+        });
+
+        thread.start();
+    }
+
     public void periodic()
     {
         _allianceBox.setBoolean(DriverStation.getAlliance() == Alliance.Blue);
