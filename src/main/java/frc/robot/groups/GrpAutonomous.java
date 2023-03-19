@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.ArmData;
 import frc.robot.Constants;
 import frc.robot.commands.CmdArmSetPosition;
 import frc.robot.commands.CmdDriveBalance;
@@ -105,13 +104,17 @@ public class GrpAutonomous extends SequentialCommandGroup
                 new GrpPlaceGamePiece(() -> HandMode.Cube)
             ).unless(() -> _numGamePieces == 0),
 
+            // Get and place the second game piece if necessary
             Commands.select
             (
                 Map.of
                 (
-                    DrivePosition.SubstationStart, getSubstationSecondPieceCommand(),
-                    DrivePosition.WallStart,       getWallSecondPieceCommand(),
-                    DrivePosition.MiddleStart,     getMiddleSecondPieceCommand()
+                    // These are proxy commands because we need to lazily create and execute them (they take too
+                    // long to build at the beginning of autonomous with everything else). Lazily creating the command
+                    // means we only create the commands we intend to execute
+                    DrivePosition.SubstationStart, new ProxyCommand(() -> getSubstationSecondPieceCommand()),
+                    DrivePosition.WallStart,       new ProxyCommand(() -> getWallSecondPieceCommand()),
+                    DrivePosition.MiddleStart,     new ProxyCommand(() -> getMiddleSecondPieceCommand())
                 ),
                 () -> _startPosition
             ).unless(() -> _numGamePieces < 2),
@@ -124,9 +127,9 @@ public class GrpAutonomous extends SequentialCommandGroup
                 (
                     Map.of
                     (
-                        DrivePosition.SubstationStart, getSubstationStartChargeStationAlignCommand(),
-                        DrivePosition.WallStart,       getWallStartChargeStationAlignCommand(),
-                        DrivePosition.MiddleStart,     getMiddleStartChargeStationAlignCommand()
+                        DrivePosition.SubstationStart, new ProxyCommand(() -> getSubstationStartChargeStationAlignCommand()),
+                        DrivePosition.WallStart,       new ProxyCommand(() -> getWallStartChargeStationAlignCommand()),
+                        DrivePosition.MiddleStart,     new ProxyCommand(() -> getMiddleStartChargeStationAlignCommand())
                     ), 
                     () -> _startPosition
                 )
@@ -139,13 +142,13 @@ public class GrpAutonomous extends SequentialCommandGroup
                 (
                     Map.of
                     (
-                        DrivePosition.SubstationStart, new CmdDrivePath(new Trajectory("pathplanner/generatedCSV/Substation Mobility.csv")),
-                        DrivePosition.WallStart,       new CmdDrivePath(new Trajectory("pathplanner/generatedCSV/Wall Mobility.csv")),
+                        DrivePosition.SubstationStart, new ProxyCommand(() -> new CmdDrivePath(new Trajectory("pathplanner/generatedCSV/Substation Mobility.csv"))),
+                        DrivePosition.WallStart,       new ProxyCommand(() -> new CmdDrivePath(new Trajectory("pathplanner/generatedCSV/Wall Mobility.csv"))),
                         DrivePosition.MiddleStart,     Commands.none()
                     ),
                     () -> _startPosition
                 ),
-                () -> _balance
+                () -> _balance && _numGamePieces < 2
             )
         );
     }
