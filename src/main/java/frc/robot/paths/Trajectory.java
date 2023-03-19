@@ -15,11 +15,16 @@ public class Trajectory
 {
     private ArrayList<TrajectoryFrame> _frames;
     private int _prevFrame;
-
+    
     public Trajectory()
     {
         _prevFrame = 0;
         _frames = new ArrayList<TrajectoryFrame>();
+    }
+
+    public Trajectory(String csvFile)
+    {
+        this(csvFile, DriverStation.getAlliance() == Alliance.Red);
     }
 
     public Trajectory(String csvFile, boolean mirror)
@@ -47,9 +52,18 @@ public class Trajectory
         }
     }
 
-    public Trajectory(String csvFile)
+    public Trajectory mirror()
     {
-        this(csvFile, DriverStation.getAlliance() == Alliance.Red);
+        var mirrored = new Trajectory();
+
+        for (int i = 0; i < _frames.size(); i++)
+        {
+            var newFrame = _frames.get(i).clone();
+            newFrame.mirror();
+            mirrored._frames.add(newFrame);
+        }
+
+        return mirrored;
     }
 
     public TrajectoryFrame getFrame(double time)

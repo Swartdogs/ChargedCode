@@ -1,7 +1,5 @@
 package frc.robot.paths;
 
-import org.opencv.core.Point;
-
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Vector;
@@ -23,6 +21,11 @@ public class TrajectoryFrame
         _angularVelocity = angularVelocity;
     }
 
+    public TrajectoryFrame(String csvLine)
+    {
+        this(csvLine, false);
+    }
+
     public TrajectoryFrame(String csvLine, boolean mirror)
     {
         String[] csvList = csvLine.split(",");
@@ -39,11 +42,21 @@ public class TrajectoryFrame
 
         if (mirror)
         {
-            _position.setX(-_position.getX());
-            _velocity.setX(-_velocity.getX());
-            _heading *= -1;
-            _angularVelocity *= -1;
+            mirror();
         }
+    }
+
+    public void mirror()
+    {
+        _position.setX(-_position.getX());
+        _velocity.setX(-_velocity.getX());
+        _heading *= -1;
+        _angularVelocity *= -1;
+    }
+
+    public TrajectoryFrame clone()
+    {
+        return new TrajectoryFrame(_time, _position.clone(), _velocity.clone(), _heading, _angularVelocity);
     }
 
     public double getTime()
