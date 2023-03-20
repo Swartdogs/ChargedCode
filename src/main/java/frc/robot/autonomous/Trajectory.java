@@ -1,4 +1,4 @@
-package frc.robot.paths;
+package frc.robot.autonomous;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,9 +6,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.util.ArrayList;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.subsystems.drive.Vector;
 
 public class Trajectory
@@ -24,7 +22,7 @@ public class Trajectory
 
     public Trajectory(String csvFile)
     {
-        this(csvFile, DriverStation.getAlliance() == Alliance.Red);
+        this(csvFile, false);
     }
 
     public Trajectory(String csvFile, boolean mirror)

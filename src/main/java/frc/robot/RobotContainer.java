@@ -12,11 +12,9 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.CmdAutoRotate;
 import frc.robot.commands.CmdDriveBalance;
-import frc.robot.commands.CmdDrivePath;
 import frc.robot.commands.CmdDriveResetOdometer;
 import frc.robot.commands.CmdDriveRotateModules;
 import frc.robot.commands.CmdDriveStrafeWithJoystick;
-import frc.robot.commands.CmdDriveVelocity;
 import frc.robot.commands.CmdDriveWithJoystick;
 import frc.robot.commands.CmdLEDChangeHandMode;
 import frc.robot.commands.CmdLEDTeleopSwapSides;
@@ -27,7 +25,6 @@ import frc.robot.groups.GrpPlaceGamePiece;
 import frc.robot.groups.GrpAutonomous;
 import frc.robot.groups.GrpIntakeGamePiece;
 import frc.robot.groups.GrpSetArmPosition;
-import frc.robot.paths.Trajectory;
 import frc.robot.subsystems.Arm.ArmPosition;
 import frc.robot.subsystems.Arm.ArmSide;
 import frc.robot.subsystems.Arm;
@@ -87,6 +84,8 @@ public class RobotContainer
     private Trigger _buttonBoxHandmodeSwitch;
     private Trigger _buttonBoxArmSideSwitch;
 
+    private Command _auto;
+
     private RobotContainer()
     {
         DriverStation.silenceJoystickConnectionWarning(true);
@@ -95,8 +94,10 @@ public class RobotContainer
         Drive.getInstance();
         Arm.getInstance();
         Manipulator.getInstance();
-        Dashboard.getInstance();
         LED.getInstance();
+        Dashboard.getInstance();
+
+        _auto = new GrpAutonomous();
 
         _buttonBoxHandmodeSwitch = new Trigger (()-> Controller.ButtonBox.joystick().getRawAxis(0) < -0.5);
         _buttonBoxArmSideSwitch  = new Trigger(()-> Controller.ButtonBox.joystick().getRawAxis(1) < -0.5);
@@ -122,8 +123,6 @@ public class RobotContainer
 
         Command driveAutoBalance  = new CmdDriveBalance().andThen(Commands.run(() -> Drive.getInstance().rotateModules(90)));
         Command intakeAdjustment  = Commands.startEnd(Manipulator.getInstance()::enableIntake, Manipulator.getInstance()::disableIntake);
-        Command velocityCommand   = Drive.getInstance().printVelocityCommand();
-        Command driveVelocityCommand = new CmdDriveVelocity();
 
         Controller.DriveJoystick.button(2).onTrue
         (
@@ -141,10 +140,7 @@ public class RobotContainer
         Controller.DriveJoystick.button( 7).onFalse(Commands.runOnce(driveRotateModules::cancel));
         Controller.DriveJoystick.button( 8).onTrue(driveAutoBalance);
         Controller.DriveJoystick.button( 8).onFalse(Commands.runOnce(driveAutoBalance::cancel));
-        Controller.DriveJoystick.button( 9).whileTrue(driveVelocityCommand);
-        Controller.DriveJoystick.button(10).whileTrue(new CmdDrivePath(new Trajectory("pathplanner/generatedCSV/TestArc.csv", true)));
         Controller.DriveJoystick.button(11).onTrue(new CmdDriveResetOdometer());
-        Controller.DriveJoystick.button(12).whileTrue(velocityCommand);
 
         Controller.OperatorJoystick.button( 1).onTrue(operatorHeightAdjustment);
         Controller.OperatorJoystick.button( 1).onFalse(Commands.runOnce(operatorHeightAdjustment::cancel));
@@ -183,7 +179,7 @@ public class RobotContainer
 
     public Command getAutonomousCommand() 
     {
-        return new GrpAutonomous();
+        return _auto;
     }
 
     public ArmSide getArmSide()

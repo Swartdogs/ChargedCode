@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants;
-import frc.robot.groups.GrpAutonomous.DrivePosition;
+import frc.robot.autonomous.Actions.DrivePosition;
 import frc.robot.subsystems.drive.Drive;
 
 public class Dashboard
@@ -38,7 +38,6 @@ public class Dashboard
     private GenericEntry _wristAngle;
     private GenericEntry _twistAngle;
     private GenericEntry _pickupDisplaySpeed;
-    private GenericEntry _hasTargetBox;
     private GenericEntry _heading;
     private GenericEntry _odometer;
     private GenericEntry _frAngle;
@@ -46,7 +45,6 @@ public class Dashboard
     private GenericEntry _brAngle;
     private GenericEntry _blAngle;
     private GenericEntry _hasGamePiece;
-    private GenericEntry _autonomousLog;
 
     private SendableChooser<Integer>       _autoDelayChooser;
     private SendableChooser<Integer>       _autoGamePiecesChooser;
@@ -58,7 +56,7 @@ public class Dashboard
         var tab                = Shuffleboard.getTab("Dashboard");
         
         var visionLayout       = tab.getLayout("Vision", BuiltInLayouts.kGrid).withPosition(0, 2).withSize(8, 2).withProperties(Map.of("Number of columns", 1, "Number of rows", 1, "Label position", "HIDDEN")); 
-        _hasTargetBox          = visionLayout.add("Has Target", false).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kBooleanBox).getEntry();
+        visionLayout.add("Has Target", false).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kBooleanBox);
 
         var driveBaseLayout    = tab.getLayout("Drive Base", BuiltInLayouts.kGrid).withPosition(0, 4).withSize(4, 5).withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"));
         _heading               = driveBaseLayout.add("Heading", 0).withPosition(0, 0).withSize(1, 1).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("Min", 0, "Max", 360, "Display value", false)).getEntry();
@@ -110,7 +108,7 @@ public class Dashboard
         _autoBalanceChooser.addOption("Yes", true);
         autonomousOptions.add("Balance Options", _autoBalanceChooser).withPosition(0, 3).withSize(1, 1).withWidget(BuiltInWidgets.kComboBoxChooser);
     
-        _autonomousLog = autonomousOptions.add("Auto Log", "").withPosition(0, 4).withSize(1, 1).withWidget(BuiltInWidgets.kTextView).getEntry();
+        autonomousOptions.add("Auto Log", "").withPosition(0, 4).withSize(1, 1).withWidget(BuiltInWidgets.kTextView);
 
         var settingsTab                 = Shuffleboard.getTab("Settings");
 
@@ -239,8 +237,6 @@ public class Dashboard
         _twistAngle.setDouble(Double.parseDouble(String.format("%6.2f", Arm.getInstance().getTwistAngle())));
         
         _pickupDisplaySpeed.setDouble(Double.parseDouble(String.format("%6.2f", Manipulator.getInstance().getIntakeSpeed())));
-
-        //_hasTargetBox.setBoolean(Vision.getInstance().getFrontResult().hasTargets() || Vision.getInstance().getRearResult().hasTargets());
 
         _heading.setDouble(Double.parseDouble(String.format("%6.2f", Drive.getInstance().getHeading())));
         _odometer.setString(String.format("%s", Drive.getInstance().getFieldPosition()));

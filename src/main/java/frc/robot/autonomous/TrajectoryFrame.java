@@ -1,4 +1,4 @@
-package frc.robot.paths;
+package frc.robot.autonomous;
 
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;

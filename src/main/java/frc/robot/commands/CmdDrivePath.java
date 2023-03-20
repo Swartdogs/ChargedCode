@@ -1,8 +1,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.paths.Trajectory;
-import frc.robot.paths.TrajectoryFrame;
+import frc.robot.autonomous.Trajectory;
+import frc.robot.autonomous.TrajectoryFrame;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.Vector;
 

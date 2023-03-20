@@ -155,7 +155,7 @@ public final class Constants
         public static final double  SHOULDER_SCALED_MIN             = -116.000;
         public static final double  SHOULDER_SCALED_MAX             =  116.000;
         public static final double  WRIST_OFFSET                    =    0.690;
-        public static final double  TWIST_OFFSET                    =    0.730;
+        public static final double  TWIST_OFFSET                    =    0.230;
         public static final double  SHOULDER_SLOPE                  = (SHOULDER_SCALED_MAX-SHOULDER_SCALED_MIN)/(SHOULDER_SENSOR_MAX-SHOULDER_SENSOR_MIN);
         public static final double  EXTENSION_CONVERSION_FACTOR     = 25.625 / 125.0947;
 
