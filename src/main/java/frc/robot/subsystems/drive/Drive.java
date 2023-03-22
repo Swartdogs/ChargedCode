@@ -4,10 +4,12 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
-
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.RobotLog;
 
 public class Drive extends SubsystemBase
@@ -268,7 +270,7 @@ public class Drive extends SubsystemBase
     public Vector getChassisVelocity()
     {
         Vector chassisVelocity = _velocity.clone();
-        chassisVelocity.translatePolarPosition(0, _rotationHeading);
+        chassisVelocity.translatePolarPosition(0, -_rotationHeading);
 
         return chassisVelocity;
     }
@@ -380,5 +382,10 @@ public class Drive extends SubsystemBase
         fuseRotationVelocity(sensorRotationVelocity, sensorRotationVariance + 1);
         // System.out.println(String.format("Odometer: %s; Position Variance: %6.2f; Heading: %6.2f; Heading Variance: %6.2f", _position, _positionVariance, _rotationHeading, _rotationHeadingVariance));
 
+    }
+
+    public Command printVelocityCommand()
+    {
+        return Commands.run(()-> System.out.println(String.format("Joystick: %6.2f, Velocity: %6.2f, Angular Velocity: %6.2f", new Vector(RobotContainer.getInstance().getDriveJoyX(), RobotContainer.getInstance().getDriveJoyY()).getMagnitude(), getFieldVelocity().getMagnitude(), getHeadingVelocity())));
     }
 }

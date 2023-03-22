@@ -2,6 +2,7 @@ package frc.robot;
 
 import java.util.HashMap;
 
+import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.subsystems.Arm.ArmPosition;
 import frc.robot.subsystems.Arm.ArmSide;
 import frc.robot.subsystems.Arm.HandMode;
@@ -58,8 +59,9 @@ public final class Constants
         public static final double  BASE_WIDTH                      = 20.00;
         public static final double  BASE_LENGTH                     = 28.75;
 
-        public static final double  MAX_DRIVE_SPEED                 = 180.0; // in/s usually
-        public static final double  MAX_ROTATE_SPEED                = 400.0;   // deg/s
+        public static final double  MAX_DRIVE_SPEED                 = 138.0; // in/s usually
+        public static final double  MAX_ROTATE_SPEED                = 280.0; // deg/s
+        public static final double  MOTION_THRESHOLD                = 0.02;  // percent
 
         public static final double  TYPICAL_MODULE_DIST             = Math.sqrt((BASE_WIDTH/2)*(BASE_WIDTH/2)+(BASE_LENGTH/2)*(BASE_LENGTH/2));
 
@@ -86,6 +88,8 @@ public final class Constants
         public static final double FR_OFFSET = 26.0;
         public static final double BL_OFFSET = -212.5;
         public static final double BR_OFFSET = 146.2;
+
+        public static final Vector PATH_PLANNER_ORIGIN = new Vector(325.63, 157.75);
     }
 
     public static class Vision
@@ -151,13 +155,24 @@ public final class Constants
         public static final double  SHOULDER_SCALED_MIN             = -116.000;
         public static final double  SHOULDER_SCALED_MAX             =  116.000;
         public static final double  WRIST_OFFSET                    =    0.690;
-        public static final double  TWIST_OFFSET                    =    0.730;
+        public static final double  TWIST_OFFSET                    =    0.230;
         public static final double  SHOULDER_SLOPE                  = (SHOULDER_SCALED_MAX-SHOULDER_SCALED_MIN)/(SHOULDER_SENSOR_MAX-SHOULDER_SENSOR_MIN);
         public static final double  EXTENSION_CONVERSION_FACTOR     = 25.625 / 125.0947;
 
-        public static final double  EXTENSION_JOYSTICK_RATE         = 10.0 / Constants.LOOPS_PER_SECOND; // inches per second
-        public static final double  SHOULDER_JOYSTICK_RATE          = 30.0 / Constants.LOOPS_PER_SECOND; // degrees per second
+        // joystick scaling
+        public static final double  REACH_JOYSTICK_RATE             = 10.0 / Constants.LOOPS_PER_SECOND; // inches per second
+        public static final double  HEIGHT_JOYSTICK_RATE            = 10.0 / Constants.LOOPS_PER_SECOND; // inches per second
         public static final double  WRIST_JOYSTICK_RATE             = 60.0 / Constants.LOOPS_PER_SECOND; // Degrees per second
+
+        // all of these in inches per second
+        public static final double  PRESET_MOTION_RATE              = 54.0; // for buttons (stow, high, floor, etc.)
+        public static final double  PLACE_MOTION_RATE               = 24.0; // vertical and horizontal placing
+        public static final double  ADJUST_MOTION_RATE              = 16.0; // adjustment buttons
+
+        // inverse kinematics
+        public static final double  HAND_LENGTH                     = 11.0;
+        public static final double  SHOULDER_HEIGHT                 = 17.5;
+        public static final double  ARM_RETRACTED_LENGTH            = 30.5;
     }
  
     public static class Manipulator
@@ -173,15 +188,30 @@ public final class Constants
         public static final double  CONE_EJECT_SPEED                = 0.30;
     }
 
+    public static class LED
+    {
+        public static final int     NUM_LEDS                        = 25;
+
+        public static final Color   RED                             = new Color(255, 0, 0);
+        public static final Color   BLUE                            = new Color(0, 0, 255);
+        public static final Color   YELLOW                          = new Color(255, 115, 0);
+        public static final Color   PURPLE                          = new Color(127, 0, 255);
+        public static final Color   ORANGE                          = new Color(255, 50, 0);
+        public static final Color   GREEN                           = new Color(0, 115, 0);
+        public static final Color   PINK                            = new Color(255, 46, 204);
+        public static final Color   OFF                             = new Color(0, 0, 0);
+    }
+
     public static class Lookups
     {
+        /* Original numbers
         public static final ArmData LOW_FRONT_CONE        = new ArmData(-105,        0,          90,    -15);
         public static final ArmData LOW_FRONT_CUBE        = new ArmData(-105,        0,          90,    -15);
         public static final ArmData LOW_BACK_CONE         = new ArmData( 105,        0,         -90,     15);
         public static final ArmData LOW_BACK_CUBE         = new ArmData( 105,        0,         -90,     15);
-        public static final ArmData MID_FRONT_CONE        = new ArmData( -54,      6.5,          90,     -0);
+        public static final ArmData MID_FRONT_CONE        = new ArmData( -58,      6.5,          90,     -0);
         public static final ArmData MID_FRONT_CUBE        = new ArmData( -60,        0,          90,     40);
-        public static final ArmData MID_BACK_CONE         = new ArmData(  54,      6.5,         -90,      0);
+        public static final ArmData MID_BACK_CONE         = new ArmData(  58,      6.5,         -90,      0);
         public static final ArmData MID_BACK_CUBE         = new ArmData(  60,        0,         -90,    -40);
         public static final ArmData HIGH_FRONT_CONE       = new ArmData( -52,       26,          90,      5);
         public static final ArmData HIGH_FRONT_CUBE       = new ArmData( -55,       18,          90,     35);
@@ -191,14 +221,38 @@ public final class Constants
         public static final ArmData SUBSTATION_FRONT_CUBE = new ArmData(  41,        0,         -90,    -45);
         public static final ArmData SUBSTATION_BACK_CONE  = new ArmData( -41,        0,          90,     45);
         public static final ArmData SUBSTATION_BACK_CUBE  = new ArmData( -41,        0,          90,     45);
-        public static final ArmData GROUND_FRONT_CONE     = new ArmData( 110,        0,         -90,     15);
+        public static final ArmData GROUND_FRONT_CONE     = new ArmData( 115,        0,         -90,     30);
         public static final ArmData GROUND_FRONT_CUBE     = new ArmData(  90,        0,           0,    -45);
-        public static final ArmData GROUND_BACK_CONE      = new ArmData(-110,        0,          90,    -15);
+        public static final ArmData GROUND_BACK_CONE      = new ArmData(-115,        0,          90,    -30);
         public static final ArmData GROUND_BACK_CUBE      = new ArmData( -90,        0,          -0,     45);
-        public static final ArmData STOW_FRONT_CONE       = new ArmData(   0,        0,          90,      0);
-        public static final ArmData STOW_FRONT_CUBE       = new ArmData(   0,        0,          90,      0);
-        public static final ArmData STOW_BACK_CONE        = new ArmData(  -0,        0,         -90,     -0);
-        public static final ArmData STOW_BACK_CUBE        = new ArmData(  -0,        0,         -90,     -0);
+        */
+
+        /*                                                                          X         Y         Angle    Twist    Preserve hand flip*/
+        public static final ArmData LOW_FRONT_CONE        = new ArmData(new Vector( -40.46,    9.61),  -90.00,   90.00,   false);
+        public static final ArmData LOW_FRONT_CUBE        = new ArmData(new Vector( -40.46,    9.61),  -90.00,   90.00,   false);
+        public static final ArmData LOW_BACK_CONE         = new ArmData(new Vector(  40.46,    9.61),   90.00,  -90.00,   false);
+        public static final ArmData LOW_BACK_CUBE         = new ArmData(new Vector(  40.46,    9.61),   90.00,  -90.00,   false);
+        public static final ArmData MID_FRONT_CONE        = new ArmData(new Vector( -40.00,    40.0),  -75.00,   90.00,   true);
+        public static final ArmData MID_FRONT_CUBE        = new ArmData(new Vector( -37.25,   30.84), -100.00,   90.00,   true);
+        public static final ArmData MID_BACK_CONE         = MID_FRONT_CONE.opposite();
+        public static final ArmData MID_BACK_CUBE         = new ArmData(new Vector(  37.25,   30.84),  100.00,  -90.00,   true);
+        public static final ArmData HIGH_FRONT_CONE       = new ArmData(new Vector( -55.00,   58.28),  -75.00,   90.00,   true);
+        public static final ArmData HIGH_FRONT_CUBE       = new ArmData(new Vector( -50.73,   45.32),  -90.00,   90.00,   true);
+        public static final ArmData HIGH_BACK_CONE        = new ArmData(new Vector(  55.00,   58.28),   75.00,  -90.00,   true);
+        public static final ArmData HIGH_BACK_CUBE        = new ArmData(new Vector(  50.73,   45.32),   90.00,  -90.00,   true);
+        public static final ArmData SUBSTATION_FRONT_CONE = new ArmData(new Vector(  30.98,   41.29),   86.00,  -90.00,   true);
+        public static final ArmData SUBSTATION_FRONT_CUBE = new ArmData(new Vector(  30.98,   41.29),   86.00,  -90.00,   true);
+        public static final ArmData SUBSTATION_BACK_CONE  = new ArmData(new Vector( -30.98,   41.29),  -86.00,   90.00,   true);
+        public static final ArmData SUBSTATION_BACK_CUBE  = new ArmData(new Vector( -30.98,   41.29),  -86.00,   90.00,   true);
+        public static final ArmData GROUND_FRONT_CONE     = new ArmData(new Vector(  39.62,     4.0),   90.00,  -90.00,   false);
+        public static final ArmData GROUND_FRONT_CUBE     = new ArmData(new Vector(  38.28,    9.72),  135.00,    0.00,   false);
+        public static final ArmData GROUND_BACK_CONE      = GROUND_FRONT_CONE.opposite();
+        public static final ArmData GROUND_BACK_CUBE      = new ArmData(new Vector( -38.28,    9.72), -135.00,    0.00,   false);
+
+        public static final ArmData STOW_FRONT_CONE       = new ArmData(new Vector( 6.0, 57.8), 0.0,  90.0, false);
+        public static final ArmData STOW_FRONT_CUBE       = STOW_FRONT_CONE;
+        public static final ArmData STOW_BACK_CONE        = STOW_FRONT_CONE.opposite();
+        public static final ArmData STOW_BACK_CUBE        = STOW_FRONT_CUBE.opposite();
 
         private static final HashMap<ArmTuple, ArmData> _lookup = new HashMap<ArmTuple, ArmData>(){{
             /*               Position                Side           Hand Mode                   Shoulder    Extension   Twist   Wrist */

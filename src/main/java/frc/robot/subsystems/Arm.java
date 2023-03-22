@@ -15,11 +15,10 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.Vector;
 
 public class Arm extends SubsystemBase 
 {
@@ -74,13 +73,12 @@ public class Arm extends SubsystemBase
     private DutyCycleEncoder    _shoulderEncoder;
     private CANSparkMax         _shoulderMotor;
     private PIDControl          _shoulderPid;
+    private double              _shoulderSetpoint;
     
     //Wrist Controls
     private CANSparkMax         _wristMotor;
     private DutyCycleEncoder    _wristEncoder;
     private PIDControl          _wristPID;
-    private double              _wristSpeed;
-    private boolean             _wristOverride;
 
     //Twist Motion Controls
     private CANSparkMax         _twistMotor;
@@ -99,7 +97,9 @@ public class Arm extends SubsystemBase
     // Controls
     private ArmPosition         _armPosition;
     private ResetStatus         _reset;
-    private boolean             _isFlipped;
+    private Vector              _coordinate;
+    private double              _handAngle;
+    private boolean             _handFlipped;
 
     // Simulation
     private DIOSim              _limitSwitchSim;
@@ -137,14 +137,15 @@ public class Arm extends SubsystemBase
         _wristMaxAngle          = Constants.Arm.WRIST_MIN_ANGLE;
         _twistMinRotation       = Constants.Arm.TWIST_MIN_ROTATION;
         _twistMaxRotation       = Constants.Arm.TWIST_MAX_ROTATION;
+
+        _coordinate             = Constants.Lookups.STOW_FRONT_CONE.getCoordinate();
+        _handAngle              = Constants.Lookups.STOW_FRONT_CONE.getHandAngle();
+        _handFlipped            = false;
         
         /* Settings */
         _minShoulderAngle       = Constants.Arm.SHOULDER_MIN_ANGLE;
         _maxShoulderAngle       = Constants.Arm.SHOULDER_MAX_ANGLE;
         _maxArmExtension        = Constants.Arm.ARM_MAX_EXTENSION;
-        _wristSpeed             = 0;
-        _wristOverride          = false;
-        _isFlipped              = false;
 
         _extensionMotor.restoreFactoryDefaults();
         _shoulderMotor.restoreFactoryDefaults();
@@ -168,13 +169,13 @@ public class Arm extends SubsystemBase
 
         followerShoulderMotor.follow(_shoulderMotor, true);
 
-        _shoulderPid.setCoefficient(Coefficient.P, 0, 0.0175, 0);
+        _shoulderPid.setCoefficient(Coefficient.P, 5, 0.02, 0.015);
         _shoulderPid.setCoefficient(Coefficient.I, 0, 0, 0);
-        _shoulderPid.setCoefficient(Coefficient.D, 0, 0.001, 0);
+        _shoulderPid.setCoefficient(Coefficient.D, 5, 0.002, 0.001);
         _shoulderPid.setInputRange(Constants.Arm.SHOULDER_MIN_ANGLE, Constants.Arm.SHOULDER_MAX_ANGLE);
-        _shoulderPid.setOutputRange(-0.62, 0.62);
-        _shoulderPid.setOutputRamp(0.05, 0.02);
-        _shoulderPid.setSetpointDeadband(5);
+        _shoulderPid.setOutputRange(-0.545, 0.545);
+        _shoulderPid.setOutputRamp(0.0, 0.02);
+        _shoulderPid.setSetpointDeadband(4.5);
         _shoulderPid.setFeedForward(setpoint -> -Constants.Arm.HORIZONTAL_STAYING_POWER * Math.sin(Math.toRadians(setpoint)));
         _shoulderPid.setSetpoint(0);
 
@@ -226,9 +227,9 @@ public class Arm extends SubsystemBase
         return !_limitSwitch.get();
     }
 
-    public double getExtensionPosition()
+    public void setExtensionEncoderPosition(double positon)
     {
-        return _extensionEncoder.getPosition() * Constants.Arm.EXTENSION_CONVERSION_FACTOR;
+        _extensionEncoder.setPosition(positon);
     }
 
     public double getShoulderAngle()
@@ -236,40 +237,41 @@ public class Arm extends SubsystemBase
         return (_shoulderEncoder.getAbsolutePosition() - Constants.Arm.SHOULDER_SENSOR_MIN) * Constants.Arm.SHOULDER_SLOPE + Constants.Arm.SHOULDER_SCALED_MIN;
     }
 
-    public void setExtensionMotorPosition(double position)
+    public double getExtensionDistance()
     {
-       _extensionPid.setSetpoint(position);
-    }
-  
-    public void modifyExtensionMotorPosition(double modification)
-    {
-        _extensionPid.setSetpoint(_extensionPid.getSetpoint() + modification);
+        return _extensionEncoder.getPosition() * Constants.Arm.EXTENSION_CONVERSION_FACTOR;
     }
 
-    public void setShoulderAngle(double angle)
+    public double getWristAngle()
     {
-        _shoulderPid.setSetpoint(angle, true);
+        return (_wristEncoder.getAbsolutePosition() - Constants.Arm.WRIST_OFFSET) * Constants.DEGREES_PER_REVOLUTION;
     }
 
-    public void modifyShoulderAngle(double modification)
+    public double getTwistAngle()
     {
-        double current = _shoulderPid.getSetpoint();
-
-        if (Math.signum(current + modification) != Math.signum(current))
-        {
-            _shoulderPid.setSetpoint(0);
-        }
-        else
-        {
-            _shoulderPid.setSetpoint(current + modification);
-        }
+        return MathUtil.inputModulus((_twistEncoder.getAbsolutePosition() - Constants.Arm.TWIST_OFFSET) * Constants.DEGREES_PER_REVOLUTION, -Constants.DEGREES_PER_HALF_REVOLUTION, Constants.DEGREES_PER_HALF_REVOLUTION);
     }
-
-    public double getShoulderAngleSetpoint()
+    
+    public double getShoulderTargetAngle()
     {
         return _shoulderPid.getSetpoint();
     }
 
+    public double getExtensionTargetDistance()
+    {
+        return _extensionPid.getSetpoint();
+    }
+
+    public double getWristTargetAngle()
+    {
+        return _wristPID.getSetpoint();
+    }
+
+    public double getTwistTargetAngle()
+    {
+        return _twistPID.getSetpoint();
+    }
+    
     public boolean shoulderAtAngle()
     {
         return _shoulderPid.atSetpoint();
@@ -280,80 +282,6 @@ public class Arm extends SubsystemBase
         return _extensionPid.atSetpoint();
     }
 
-    public void setArmPosition(ArmPosition position)
-    {
-        _armPosition = position;
-    }
-
-    public ArmPosition getArmPosition()
-    {
-        return _armPosition;
-    }
-
-    public void setExtensionEncoderPosition(double positon)
-    {
-        _extensionEncoder.setPosition(positon);
-    }
-
-    public void overrideWrist()
-    {
-        _wristOverride = true;
-        _wristMotor.setIdleMode(IdleMode.kBrake);
-    }
-
-    public boolean isWristOverridden()
-    {
-        return _wristOverride;
-    }
-
-    public void setWristAngle(double position)
-    {
-        _wristPID.setSetpoint(position);
-    }
-
-    public void setWristSpeed(double speed)
-    {
-        if (_wristOverride)
-        {
-            _wristMotor.setVoltage(speed * Constants.MOTOR_VOLTAGE);
-        }
-    }
-
-    public double getWristAngle()
-    {
-        return (_wristEncoder.getAbsolutePosition() - Constants.Arm.WRIST_OFFSET) * Constants.DEGREES_PER_REVOLUTION;
-    }
-
-    public void modifyWristAngle(double modification)
-    {
-        _wristPID.setSetpoint(_wristPID.getSetpoint() + modification);
-    }
-    
-    public void setTwistAngle(double position)
-    {
-        _twistPID.setSetpoint(position);
-    }    
-    
-    public double getTwistAngle()
-    {
-        return MathUtil.inputModulus((_twistEncoder.getAbsolutePosition() - Constants.Arm.TWIST_OFFSET) * Constants.DEGREES_PER_REVOLUTION, -Constants.DEGREES_PER_HALF_REVOLUTION, Constants.DEGREES_PER_HALF_REVOLUTION);
-    }    
-    
-    public double getTwistTargetAngle()
-    {
-        return _twistPID.getSetpoint();
-    }    
-    
-    public void setIsFlipped(boolean isFlipped)
-    {
-        _isFlipped = isFlipped;
-    }    
-    
-    public boolean isFlipped()
-    {
-        return _isFlipped;
-    }    
-
     public boolean wristAtAngle()
     {
         return _wristPID.atSetpoint();
@@ -362,6 +290,82 @@ public class Arm extends SubsystemBase
     public boolean twistAtAngle()
     {
         return _twistPID.atSetpoint();
+    }
+
+    private void updateArmSetpoints()
+    {
+        double sin = Math.sin(Math.toRadians(_handAngle));
+        double cos = Math.cos(Math.toRadians(_handAngle));
+
+        double x = _coordinate.getX() - Constants.Arm.HAND_LENGTH * sin;
+        double y = _coordinate.getY() - Constants.Arm.HAND_LENGTH * cos - Constants.Arm.SHOULDER_HEIGHT; 
+
+        double a = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+        double s = Math.toDegrees(Math.atan2(x, y));
+        double w = s - _handAngle;
+
+        _shoulderSetpoint = s;
+        _extensionPid.setSetpoint(a - Constants.Arm.ARM_RETRACTED_LENGTH);
+        _wristPID.setSetpoint(w);
+    }
+
+    public void setArmPosition(Vector coordinate, double handAngle, double twistAngle)
+    {
+        _coordinate = coordinate;
+        _handAngle  = handAngle;
+
+        setTwistAngle(twistAngle);
+        updateArmSetpoints();
+    }
+
+    public Vector getCoordinate()
+    {
+        return _coordinate;
+    }
+
+    public double getHandAngle()
+    {
+        return _handAngle;
+    }
+
+    public void setTargetArmPreset(ArmPosition position)
+    {
+        _armPosition = position;
+    }
+
+    public ArmPosition getTargetArmPreset()
+    {
+        return _armPosition;
+    }
+
+    public void setTwistAngle(double position)
+    {
+        if (_handFlipped)
+        {
+            position *= -1;
+        }
+
+        _twistPID.setSetpoint(position);
+    }
+
+    public void setHandIsFlipped(boolean flipped)
+    {
+        if(flipped != handIsFlipped())
+        {
+            flipHand();
+        }
+    }
+
+    public boolean handIsFlipped()
+    {
+        return _handFlipped;
+    }
+
+    public void flipHand()
+    {
+        _handFlipped = !_handFlipped;
+
+        _twistPID.setSetpoint(-_twistPID.getSetpoint());
     }
 
     //Settings Functions
@@ -439,17 +443,16 @@ public class Arm extends SubsystemBase
             default:
                 break;
         }
-
-        _twistMotor.setVoltage(_twistPID.calculate(getTwistAngle()) * Constants.MOTOR_VOLTAGE);
         
-        if (!_wristOverride)
-        {
-            _wristSpeed = _wristPID.calculate(getWristAngle());
-            _wristMotor.setVoltage(_wristSpeed * Constants.MOTOR_VOLTAGE);
-        }
+        _shoulderPid.setSetpoint(_shoulderSetpoint - Math.min(Math.max(Drive.getInstance().getChassisPitch(), -20.0), 20.0), false); // preserve input range
+        
+        _shoulderMotor.setVoltage(_shoulderPid.calculate(getShoulderAngle()) * Constants.MOTOR_VOLTAGE);
+        _extensionMotor.setVoltage(_extensionPid.calculate(getExtensionDistance()) * Constants.MOTOR_VOLTAGE);
+        _wristMotor.setVoltage(_wristPID.calculate(getWristAngle()) * Constants.MOTOR_VOLTAGE);
+        _twistMotor.setVoltage(_twistPID.calculate(getTwistAngle()) * Constants.MOTOR_VOLTAGE);
 
-        _shoulderMotor.setVoltage(_shoulderPid.calculate(getShoulderAngle() + Math.min(Math.max(Drive.getInstance().getChassisPitch(), -15.0), 15.0)) * Constants.MOTOR_VOLTAGE);
-        _extensionMotor.setVoltage(_extensionPid.calculate(getExtensionPosition()) * Constants.MOTOR_VOLTAGE);
+        //System.out.println(String.format("Shoulder Setpoint: %6.2f, Shoulder Current: %6.2f, Shoulder Out: %6.2f", _shoulderPid.getSetpoint(), getShoulderAngle(), shoulderOutput));
+        //System.out.println(String.format("Shoulder: %b, Extension: %b, Wrist: %b, Twist: %b, %s", shoulderAtAngle(), extensionAtDistance(), wristAtAngle(), twistAtAngle(), _reset));
     }
 
     @Override
@@ -459,15 +462,5 @@ public class Arm extends SubsystemBase
         _pitchEncoderSim.set(_shoulderMotor.getEncoder().getPosition());
         _wristEncoderSim.set(_wristMotor.getEncoder().getPosition());
         _twistEncoderSim.set(_twistMotor.getEncoder().getPosition());
-    }
-    
-    public Command printWristHealthCommand()
-    {
-        return Commands.either
-        (
-            Commands.print(String.format("Wrist Angle: %6.2f, Wrist Command: %5.2f, Wrist Setpoint: %6.2f", getWristAngle(), _wristSpeed, _wristPID.getSetpoint())),
-            Commands.print(String.format("Wrist overridden!")),
-            () -> !_wristOverride
-        ).repeatedly();
     }
 }

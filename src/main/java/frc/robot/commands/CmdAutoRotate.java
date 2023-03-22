@@ -31,7 +31,7 @@ public class CmdAutoRotate extends DriveCommand
     @Override
     public void execute() 
     {
-        double outputR = _rotatePID.calculate(_drive.getHeading());
+        double outputR = _rotatePID.calculate(_drive.getHeading()) + RobotContainer.getInstance().getDriveJoyZ();
         double x       =  RobotContainer.getInstance().getDriveJoyX();
         double y       =  RobotContainer.getInstance().getDriveJoyY();
 
