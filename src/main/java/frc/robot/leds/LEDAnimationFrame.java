@@ -9,9 +9,8 @@ import frc.robot.Constants;
 public class LEDAnimationFrame
 {
     private ArrayList<Color> _pattern;
-    private double           _duration;
-    
-    public LEDAnimationFrame(Color[] pattern, double time)
+
+    public LEDAnimationFrame(Color[] pattern)
     {
         if (pattern.length != Constants.LED.NUM_LEDS)
         {
@@ -24,17 +23,10 @@ public class LEDAnimationFrame
         {
             _pattern.add(pattern[i]);
         }
-
-        _duration = time;
     }
 
     public List<Color> getLEDPattern()
     {
         return _pattern;
-    }
-
-    public double getDuration()
-    {
-        return _duration;
     }
 }

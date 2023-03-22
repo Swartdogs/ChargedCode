@@ -37,7 +37,10 @@ public class GrpSetArmPosition extends SequentialCommandGroup
                 Arm.getInstance().setTargetArmPreset(position);
             }),
 
-            new ProxyCommand(()-> new CmdArmSetPosition(Constants.Lookups.STOW_FRONT_CUBE, Constants.Arm.PRESET_MOTION_RATE, true))
+            new ProxyCommand(()-> new CmdArmSetPosition(armSideSupplier.get() == ArmSide.Front ? 
+                                                            Constants.Lookups.STOW_FRONT_CUBE : 
+                                                            Constants.Lookups.STOW_BACK_CUBE, 
+                                                        Constants.Arm.PRESET_MOTION_RATE, true))
                 // If the signs of where we are and where we need to go are different, we need to stow.
                 // If the product of the signs is -1, we're crossing sides
                 // If the product of the signs is  0, we're either stowing or are already stowed

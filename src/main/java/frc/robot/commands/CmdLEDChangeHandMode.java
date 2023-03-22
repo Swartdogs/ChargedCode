@@ -73,7 +73,7 @@ public class CmdLEDChangeHandMode extends LEDAnimationCommand
                 }
             }
 
-            animation.addFrame(new LEDAnimationFrame(colors, 0.02));
+            animation.addFrame(new LEDAnimationFrame(colors));
         }
 
         setAnimation(animation);

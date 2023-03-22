@@ -26,38 +26,38 @@ public class CmdLEDTeleopInit extends LEDAnimationCommand
         {
             animation = new LEDAnimation
             (
-                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  color, null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  color, color, OFF,   null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  color, color, color, OFF,   OFF,   null,  null,  null,  null,  null,  null,  null,  null,  null,  null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  null,  null,  color, color, color, color, OFF,   OFF,   OFF,   null,  null,  null,  null,  null,  null,  null,  null,  null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  null,  color, color, color, color, color, OFF,   OFF,   OFF,   OFF,   null,  null,  null,  null,  null,  null,  null,  null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  color, color, color, color, color, color, OFF,   OFF,   OFF,   OFF,   OFF,   null,  null,  null,  null,  null,  null,  null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  color, color, color, color, color, color, color, OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   null,  null,  null,  null,  null,  null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  color, color, color, color, color, color, color, color, OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   null,  null,  null,  null,  null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  color, color, color, color, color, color, color, color, color, OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   null,  null,  null,  null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { null,  null,  null,  color, color, color, color, color, color, color, color, color, color, OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   null,  null,  null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { null,  null,  color, color, color, color, color, color, color, color, color, color, color, OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   null,  null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { null,  color, color, color, color, color, color, color, color, color, color, color, color, OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { color, color, color, color, color, color, color, color, color, color, color, color, color, OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF   }, 0.02)
+                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  color, null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null  }),
+                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  color, color, OFF,   null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null  }),
+                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  color, color, color, OFF,   OFF,   null,  null,  null,  null,  null,  null,  null,  null,  null,  null  }),
+                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  null,  null,  color, color, color, color, OFF,   OFF,   OFF,   null,  null,  null,  null,  null,  null,  null,  null,  null  }),
+                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  null,  color, color, color, color, color, OFF,   OFF,   OFF,   OFF,   null,  null,  null,  null,  null,  null,  null,  null  }),
+                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  color, color, color, color, color, color, OFF,   OFF,   OFF,   OFF,   OFF,   null,  null,  null,  null,  null,  null,  null  }),
+                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  color, color, color, color, color, color, color, OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   null,  null,  null,  null,  null,  null  }),
+                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  color, color, color, color, color, color, color, color, OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   null,  null,  null,  null,  null  }),
+                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  color, color, color, color, color, color, color, color, color, OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   null,  null,  null,  null  }),
+                new LEDAnimationFrame(new Color[] { null,  null,  null,  color, color, color, color, color, color, color, color, color, color, OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   null,  null,  null  }),
+                new LEDAnimationFrame(new Color[] { null,  null,  color, color, color, color, color, color, color, color, color, color, color, OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   null,  null  }),
+                new LEDAnimationFrame(new Color[] { null,  color, color, color, color, color, color, color, color, color, color, color, color, OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   null  }),
+                new LEDAnimationFrame(new Color[] { color, color, color, color, color, color, color, color, color, color, color, color, color, OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF   })
             );
         }
         else
         {
             animation = new LEDAnimation
             (
-                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  color, null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  OFF,   color, color, null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  OFF,   OFF,   color, color, color, null,  null,  null,  null,  null,  null,  null,  null,  null,  null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  null,  null,  OFF,   OFF,   OFF,   color, color, color, color, null,  null,  null,  null,  null,  null,  null,  null,  null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  null,  OFF,   OFF,   OFF,   OFF,   color, color, color, color, color, null,  null,  null,  null,  null,  null,  null,  null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  OFF,   OFF,   OFF,   OFF,   OFF,   color, color, color, color, color, color, null,  null,  null,  null,  null,  null,  null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   color, color, color, color, color, color, color, null,  null,  null,  null,  null,  null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   color, color, color, color, color, color, color, color, null,  null,  null,  null,  null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   color, color, color, color, color, color, color, color, color, null,  null,  null,  null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { null,  null,  null,  OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   color, color, color, color, color, color, color, color, color, color, null,  null,  null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { null,  null,  OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   color, color, color, color, color, color, color, color, color, color, color, null,  null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { null,  OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   color, color, color, color, color, color, color, color, color, color, color, color, null  }, 0.02),
-                new LEDAnimationFrame(new Color[] { OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   color, color, color, color, color, color, color, color, color, color, color, color, color }, 0.02)
+                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  color, null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null  }),
+                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  OFF,   color, color, null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  null  }),
+                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  null,  null,  null,  OFF,   OFF,   color, color, color, null,  null,  null,  null,  null,  null,  null,  null,  null,  null  }),
+                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  null,  null,  OFF,   OFF,   OFF,   color, color, color, color, null,  null,  null,  null,  null,  null,  null,  null,  null  }),
+                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  null,  OFF,   OFF,   OFF,   OFF,   color, color, color, color, color, null,  null,  null,  null,  null,  null,  null,  null  }),
+                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  null,  OFF,   OFF,   OFF,   OFF,   OFF,   color, color, color, color, color, color, null,  null,  null,  null,  null,  null,  null  }),
+                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  null,  OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   color, color, color, color, color, color, color, null,  null,  null,  null,  null,  null  }),
+                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  null,  OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   color, color, color, color, color, color, color, color, null,  null,  null,  null,  null  }),
+                new LEDAnimationFrame(new Color[] { null,  null,  null,  null,  OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   color, color, color, color, color, color, color, color, color, null,  null,  null,  null  }),
+                new LEDAnimationFrame(new Color[] { null,  null,  null,  OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   color, color, color, color, color, color, color, color, color, color, null,  null,  null  }),
+                new LEDAnimationFrame(new Color[] { null,  null,  OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   color, color, color, color, color, color, color, color, color, color, color, null,  null  }),
+                new LEDAnimationFrame(new Color[] { null,  OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   color, color, color, color, color, color, color, color, color, color, color, color, null  }),
+                new LEDAnimationFrame(new Color[] { OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   color, color, color, color, color, color, color, color, color, color, color, color, color })
             );
         }
 

@@ -2,19 +2,15 @@ package frc.robot.leds;
 
 import java.util.ArrayList;
 
-import edu.wpi.first.wpilibj.Timer;
-
 public class LEDAnimation 
 {
-    private Timer                        _frameTimer;
     private ArrayList<LEDAnimationFrame> _frames;
     private int                          _currentFrame;
 
     public LEDAnimation()
     {
-        _frameTimer   = new Timer();
         _frames       = new ArrayList<LEDAnimationFrame>();
-        _currentFrame = 0;
+        _currentFrame = -1;
     }
 
     public LEDAnimation(LEDAnimationFrame... animationFrames)
@@ -30,8 +26,6 @@ public class LEDAnimation
     private void startFrame(int frame)
     {
         _currentFrame = frame;
-        _frameTimer.reset();
-        _frameTimer.start();
     }
 
     public void start()
@@ -41,7 +35,7 @@ public class LEDAnimation
 
     public void play()
     {
-        if (_currentFrame < _frames.size() && _frameTimer.hasElapsed(_frames.get(_currentFrame).getDuration()))
+        if (_currentFrame < _frames.size())
         {
             startFrame(_currentFrame + 1);
         }

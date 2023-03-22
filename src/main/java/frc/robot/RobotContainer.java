@@ -17,6 +17,7 @@ import frc.robot.commands.CmdDriveRotateModules;
 import frc.robot.commands.CmdDriveStrafeWithJoystick;
 import frc.robot.commands.CmdDriveWithJoystick;
 import frc.robot.commands.CmdLEDChangeHandMode;
+import frc.robot.commands.CmdLEDCycleWave;
 import frc.robot.commands.CmdLEDTeleopSwapSides;
 import frc.robot.commands.CmdArmAdjustContinuous;
 import frc.robot.commands.CmdArmSetPosition;
@@ -151,6 +152,8 @@ public class RobotContainer
         Controller.OperatorJoystick.button( 4).onFalse(Commands.runOnce(operatorWristAdjustment::cancel));
         Controller.OperatorJoystick.button( 5).onTrue(new CmdLEDWaterfallSolidColor(new Color(255, 0, 0)).ignoringDisable(true));
         Controller.OperatorJoystick.button( 6).onTrue(new CmdLEDWaterfallSolidColor(new Color(0, 0, 255)).ignoringDisable(true));
+        Controller.OperatorJoystick.button(11).toggleOnTrue(new CmdLEDCycleWave(Constants.LED.YELLOW, Constants.LED.PINK, Constants.LED.BLUE).repeatedly());
+        Controller.OperatorJoystick.button(12).toggleOnTrue(new CmdLEDCycleWave(Constants.LED.GREEN, Constants.LED.PINK, Constants.LED.PURPLE).repeatedly());
         
         Controller.ButtonBox.button( 1).onTrue(new GrpPlaceGamePiece());
         Controller.ButtonBox.button( 2).onTrue(intakeAdjustment);
