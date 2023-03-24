@@ -197,12 +197,12 @@ public class Arm extends SubsystemBase
         _wristPID.setSetpointDeadband(5);
         _wristPID.setSetpoint(0);
 
-        _twistPID.setCoefficient(Coefficient.P, 0, 0.015, 0);
+        _twistPID.setCoefficient(Coefficient.P, 0, 0.020, 0);// 0.015
         _twistPID.setCoefficient(Coefficient.I, 0, 0,     0);
-        _twistPID.setCoefficient(Coefficient.D, 0, 0.0006,  0);
+        _twistPID.setCoefficient(Coefficient.D, 0, 0.0005,  0);// 0.0006
         _twistPID.setInputRange(Constants.Arm.TWIST_MIN_ROTATION, Constants.Arm.TWIST_MAX_ROTATION);
         _twistPID.setOutputRange(-0.25, 0.25);
-        _twistPID.setSetpointDeadband(8);
+        _twistPID.setSetpointDeadband(10);// 8
         _twistPID.setSetpoint(90);
 
         if (RobotBase.isSimulation())
@@ -446,10 +446,32 @@ public class Arm extends SubsystemBase
         
         _shoulderPid.setSetpoint(_shoulderSetpoint - Math.min(Math.max(Drive.getInstance().getChassisPitch(), -20.0), 20.0), false); // preserve input range
         
-        _shoulderMotor.setVoltage(_shoulderPid.calculate(getShoulderAngle()) * Constants.MOTOR_VOLTAGE);
+        double shoulderOutput = _shoulderPid.calculate(getShoulderAngle()) * Constants.MOTOR_VOLTAGE;
+        double wristOutput    = _wristPID.calculate(getWristAngle()) * Constants.MOTOR_VOLTAGE;
+        double twistOutput    = _twistPID.calculate(getTwistAngle()) * Constants.MOTOR_VOLTAGE;
+
+        if (!_shoulderEncoder.isConnected())
+        {
+            System.out.println("Shoulder Sensor Dead");
+            shoulderOutput = 0.0;
+        }
+
+        if (!_wristEncoder.isConnected())
+        {
+            System.out.println("Wrist Sensor Dead");
+            wristOutput = 0.0;
+        }
+
+        if (!_twistEncoder.isConnected())
+        {
+            System.out.println("Twist Sensor Dead");
+            twistOutput = 0.0;
+        }
+
+        _shoulderMotor.setVoltage(shoulderOutput);
         _extensionMotor.setVoltage(_extensionPid.calculate(getExtensionDistance()) * Constants.MOTOR_VOLTAGE);
-        _wristMotor.setVoltage(_wristPID.calculate(getWristAngle()) * Constants.MOTOR_VOLTAGE);
-        _twistMotor.setVoltage(_twistPID.calculate(getTwistAngle()) * Constants.MOTOR_VOLTAGE);
+        _wristMotor.setVoltage(wristOutput);
+        _twistMotor.setVoltage(twistOutput);
 
         //System.out.println(String.format("Shoulder Setpoint: %6.2f, Shoulder Current: %6.2f, Shoulder Out: %6.2f", _shoulderPid.getSetpoint(), getShoulderAngle(), shoulderOutput));
         //System.out.println(String.format("Shoulder: %b, Extension: %b, Wrist: %b, Twist: %b, %s", shoulderAtAngle(), extensionAtDistance(), wristAtAngle(), twistAtAngle(), _reset));
