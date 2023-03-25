@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.CmdLEDDripSolidColor;
 import frc.robot.commands.CmdLEDWaterfallSolidColor;
 import frc.robot.commands.CmdLEDAutonomous;
@@ -14,6 +15,7 @@ import frc.robot.commands.CmdLEDDisabled;
 import frc.robot.commands.CmdLEDTeleop;
 import frc.robot.commands.CmdLEDTeleopInit;
 import frc.robot.subsystems.LED;
+import frc.robot.subsystems.drive.Drive;
 
 public class Robot extends TimedRobot 
 {
@@ -39,6 +41,9 @@ public class Robot extends TimedRobot
         LED.getInstance().switchDefaultCommand(new CmdLEDDisabled());
 
         new CmdLEDDripSolidColor(Constants.LED.ORANGE).schedule();
+
+        Drive.getInstance().setBrakeMode(true);
+        Commands.waitSeconds(6.0).ignoringDisable(true).andThen(Commands.runOnce(()->{Drive.getInstance().setBrakeMode(false);})).ignoringDisable(true);
     }
   
     @Override

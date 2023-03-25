@@ -38,6 +38,9 @@ public class Manipulator extends SubsystemBase
     private DigitalInput        _intakeSensor;
     private IntakeState         _intakeState;
 
+    private boolean             _hasGamePiece;
+    private int                 _intakeTimer;
+
     //Settings
     private double              _ejectTime;
     private double              _intakeSpeed;
@@ -50,6 +53,9 @@ public class Manipulator extends SubsystemBase
         _intakeMotor        = new CANSparkMax(Constants.CAN.INTAKE_ID, MotorType.kBrushless);
         _intakeSensor       = new DigitalInput(Constants.DIO.LIGHT_SENSOR_PORT);
         _intakeState        = IntakeState.Off;
+
+        _hasGamePiece       = true;
+        _intakeTimer        = 0;
 
         _ejectTime          = Constants.Manipulator.EJECT_TIME;
         _intakeSpeed        = Constants.Manipulator.INTAKE_SPEED;
@@ -119,7 +125,13 @@ public class Manipulator extends SubsystemBase
     
     public boolean hasGamePiece()
     {
-        return !_intakeSensor.get();    
+        //return !_intakeSensor.get();
+        return _hasGamePiece;
+    }
+
+    public void setGamePiece(boolean hasPiece)
+    {
+        _hasGamePiece = hasPiece;
     }
     
     //Settings Functions
@@ -166,7 +178,11 @@ public class Manipulator extends SubsystemBase
     @Override
     public void periodic()
     {
+        System.out.println(String.format("Current: %6.2f", _intakeMotor.getOutputCurrent()));
+
         _intakeMotor.setInverted(true);
+
+        _intakeTimer += 1;
 
         switch (_intakeState)
         {
@@ -179,6 +195,8 @@ public class Manipulator extends SubsystemBase
                 break;
 
             case Off:
+                _intakeTimer = 0;
+
                 if (hasGamePiece())
                 {
                     _intakeMotor.setVoltage(Constants.Manipulator.INTAKE_HOLD_SPEED * Constants.MOTOR_VOLTAGE);
@@ -196,6 +214,23 @@ public class Manipulator extends SubsystemBase
             default:
                 _intakeMotor.setVoltage(0);
                 break;
+        }
+
+        double intakeCurrent = _intakeMotor.getOutputCurrent();
+
+        if (!hasGamePiece() && _intakeTimer > 10 && intakeCurrent > 18.0)
+        {
+            _hasGamePiece = true;
+        }
+
+        if (hasGamePiece() && (_intakeState == IntakeState.Reverse || _intakeState == IntakeState.ConeEject) && _intakeTimer > 10)
+        {
+            _hasGamePiece = false;
+        }
+
+        if (hasGamePiece() && _intakeTimer == 0 && intakeCurrent < 12.0)
+        {
+            _hasGamePiece = false;
         }
     }
 }

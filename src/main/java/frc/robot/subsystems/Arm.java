@@ -189,7 +189,7 @@ public class Arm extends SubsystemBase
         _extensionPid.setSetpoint(0);
         _extensionEncoder.setPosition(Constants.Arm.ARM_MAX_EXTENSION / Constants.Arm.EXTENSION_CONVERSION_FACTOR);
 
-        _wristPID.setCoefficient(Coefficient.P, 0, 0.025, 0);
+        _wristPID.setCoefficient(Coefficient.P, 0, 0.038, 0);
         _wristPID.setCoefficient(Coefficient.I, 0, 0,    0);
         _wristPID.setCoefficient(Coefficient.D, 0, 0.001, 0);
         _wristPID.setInputRange(Constants.Arm.WRIST_MIN_ANGLE, Constants.Arm.WRIST_MAX_ANGLE);
@@ -444,7 +444,7 @@ public class Arm extends SubsystemBase
                 break;
         }
         
-        _shoulderPid.setSetpoint(_shoulderSetpoint - Math.min(Math.max(Drive.getInstance().getChassisPitch(), -20.0), 20.0), false); // preserve input range
+        _shoulderPid.setSetpoint(_shoulderSetpoint/* - Math.min(Math.max(Drive.getInstance().getChassisPitch(), -20.0), 20.0)*/, false); // preserve input range
         
         double shoulderOutput = _shoulderPid.calculate(getShoulderAngle()) * Constants.MOTOR_VOLTAGE;
         double wristOutput    = _wristPID.calculate(getWristAngle()) * Constants.MOTOR_VOLTAGE;
