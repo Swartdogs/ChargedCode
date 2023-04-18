@@ -2,13 +2,14 @@ package frc.robot.commands;
 
 import PIDControl.PIDControl;
 import PIDControl.PIDControl.Coefficient;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
 
 public class CmdDriveBalance extends CommandBase 
 {
-    private final double BALANCE_TIME = 0.3;
+    private final double BALANCE_TIME = 0.05;
 
     private PIDControl _pitchPID;
     private int        _timer;
@@ -16,11 +17,11 @@ public class CmdDriveBalance extends CommandBase
     public CmdDriveBalance() 
     {
         _pitchPID = new PIDControl();
-        _pitchPID.setCoefficient(Coefficient.P, 11, 0.005, 0);
+        _pitchPID.setCoefficient(Coefficient.P, 11, 0.010, 0);
         _pitchPID.setCoefficient(Coefficient.I, 4,   0,    0.005);
         _pitchPID.setCoefficient(Coefficient.D, 0,   0,    0);
         _pitchPID.setInputRange(-20, 20);
-        _pitchPID.setOutputRange(-0.1, 0.1);
+        _pitchPID.setOutputRange(-0.18, 0.18);
         _pitchPID.setSetpointDeadband(2);
 
         addRequirements(Drive.getInstance());
@@ -59,6 +60,6 @@ public class CmdDriveBalance extends CommandBase
     @Override
     public boolean isFinished()
     {
-        return _timer >= (int)(BALANCE_TIME * Constants.LOOPS_PER_SECOND);
+        return _timer >= (int)(BALANCE_TIME * Constants.LOOPS_PER_SECOND) || (DriverStation.getMatchTime() > 0.0 && DriverStation.getMatchTime() < 1.4);
     }
 }

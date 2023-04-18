@@ -162,7 +162,7 @@ public final class Actions
         PLACE_CUBE.get()
     );
 
-    public final Supplier<Command> PICKUP_CUBE = () -> new GrpIntakeGamePiece(ArmPosition.Ground, () -> ArmSide.Front, () -> HandMode.Cone); // Cone is intentional to pick up the cube from the sides
+    public final Supplier<Command> PICKUP_CUBE = () -> new GrpIntakeGamePiece(ArmPosition.Ground, () -> ArmSide.Front, () -> HandMode.Cube); // Cone is intentional to pick up the cube from the sides
     public final Supplier<Command> STOW        = () -> new CmdArmSetPosition(Constants.Lookups.STOW_FRONT_CONE, Constants.Arm.PRESET_MOTION_RATE, true);
 
     // Second game piece commands

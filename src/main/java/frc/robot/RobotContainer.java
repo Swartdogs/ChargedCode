@@ -154,7 +154,8 @@ public class RobotContainer
         Controller.OperatorJoystick.button( 6).onTrue(new CmdLEDWaterfallSolidColor(new Color(0, 0, 255)).ignoringDisable(true));
         Controller.OperatorJoystick.button(11).toggleOnTrue(new CmdLEDCycleWave(Constants.LED.YELLOW, Constants.LED.PINK, Constants.LED.BLUE).repeatedly());
         Controller.OperatorJoystick.button(12).toggleOnTrue(new CmdLEDCycleWave(Constants.LED.GREEN, Constants.LED.PINK, Constants.LED.PURPLE).repeatedly());
-        
+        Controller.OperatorJoystick.button(10).onTrue(Commands.runOnce(()->{ Manipulator.getInstance().setGamePiece(!Manipulator.getInstance().hasGamePiece()); }));
+
         Controller.ButtonBox.button( 1).onTrue(new GrpPlaceGamePiece());
         Controller.ButtonBox.button( 2).onTrue(intakeAdjustment);
         Controller.ButtonBox.button( 2).onFalse(Commands.runOnce(intakeAdjustment::cancel));

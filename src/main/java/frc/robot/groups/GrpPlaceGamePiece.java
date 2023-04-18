@@ -36,7 +36,7 @@ public class GrpPlaceGamePiece extends SequentialCommandGroup
                 new SequentialCommandGroup
                 (
                     // Modify the shoulder downward and wait for it to be in position
-                    new CmdArmSetPosition(new Vector(0, -6), 3.0, 0.0, Constants.Arm.PLACE_MOTION_RATE, false),
+                    new CmdArmSetPosition(new Vector(0, -6), 20.0, 0.0, Constants.Arm.PLACE_MOTION_RATE, false),
 
                     // Retract the arm, but also run the intake in reverse as long as we're retracting
                     new ParallelDeadlineGroup

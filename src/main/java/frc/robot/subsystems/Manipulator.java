@@ -6,7 +6,6 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -35,8 +34,10 @@ public class Manipulator extends SubsystemBase
     
     //Intake Controls
     private CANSparkMax         _intakeMotor;
-    private DigitalInput        _intakeSensor;
     private IntakeState         _intakeState;
+
+    private boolean             _hasGamePiece;
+    private int                 _intakeTimer;
 
     //Settings
     private double              _ejectTime;
@@ -48,8 +49,10 @@ public class Manipulator extends SubsystemBase
     private Manipulator()
     {
         _intakeMotor        = new CANSparkMax(Constants.CAN.INTAKE_ID, MotorType.kBrushless);
-        _intakeSensor       = new DigitalInput(Constants.DIO.LIGHT_SENSOR_PORT);
         _intakeState        = IntakeState.Off;
+
+        _hasGamePiece       = true;
+        _intakeTimer        = 0;
 
         _ejectTime          = Constants.Manipulator.EJECT_TIME;
         _intakeSpeed        = Constants.Manipulator.INTAKE_SPEED;
@@ -119,7 +122,13 @@ public class Manipulator extends SubsystemBase
     
     public boolean hasGamePiece()
     {
-        return !_intakeSensor.get();    
+        //return !_intakeSensor.get();
+        return _hasGamePiece;
+    }
+
+    public void setGamePiece(boolean hasPiece)
+    {
+        _hasGamePiece = hasPiece;
     }
     
     //Settings Functions
@@ -168,6 +177,8 @@ public class Manipulator extends SubsystemBase
     {
         _intakeMotor.setInverted(true);
 
+        _intakeTimer += 1;
+
         switch (_intakeState)
         {
             case On:
@@ -179,6 +190,8 @@ public class Manipulator extends SubsystemBase
                 break;
 
             case Off:
+                _intakeTimer = 0;
+
                 if (hasGamePiece())
                 {
                     _intakeMotor.setVoltage(Constants.Manipulator.INTAKE_HOLD_SPEED * Constants.MOTOR_VOLTAGE);
@@ -196,6 +209,23 @@ public class Manipulator extends SubsystemBase
             default:
                 _intakeMotor.setVoltage(0);
                 break;
+        }
+
+        double intakeCurrent = _intakeMotor.getOutputCurrent();
+
+        if (!hasGamePiece() && _intakeTimer > 10 && intakeCurrent > 18.0)
+        {
+            _hasGamePiece = true;
+        }
+
+        if (hasGamePiece() && (_intakeState == IntakeState.Reverse || _intakeState == IntakeState.ConeEject) && _intakeTimer > 10)
+        {
+            _hasGamePiece = false;
+        }
+
+        if (hasGamePiece() && _intakeTimer == 0 && intakeCurrent < 12.0)
+        {
+            _hasGamePiece = false;
         }
     }
 }
