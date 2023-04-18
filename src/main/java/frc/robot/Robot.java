@@ -43,7 +43,7 @@ public class Robot extends TimedRobot
         new CmdLEDDripSolidColor(Constants.LED.ORANGE).schedule();
 
         Drive.getInstance().setBrakeMode(true);
-        Commands.waitSeconds(6.0).ignoringDisable(true).andThen(Commands.runOnce(()->{Drive.getInstance().setBrakeMode(false);})).ignoringDisable(true);
+        Commands.waitSeconds(3.0).ignoringDisable(true).andThen(Commands.runOnce(()->{Drive.getInstance().setBrakeMode(false);})).ignoringDisable(true).schedule();
     }
   
     @Override
