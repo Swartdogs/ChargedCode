@@ -60,6 +60,6 @@ public class CmdDriveBalance extends CommandBase
     @Override
     public boolean isFinished()
     {
-        return _timer >= (int)(BALANCE_TIME * Constants.LOOPS_PER_SECOND) | (DriverStation.getMatchTime() > 0.0 && DriverStation.getMatchTime() < 1.4);
+        return _timer >= (int)(BALANCE_TIME * Constants.LOOPS_PER_SECOND) || (DriverStation.getMatchTime() > 0.0 && DriverStation.getMatchTime() < 1.4);
     }
 }

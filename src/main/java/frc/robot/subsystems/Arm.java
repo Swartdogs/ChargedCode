@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.Vector;
 
 public class Arm extends SubsystemBase 
