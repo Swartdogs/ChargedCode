@@ -53,7 +53,13 @@ public class SwerveModule extends Vector
         _driveMotor.setIdleMode(IdleMode.kCoast);
         _rotateMotor.setIdleMode(IdleMode.kCoast);
 
+        _driveMotor.setSmartCurrentLimit(80);
+        _rotateMotor.setSmartCurrentLimit(20);
+
         _driveMotor.getEncoder().setPositionConversionFactor(Constants.Drive.DRIVE_ENCODER_TO_DISTANCE);
+
+        _driveMotor.burnFlash();
+        _rotateMotor.burnFlash();
 
         _rotatePID = new PIDControl();
 

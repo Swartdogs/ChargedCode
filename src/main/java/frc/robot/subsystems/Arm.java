@@ -168,6 +168,18 @@ public class Arm extends SubsystemBase
 
         followerShoulderMotor.follow(_shoulderMotor, true);
 
+        _extensionMotor.setSmartCurrentLimit(80);
+        _shoulderMotor.setSmartCurrentLimit(20);
+        _wristMotor.setSmartCurrentLimit(20);
+        _twistMotor.setSmartCurrentLimit(20);
+        followerShoulderMotor.setSmartCurrentLimit(20);
+
+        _extensionMotor.burnFlash();
+        _shoulderMotor.burnFlash();
+        _wristMotor.burnFlash();
+        _twistMotor.burnFlash();
+        followerShoulderMotor.burnFlash();
+
         _shoulderPid.setCoefficient(Coefficient.P, 5, 0.02, 0.015);
         _shoulderPid.setCoefficient(Coefficient.I, 0, 0, 0);
         _shoulderPid.setCoefficient(Coefficient.D, 5, 0.002, 0.001);
@@ -413,8 +425,6 @@ public class Arm extends SubsystemBase
     @Override 
     public void periodic()
     {
-        _wristMotor.setInverted(true);
-
         switch (_reset)
         {
             case NotReset:

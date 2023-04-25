@@ -62,9 +62,13 @@ public class Manipulator extends SubsystemBase
 
         _intakeMotor.restoreFactoryDefaults();
 
+        _intakeMotor.setSmartCurrentLimit(20);
+
         _intakeMotor.setInverted(true);
 
         _intakeMotor.setIdleMode(IdleMode.kBrake);
+
+        _intakeMotor.burnFlash();
 
         if (RobotBase.isSimulation())
         {
@@ -175,8 +179,6 @@ public class Manipulator extends SubsystemBase
     @Override
     public void periodic()
     {
-        _intakeMotor.setInverted(true);
-
         _intakeTimer += 1;
 
         switch (_intakeState)
