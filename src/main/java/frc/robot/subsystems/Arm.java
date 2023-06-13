@@ -169,10 +169,10 @@ public class Arm extends SubsystemBase
         followerShoulderMotor.follow(_shoulderMotor, true);
 
         _extensionMotor.setSmartCurrentLimit(80);
-        _shoulderMotor.setSmartCurrentLimit(20);
+        _shoulderMotor.setSmartCurrentLimit(80);
         _wristMotor.setSmartCurrentLimit(20);
         _twistMotor.setSmartCurrentLimit(20);
-        followerShoulderMotor.setSmartCurrentLimit(20);
+        followerShoulderMotor.setSmartCurrentLimit(80);
 
         _extensionMotor.burnFlash();
         _shoulderMotor.burnFlash();
