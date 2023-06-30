@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.FaultID;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -152,6 +153,12 @@ public class Arm extends SubsystemBase
         _twistMotor.restoreFactoryDefaults();
         followerShoulderMotor.restoreFactoryDefaults();
         
+        _extensionMotor.clearFaults();
+        _shoulderMotor.clearFaults();
+        _wristMotor.clearFaults();
+        _twistMotor.clearFaults();
+        followerShoulderMotor.clearFaults();
+
         _extensionEncoder = _extensionMotor.getEncoder();
         
         _extensionMotor.setIdleMode(IdleMode.kBrake);
@@ -305,19 +312,22 @@ public class Arm extends SubsystemBase
 
     private void updateArmSetpoints()
     {
-        double sin = Math.sin(Math.toRadians(_handAngle));
-        double cos = Math.cos(Math.toRadians(_handAngle));
+        if (_reset == ResetStatus.Reset)
+        {
+            double sin = Math.sin(Math.toRadians(_handAngle));
+            double cos = Math.cos(Math.toRadians(_handAngle));
 
-        double x = _coordinate.getX() - Constants.Arm.HAND_LENGTH * sin;
-        double y = _coordinate.getY() - Constants.Arm.HAND_LENGTH * cos - Constants.Arm.SHOULDER_HEIGHT; 
+            double x = _coordinate.getX() - Constants.Arm.HAND_LENGTH * sin;
+            double y = _coordinate.getY() - Constants.Arm.HAND_LENGTH * cos - Constants.Arm.SHOULDER_HEIGHT; 
 
-        double a = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-        double s = Math.toDegrees(Math.atan2(x, y));
-        double w = s - _handAngle;
+            double a = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+            double s = Math.toDegrees(Math.atan2(x, y));
+            double w = s - _handAngle;
 
-        _shoulderSetpoint = s;
-        _extensionPid.setSetpoint(a - Constants.Arm.ARM_RETRACTED_LENGTH);
-        _wristPID.setSetpoint(w);
+            _shoulderSetpoint = s;
+            _extensionPid.setSetpoint(a - Constants.Arm.ARM_RETRACTED_LENGTH);
+            _wristPID.setSetpoint(w);
+        }
     }
 
     public void setArmPosition(Vector coordinate, double handAngle, double twistAngle)
@@ -422,18 +432,30 @@ public class Arm extends SubsystemBase
         _twistPID.setInputRange(_twistMinRotation, _twistMaxRotation);
     }    
 
+    public boolean isReset()
+    {
+        return _reset == ResetStatus.Reset;
+    }
+    
     @Override 
     public void periodic()
     {
+        if (_reset == ResetStatus.Reset && (_extensionMotor.getFault(FaultID.kBrownout) || _extensionMotor.getFault(FaultID.kHasReset)))
+        {
+            _reset = ResetStatus.NotReset;
+            _extensionMotor.clearFaults();
+            setArmPosition(Constants.Lookups.STOW_FRONT_CONE.getCoordinate(), Constants.Lookups.STOW_FRONT_CONE.getHandAngle(), Constants.Lookups.STOW_FRONT_CONE.getTwistAngle());
+        }
+
         switch (_reset)
         {
             case NotReset:
+                _extensionPid.setSetpoint(0);
+                _extensionEncoder.setPosition(Constants.Arm.ARM_MAX_EXTENSION / Constants.Arm.EXTENSION_CONVERSION_FACTOR);
+                _extensionPid.setOutputRange(-0.25, 0.25);
                 if (isLimitSwitchPressed())
                 {
                     _reset = ResetStatus.Resetting;
-                    _extensionPid.setOutputRange(-1.0, 1.0);
-                    _extensionEncoder.setPosition(-0.5);
-                    
                 }
                 break;
 
@@ -441,15 +463,21 @@ public class Arm extends SubsystemBase
                 if (isLimitSwitchPressed())
                 {
                     _extensionEncoder.setPosition(-0.5);
+                    _extensionPid.setSetpoint(0);
                 }
                 else
                 {
                     _reset = ResetStatus.Reset;
+                    _extensionPid.setOutputRange(-1.0, 1.0);
+                    updateArmSetpoints();
                 }
                 break;
 
             case Reset:
+                break;
+
             default:
+                _reset = ResetStatus.NotReset;
                 break;
         }
         

@@ -18,6 +18,7 @@ import frc.robot.commands.CmdDriveStrafeWithJoystick;
 import frc.robot.commands.CmdDriveWithJoystick;
 import frc.robot.commands.CmdLEDChangeHandMode;
 import frc.robot.commands.CmdLEDCycleWave;
+import frc.robot.commands.CmdLEDTeleopResetting;
 import frc.robot.commands.CmdLEDTeleopSwapSides;
 import frc.robot.commands.CmdArmAdjustContinuous;
 import frc.robot.commands.CmdArmSetPosition;
@@ -84,6 +85,7 @@ public class RobotContainer
 
     private Trigger _buttonBoxHandmodeSwitch;
     private Trigger _buttonBoxArmSideSwitch;
+    private Trigger _armResetting;
 
     private Command _auto;
 
@@ -100,8 +102,9 @@ public class RobotContainer
 
         _auto = new GrpAutonomous();
 
-        _buttonBoxHandmodeSwitch = new Trigger (()-> Controller.ButtonBox.joystick().getRawAxis(0) < -0.5);
+        _buttonBoxHandmodeSwitch = new Trigger(()-> Controller.ButtonBox.joystick().getRawAxis(0) < -0.5);
         _buttonBoxArmSideSwitch  = new Trigger(()-> Controller.ButtonBox.joystick().getRawAxis(1) < -0.5);
+        _armResetting            = new Trigger(()-> !Arm.getInstance().isReset());
 
        configureDefaultCommands();
        configureBindings();
@@ -179,6 +182,9 @@ public class RobotContainer
         _buttonBoxArmSideSwitch.onFalse(new GrpSetArmPosition(ArmPosition.Stow));
         _buttonBoxArmSideSwitch.onTrue(new CmdLEDTeleopSwapSides());
         _buttonBoxArmSideSwitch.onFalse(new CmdLEDTeleopSwapSides()); 
+        
+        _armResetting.onTrue(new CmdLEDTeleopResetting());
+
     }
 
     public Command getAutonomousCommand() 
